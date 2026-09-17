@@ -378,6 +378,7 @@
 
     {{-- MAIN --}}
     <main class="main">
+        <x-topbar title="Pendaftaran" icon="clipboard-plus" />
 
         <section class="content">
 

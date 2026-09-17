@@ -1,77 +1,98 @@
 <aside class="sidebar">
 
-    {{-- Logo --}}
+    {{-- =========================
+         LOGO
+    ========================== --}}
     <div class="logo">
+
         <div class="logo-icon">
-            <i class="bi bi-hospital"></i>
+            <span>SR</span>
         </div>
 
         <div class="logo-text">
-            Klinik Merah Putih
+            <strong>Klinik</strong>
+            <span>Merah Putih</span>
         </div>
+
     </div>
 
 
-    {{-- Menu --}}
+    {{-- =========================
+         MENU
+    ========================== --}}
     <nav class="menu">
 
         {{-- Dashboard --}}
+        <a href="{{ route('dashboard') }}"
+           class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+
+            <i class="bi bi-grid-fill"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        {{-- Pendaftaran --}}
+        <a href="{{ route('pendaftaran') }}"
+           class="menu-item {{ request()->routeIs('pendaftaran') || request()->routeIs('pasien.*') ? 'active' : '' }}">
+
+            <i class="bi bi-clipboard-plus"></i>
+
+            <span>Pendaftaran</span>
+
+        </a>
+
+
+        {{-- Pemeriksaan --}}
         <a href="#"
            class="menu-item">
-            <i class="bi bi-house-fill"></i>
-            <span>Dashboard</span>
-        </a>
 
+            <i class="bi bi-heart-pulse-fill"></i>
 
-        {{-- =========================
-     PENDAFTARAN
-========================== --}}
-
-<a
-    href="{{ route('pendaftaran') }}"
-    class="menu-item {{ request()->routeIs('pendaftaran') || request()->routeIs('pasien.*') ? 'active' : '' }}"
->
-
-    <i class="bi bi-clipboard-plus"></i>
-
-    <span>Pendaftaran</span>
-
-</a>
-
-
-        {{-- =========================
-             POLI
-        ========================== --}}
-        <a href="#" class="menu-item menu-poli">
-
-            <span class="menu-left">
-
-                <i class="bi bi-people-fill"></i>
-
-                <span>Poli</span>
-
-            </span>
-
-            <i class="bi bi-chevron-down arrow"></i>
+            <span>Pemeriksaan</span>
 
         </a>
 
 
-        {{-- =========================
-             RADIOLOGI
-        ========================== --}}
-        <a href="#" class="menu-item">
+        {{-- Penunjang --}}
+        <a href="#"
+           class="menu-item">
 
-            <i class="bi bi-radioactive"></i>
+            <i class="bi bi-clipboard2-pulse-fill"></i>
 
-            <span>Radiologi</span>
+            <span>Penunjang</span>
+
+        </a>
+
+
+        {{-- Farmasi --}}
+        <a href="#"
+           class="menu-item">
+
+            <i class="bi bi-capsule"></i>
+
+            <span>Farmasi</span>
+
+        </a>
+
+
+        {{-- Rekam Medis --}}
+        <a href="#"
+           class="menu-item">
+
+            <i class="bi bi-folder-fill"></i>
+
+            <span>Rekam Medis</span>
 
         </a>
 
     </nav>
 
 
-    {{-- Logout --}}
+    {{-- =========================
+         LOGOUT
+    ========================== --}}
     <div class="logout">
 
         <a href="#">
@@ -87,180 +108,228 @@
 </aside>
 
 
-<script>
-
-function togglePendaftaran() {
-
-    const submenu = document.getElementById('pendaftaran-submenu');
-    const arrow = document.getElementById('pendaftaran-arrow');
-
-    submenu.classList.toggle('show');
-
-    arrow.classList.toggle('rotate');
-
-}
-
-</script>
-
 <style>
 
-.sidebar {
-    width: 230px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    color: white;
-    background: linear-gradient(180deg, #980000 0%, #570000 100%);
-    z-index: 1000;
-}
+    /* =================================
+       SIDEBAR
+    ================================== */
 
-.logo {
-    height: 75px;
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.18);
-}
+    .sidebar {
+        width: 230px;
+        height: 100vh;
 
-.logo-icon {
-    width: 38px;
-    height: 38px;
-    border: 2px solid white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 9px;
-    font-size: 17px;
-}
+        position: fixed;
+        left: 0;
+        top: 0;
 
-.logo-text {
-    font-size: 12px;
-    font-weight: 600;
-}
+        display: flex;
+        flex-direction: column;
 
-.menu {
-    padding: 30px 12px;
-}
+        color: white;
 
-.menu-item,
-.menu-dropdown {
-    width: 100%;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    padding: 0 13px;
-    margin-bottom: 6px;
-    color: white;
-    text-decoration: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    border: none;
-    border-radius: 5px;
-    background: transparent;
-    cursor: pointer;
-    transition: 0.2s;
-}
+        background: linear-gradient(
+            180deg,
+            #980000 0%,
+            #570000 100%
+        );
 
-.menu-item i,
-.menu-dropdown i {
-    width: 28px;
-    font-size: 16px;
-}
+        z-index: 1000;
+    }
 
-.menu-item:hover,
-.menu-dropdown:hover {
-    background: rgba(255,255,255,0.12);
-}
 
-.menu-group {
-    width: 100%;
-}
+    /* =================================
+       LOGO
+    ================================== */
 
-.menu-dropdown {
-    justify-content: space-between;
-}
+    .logo {
+        height: 78px;
 
-.menu-left {
-    display: flex;
-    align-items: center;
-}
+        display: flex;
+        align-items: center;
 
-.menu-dropdown .arrow {
-    width: auto;
-    font-size: 11px;
-    transition: transform 0.25s ease;
-}
+        padding: 12px 20px;
 
-.menu-item.active {
-    background: #ed1111;
-}
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    }
 
-.menu-dropdown .arrow.rotate {
-    transform: rotate(180deg);
-}
 
-.submenu {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.2s ease;
-    margin-bottom: 5px;
-}
+    .logo-icon {
+        width: 39px;
+        height: 39px;
 
-.submenu.show {
-    max-height: 150px;
-    opacity: 1;
-}
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-.submenu a {
-    display: flex;
-    align-items: center;
-    min-height: 34px;
-    margin: 2px 0 2px 28px;
-    padding: 7px 10px;
-    color: rgba(255,255,255,0.82);
-    text-decoration: none;
-    font-size: 10px;
-    font-weight: 400;
-    border-radius: 4px;
-    transition: 0.2s;
-}
+        margin-right: 10px;
 
-.submenu a:hover {
-    color: white;
-    background: rgba(255,255,255,0.12);
-}
+        border: 2px solid white;
+        border-radius: 10px;
 
-.submenu a.submenu-active {
-    color: white;
-    background: rgba(255,255,255,0.18);
-    font-weight: 600;
-}
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
 
-.logout {
-    margin-top: auto;
-    padding: 18px 12px;
-    border-top: 1px solid rgba(255,255,255,0.2);
-}
 
-.logout a {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    padding: 0 13px;
-    color: white;
-    text-decoration: none;
-    font-size: 12px;
-}
+    .logo-text {
+        display: flex;
+        flex-direction: column;
 
-.logout i {
-    width: 28px;
-    font-size: 17px;
-}
+        line-height: 1.25;
+
+        font-family: 'Poppins', sans-serif;
+    }
+
+
+    .logo-text strong {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+
+    .logo-text span {
+        font-size: 11px;
+        font-weight: 400;
+
+        opacity: 0.85;
+    }
+
+
+    /* =================================
+       MENU
+    ================================== */
+
+    .menu {
+        padding: 28px 12px;
+    }
+
+
+    .menu-item {
+        width: 100%;
+        height: 44px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 0 14px;
+        margin-bottom: 7px;
+
+        color: white;
+
+        text-decoration: none;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+
+        border-radius: 7px;
+
+        transition:
+            background 0.2s ease,
+            transform 0.15s ease;
+    }
+
+
+    /* =================================
+       ICON
+    ================================== */
+
+    .menu-item i {
+        width: 29px;
+
+        font-size: 16px;
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+
+    /* =================================
+       HOVER
+    ================================== */
+
+    .menu-item:hover {
+        color: white;
+
+        background: rgba(255, 255, 255, 0.12);
+
+        text-decoration: none;
+    }
+
+
+    .menu-item:hover i {
+        transform: translateX(1px);
+    }
+
+
+    /* =================================
+       ACTIVE MENU
+    ================================== */
+
+    .menu-item.active {
+        color: white;
+
+        background: #ed1111;
+
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+
+
+    .menu-item.active:hover {
+        background: #ed1111;
+    }
+
+
+    /* =================================
+       LOGOUT
+    ================================== */
+
+    .logout {
+        margin-top: auto;
+
+        padding: 16px 12px;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+
+    .logout a {
+        height: 44px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 0 14px;
+
+        color: white;
+
+        text-decoration: none;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+
+        border-radius: 7px;
+
+        transition: background 0.2s ease;
+    }
+
+
+    .logout a:hover {
+        color: white;
+
+        background: rgba(255, 255, 255, 0.12);
+
+        text-decoration: none;
+    }
+
+
+    .logout i {
+        width: 29px;
+
+        font-size: 17px;
+    }
 
 </style>

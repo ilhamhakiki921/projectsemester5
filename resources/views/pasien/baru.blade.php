@@ -1,3 +1,4 @@
+```blade
 @extends('layouts.app')
 
 @section('title', 'Pasien Baru')
@@ -5,6 +6,7 @@
 @section('style')
 
 <style>
+
     * {
         margin: 0;
         padding: 0;
@@ -24,64 +26,110 @@
         background: #ffffff;
     }
 
+    .phone-input {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 34px;
+    border: 1px solid #999;
+    border-radius: 6px;
+    background: #ffffff;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.phone-input:focus-within {
+    border-color: #2f6f6a;
+    box-shadow: 0 0 0 3px rgba(47, 111, 106, 0.10);
+}
+
+.phone-prefix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    min-width: 90px;
+    height: 100%;
+    padding: 0 12px;
+    background: #f8fafc;
+    border-right: 1px solid #e1e5ea;
+    color: #111827;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.phone-input input,
+.form-group .phone-input input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0 10px;
+    border: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #374151;
+    box-sizing: border-box;
+}
+
+.phone-input input::placeholder {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.phone-input input:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
     .content {
         width: 100%;
-
         padding: 20px 22px;
-
         background: #ffffff;
     }
 
     .page-title {
         margin-bottom: 15px;
-
         font-size: 21px;
         font-weight: 700;
-
         text-transform: uppercase;
-
         color: #222;
     }
 
     .form-section {
         position: relative;
-
         width: 100%;
-
         padding: 24px 15px 15px;
-
         margin-bottom: 18px;
-
         border: 1px solid #888;
-
         border-radius: 11px;
-
         background: #ffffff;
     }
 
     .section-title {
         position: absolute;
-
         top: -10px;
         left: 18px;
-
         padding: 0 9px;
-
         background: #ffffff;
-
         font-size: 12px;
         font-weight: 600;
-
         color: #333;
     }
 
     .form-grid {
-        display: grid;
-
-        grid-template-columns: 1fr 1fr;
-
-        column-gap: 35px;
-        row-gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 35px;
+    row-gap: 15px;
     }
 
     .form-group {
@@ -90,42 +138,52 @@
     }
 
     .form-group label {
-        margin-bottom: 4px;
+    margin-bottom: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #333;
+}
 
-        font-size: 10px;
-        font-weight: 500;
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 35px;
+    padding: 0 10px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    outline: none;
+    background: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    color: #555;
+}
 
-        color: #333;
-    }
+.form-group input::placeholder {
+    color: #aaa;
+}
 
-    .required {
-        color: red;
-    }
+.form-group textarea {
+    width: 100%;
+    min-height: 70px;
+    padding: 10px 12px;
+    border: 1px solid #999;
+    border-radius: 6px;
+    outline: none;
+    background: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #555;
+    resize: vertical;
+}
 
-    .form-group input,
-    .form-group select {
-        width: 100%;
-        height: 35px;
+.form-group textarea::placeholder {
+    color: #aaa;
+    font-size: 12px;
+}
 
-        padding: 0 10px;
-
-        border: 1px solid #999;
-        border-radius: 5px;
-
-        outline: none;
-
-        background: #ffffff;
-
-        font-family: 'Poppins', sans-serif;
-
-        font-size: 10px;
-
-        color: #555;
-    }
-
-    .form-group input::placeholder {
-        color: #aaa;
-    }
+.form-group textarea:focus {
+    border-color: #555;
+}
 
     .form-group input:focus,
     .form-group select:focus {
@@ -133,59 +191,43 @@
     }
 
     .radio-wrapper {
-        height: 35px;
-
+        min-height: 40px;
         display: flex;
         align-items: center;
-
         gap: 18px;
+        flex-wrap: wrap;
     }
 
     .radio-item {
-        display: flex;
-
-        align-items: center;
-
-        gap: 5px;
-
-        font-size: 10px;
-
-        white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    white-space: nowrap;
     }
 
     .radio-item input {
         width: 13px;
         height: 13px;
-
         margin: 0;
     }
 
     .form-buttons {
         display: flex;
-
         justify-content: flex-end;
-
         gap: 15px;
-
         margin-top: 3px;
     }
 
     .btn {
         width: 87px;
         height: 36px;
-
         border: none;
-
         border-radius: 5px;
-
         color: #ffffff;
-
         font-family: 'Poppins', sans-serif;
-
         font-size: 11px;
-
         cursor: pointer;
-
         transition: 0.2s;
     }
 
@@ -205,7 +247,6 @@
         background: #08089e;
     }
 
-    /* Pesan error validasi */
     .error-text {
         color: red;
         font-size: 9px;
@@ -242,7 +283,10 @@
         .content {
             padding: 15px;
         }
+
+        
     }
+
 </style>
 
 @endsection
@@ -255,9 +299,9 @@
     {{-- SIDEBAR --}}
     <x-sidebar />
 
-
     {{-- MAIN --}}
     <main class="main">
+        <x-topbar title="Pendaftaran Pasien Baru" icon="person-plus" />
 
         {{-- CONTENT --}}
         <section class="content">
@@ -268,19 +312,30 @@
 
             {{-- Tampilkan error validasi kalau ada --}}
             @if($errors->any())
+
                 <div style="background:#ffe0e0; color:#a00000; padding:10px 15px; border-radius:6px; margin-bottom:15px; font-size:12px;">
+
                     <strong>Periksa kembali data yang diisi:</strong>
+
                     <ul style="margin:6px 0 0 18px;">
+
                         @foreach($errors->all() as $error)
+
                             <li>{{ $error }}</li>
+
                         @endforeach
+
                     </ul>
+
                 </div>
+
             @endif
+
 
             <form action="{{ route('pasien.baru.store') }}" method="POST">
 
                 @csrf
+
 
                 {{-- =========================
                      DATA IDENTITAS PASIEN
@@ -296,6 +351,7 @@
                     <div class="form-grid">
 
                         {{-- No RM --}}
+
                         <div class="form-group">
 
                             <label>
@@ -314,6 +370,7 @@
 
 
                         {{-- Jenis Kelamin --}}
+
                         <div class="form-group">
 
                             <label>
@@ -327,9 +384,23 @@
                                     <input
                                         type="radio"
                                         name="jenis_kelamin"
-                                        value="Laki-laki"
-                                        {{ old('jenis_kelamin') == 'Laki-laki' ? 'checked' : '' }}
+                                        value="0"
+                                        {{ old('jenis_kelamin') == '0' ? 'checked' : '' }}
                                         required
+                                    >
+
+                                    Tidak diketahui
+
+                                </label>
+
+
+                                <label class="radio-item">
+
+                                    <input
+                                        type="radio"
+                                        name="jenis_kelamin"
+                                        value="1"
+                                        {{ old('jenis_kelamin') == '1' ? 'checked' : '' }}
                                     >
 
                                     Laki-laki
@@ -342,11 +413,39 @@
                                     <input
                                         type="radio"
                                         name="jenis_kelamin"
-                                        value="Perempuan"
-                                        {{ old('jenis_kelamin') == 'Perempuan' ? 'checked' : '' }}
+                                        value="2"
+                                        {{ old('jenis_kelamin') == '2' ? 'checked' : '' }}
                                     >
 
                                     Perempuan
+
+                                </label>
+
+
+                                <label class="radio-item">
+
+                                    <input
+                                        type="radio"
+                                        name="jenis_kelamin"
+                                        value="3"
+                                        {{ old('jenis_kelamin') == '3' ? 'checked' : '' }}
+                                    >
+
+                                    Tidak dapat ditentukan
+
+                                </label>
+
+
+                                <label class="radio-item">
+
+                                    <input
+                                        type="radio"
+                                        name="jenis_kelamin"
+                                        value="4"
+                                        {{ old('jenis_kelamin') == '4' ? 'checked' : '' }}
+                                    >
+
+                                    Tidak mengisi
 
                                 </label>
 
@@ -356,6 +455,7 @@
 
 
                         {{-- Nama --}}
+
                         <div class="form-group">
 
                             <label>
@@ -375,72 +475,77 @@
 
 
                         {{-- Tanggal Lahir --}}
+
                         <div class="form-group">
-
-                            <label>
-                                Tanggal Lahir
-                                <span class="required">*</span>
-                            </label>
-
-                            <input
+                        <label for="tanggal_lahir">Tanggal Lahir</label>
+                        <input
                                 type="date"
+                                id="tanggal_lahir"
                                 name="tanggal_lahir"
                                 value="{{ old('tanggal_lahir') }}"
+                                lang="id-ID"
                                 required
                             >
-
                         </div>
 
 
                         {{-- NIK --}}
+
                         <div class="form-group">
 
                             <label>
-                                NIK <span class="required">*</span>
+                                Nomor Induk Kependudukan (NIK)
+                                <span class="required">*</span>
                             </label>
 
                             <input
                                 type="text"
                                 name="nik"
                                 value="{{ old('nik') }}"
-                                placeholder="NIK"
+                                placeholder="16 digit NIK"
+                                inputmode="numeric"
+                                pattern="[0-9]{16}"
+                                maxlength="16"
                                 required
                             >
 
                         </div>
 
 
-                        {{-- Nomor Telepon --}}
+                        {{-- Nomor Telepon Selular Pasien --}}
+
+                        <div class="form-group">
+    <label for="no_telepon">Nomor Telepon Selular Pasien</label>
+
+    <div class="phone-input">
+        <span class="phone-prefix">+62</span>
+
+        <input
+            type="tel"
+            id="no_telepon"
+            name="no_telepon"
+            value="{{ old('no_telepon') }}"
+            placeholder="81234567890"
+            inputmode="numeric"
+        >
+    </div>
+</div>
+
+
+                        {{-- Alamat Lengkap --}}
+
                         <div class="form-group">
 
                             <label>
-                                Nomor Telepon
+                                Alamat Lengkap
+                                <span class="required">*</span>
                             </label>
 
-                            <input
-                                type="text"
-                                name="no_telepon"
-                                value="{{ old('no_telepon') }}"
-                                placeholder="Nomor telepon"
-                            >
-
-                        </div>
-
-
-                        {{-- Alamat --}}
-                        <div class="form-group">
-
-                            <label>
-                                Alamat <span class="required">*</span>
-                            </label>
-
-                            <input
-                                type="text"
+                            <textarea
                                 name="alamat"
-                                value="{{ old('alamat') }}"
-                                placeholder="Alamat lengkap"
+                                placeholder="Nama jalan, nomor rumah, RT/RW, desa/kelurahan, kecamatan"
                                 required
-                            >
+                            >{{ old('alamat') }}</textarea>
 
                         </div>
 
@@ -463,6 +568,7 @@
                     <div class="form-grid">
 
                         {{-- Tanggal Kunjungan --}}
+
                         <div class="form-group">
 
                             <label>
@@ -473,7 +579,7 @@
                             <input
                                 type="date"
                                 name="tanggal_kunjungan"
-                                value="{{ old('tanggal_kunjungan') }}"
+                                value="{{ old('tanggal_kunjungan', date('Y-m-d')) }}"
                                 required
                             >
 
@@ -481,6 +587,7 @@
 
 
                         {{-- Dokter --}}
+
                         <div class="form-group">
 
                             <label>
@@ -494,15 +601,18 @@
                                     Pilih nama dokter yang bertugas
                                 </option>
 
-                                <option value="dokter1" {{ old('dokter') == 'dokter1' ? 'selected' : '' }}>
+                                <option value="dokter1"
+                                    {{ old('dokter') == 'dokter1' ? 'selected' : '' }}>
                                     Dr. Ahmad
                                 </option>
 
-                                <option value="dokter2" {{ old('dokter') == 'dokter2' ? 'selected' : '' }}>
+                                <option value="dokter2"
+                                    {{ old('dokter') == 'dokter2' ? 'selected' : '' }}>
                                     Dr. Budi
                                 </option>
 
-                                <option value="dokter3" {{ old('dokter') == 'dokter3' ? 'selected' : '' }}>
+                                <option value="dokter3"
+                                    {{ old('dokter') == 'dokter3' ? 'selected' : '' }}>
                                     Dr. Citra
                                 </option>
 
@@ -512,6 +622,7 @@
 
 
                         {{-- Poli --}}
+
                         <div class="form-group">
 
                             <label>
@@ -525,15 +636,18 @@
                                     Pilih poli
                                 </option>
 
-                                <option value="umum" {{ old('poli') == 'umum' ? 'selected' : '' }}>
+                                <option value="umum"
+                                    {{ old('poli') == 'umum' ? 'selected' : '' }}>
                                     Poli Umum
                                 </option>
 
-                                <option value="gigi" {{ old('poli') == 'gigi' ? 'selected' : '' }}>
+                                <option value="gigi"
+                                    {{ old('poli') == 'gigi' ? 'selected' : '' }}>
                                     Poli Gigi
                                 </option>
 
-                                <option value="anak" {{ old('poli') == 'anak' ? 'selected' : '' }}>
+                                <option value="anak"
+                                    {{ old('poli') == 'anak' ? 'selected' : '' }}>
                                     Poli Anak
                                 </option>
 
@@ -543,6 +657,7 @@
 
 
                         {{-- Pembayaran --}}
+
                         <div class="form-group">
 
                             <label>
@@ -556,15 +671,18 @@
                                     Pilih cara pembayaran
                                 </option>
 
-                                <option value="bpjs" {{ old('pembayaran') == 'bpjs' ? 'selected' : '' }}>
+                                <option value="bpjs"
+                                    {{ old('pembayaran') == 'bpjs' ? 'selected' : '' }}>
                                     BPJS
                                 </option>
 
-                                <option value="umum" {{ old('pembayaran') == 'umum' ? 'selected' : '' }}>
+                                <option value="umum"
+                                    {{ old('pembayaran') == 'umum' ? 'selected' : '' }}>
                                     Umum
                                 </option>
 
-                                <option value="asuransi" {{ old('pembayaran') == 'asuransi' ? 'selected' : '' }}>
+                                <option value="asuransi"
+                                    {{ old('pembayaran') == 'asuransi' ? 'selected' : '' }}>
                                     Asuransi
                                 </option>
 
@@ -610,3 +728,4 @@
 </div>
 
 @endsection
+```

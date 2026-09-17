@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasienController;
 
 Route::get('/', function () {
@@ -15,9 +16,8 @@ Route::post('/login', function () {
     return redirect()->route('dashboard');
 })->name('login.process');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
 
 Route::get('/pendaftaran', function () {
     return view('pendaftaran.index');

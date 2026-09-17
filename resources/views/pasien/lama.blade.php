@@ -545,6 +545,7 @@ body {
     ========================== -->
 
     <main class="main">
+        <x-topbar title="Pendaftaran Pasien Lama" icon="person-vcard" />
 
         <!-- Content -->
 
