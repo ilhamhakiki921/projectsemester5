@@ -5,16 +5,25 @@
     ========================== --}}
     <div class="logo">
 
-        <div class="logo-icon">
-            <span>SR</span>
-        </div>
-
-        <div class="logo-text">
-            <strong>Klinik</strong>
-            <span>Merah Putih</span>
-        </div>
-
+    <div class="logo-icon">
+        <span>SR</span>
     </div>
+
+    <div class="logo-text">
+        <strong>Klinik</strong>
+        <span>Merah Putih</span>
+    </div>
+
+    <button
+    type="button"
+    class="sidebar-close"
+    onclick="toggleSidebar()"
+    title="Tutup menu"
+>
+    <i class="bi bi-chevron-left"></i>
+</button>
+
+</div>
 
 
     {{-- =========================
@@ -45,14 +54,46 @@
 
 
         {{-- Pemeriksaan --}}
-        <a href="#"
-           class="menu-item">
+<div class="menu-dropdown">
 
-            <i class="bi bi-heart-pulse-fill"></i>
+    <a href="{{ route('pemeriksaan') }}"
+       class="menu-item pemeriksaan-toggle {{ request()->routeIs('pemeriksaan*') ? 'active' : '' }}"
+       onclick="togglePemeriksaan(event)">
+        <i class="bi bi-heart-pulse-fill"></i>
+        <span>Pemeriksaan</span>
+        <i class="bi bi-chevron-down dropdown-icon"></i>
+    </a>
 
-            <span>Pemeriksaan</span>
+    <div class="submenu" id="submenuPemeriksaan">
 
+        <a href="{{ route('pemeriksaan.umum') }}"
+           class="submenu-item {{ request()->routeIs('pemeriksaan.umum') ? 'active' : '' }}">
+            Poli Umum
         </a>
+
+        <a href="{{ route('pemeriksaan.dalam') }}"
+           class="submenu-item {{ request()->routeIs('pemeriksaan.dalam') ? 'active' : '' }}">
+            Poli Dalam
+        </a>
+
+        <a href="{{ route('pemeriksaan.gigi') }}"
+           class="submenu-item {{ request()->routeIs('pemeriksaan.gigi') ? 'active' : '' }}">
+            Poli Gigi
+        </a>
+
+        <a href="{{ route('pemeriksaan.fisioterapi') }}"
+           class="submenu-item {{ request()->routeIs('pemeriksaan.fisioterapi') ? 'active' : '' }}">
+            Fisioterapi
+        </a>
+
+        <a href="{{ route('pemeriksaan.mikrobiologi') }}"
+           class="submenu-item {{ request()->routeIs('pemeriksaan.mikrobiologi') ? 'active' : '' }}">
+            Mikrobiologi
+        </a>
+
+    </div>
+
+</div>
 
 
         {{-- Penunjang --}}
@@ -115,26 +156,28 @@
     ================================== */
 
     .sidebar {
-        width: 230px;
-        height: 100vh;
+    width: 230px;
+    height: 100vh;
 
-        position: fixed;
-        left: 0;
-        top: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
 
-        display: flex;
-        flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-        color: white;
+    color: white;
 
-        background: linear-gradient(
-            180deg,
-            #980000 0%,
-            #570000 100%
-        );
+    background: linear-gradient(
+        180deg,
+        #980000 0%,
+        #570000 100%
+    );
 
-        z-index: 1000;
-    }
+    z-index: 1000;
+
+    transition: height 0.25s ease;
+}
 
 
     /* =================================
@@ -195,6 +238,29 @@
         opacity: 0.85;
     }
 
+    .sidebar-close {
+    margin-left: auto;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: white;
+
+    font-size: 15px;
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
 
     /* =================================
        MENU
@@ -332,4 +398,203 @@
         font-size: 17px;
     }
 
+    /* =================================
+   PEMERIKSAAN DROPDOWN
+================================= */
+
+.menu-dropdown {
+    width: 100%;
+}
+
+.pemeriksaan-toggle {
+    position: relative;
+}
+
+.dropdown-icon {
+    width: auto !important;
+    margin-left: auto;
+    font-size: 11px !important;
+    transition: transform 0.2s ease;
+}
+
+.submenu {
+    display: none;
+    padding: 2px 0 6px 0;
+}
+
+/* =================================
+   PEMERIKSAAN DROPDOWN
+================================= */
+
+.menu-dropdown {
+    width: 100%;
+}
+
+.pemeriksaan-toggle {
+    position: relative;
+}
+
+.dropdown-icon {
+    width: auto !important;
+    margin-left: auto;
+    font-size: 11px !important;
+    transition: transform 0.2s ease;
+}
+
+.submenu {
+    display: none;
+    padding: 2px 0 6px 0;
+}
+
+.submenu.show {
+    display: block;
+}
+
+.dropdown-icon.rotate {
+    transform: rotate(180deg);
+}
+
+.submenu-item {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    margin: 3px 0 3px 14px;
+    padding: 0 10px 0 29px;
+    color: rgba(255, 255, 255, 0.82);
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.submenu-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
+}
+
+.submenu-item.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.18);
+    font-weight: 500;
+}
+
+.menu-dropdown:hover .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.submenu-item {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    margin: 3px 0 3px 14px;
+    padding: 0 10px 0 29px;
+    color: rgba(255, 255, 255, 0.82);
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.submenu-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
+}
+
+.submenu-item.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.18);
+    font-weight: 500;
+}
+
+/* =================================
+   SIDEBAR COLLAPSE
+================================= */
+
+/* =================================
+   SIDEBAR COLLAPSE
+================================= */
+
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    transition: transform 0.25s ease;
+}
+
+body.sidebar-collapsed .sidebar {
+    transform: translateX(-162px);
+}
+
+body.sidebar-collapsed .sidebar-close i {
+    transform: rotate(180deg);
+}
+
 </style>
+
+<script>
+
+    function toggleSidebar() {
+
+        const body = document.body;
+        const tombol = document.querySelector('.sidebar-close');
+
+        if (body.classList.contains('sidebar-collapsed')) {
+
+            body.classList.remove('sidebar-collapsed');
+
+            if (tombol) {
+                tombol.innerHTML = '<i class="bi bi-chevron-left"></i>';
+                tombol.title = 'Tutup menu';
+            }
+
+        } else {
+
+            body.classList.add('sidebar-collapsed');
+
+            if (tombol) {
+                tombol.innerHTML = '<i class="bi bi-chevron-right"></i>';
+                tombol.title = 'Buka menu';
+            }
+
+        }
+
+    }
+
+
+    function togglePemeriksaan(event) {
+
+        event.preventDefault();
+
+        const submenu = document.getElementById('submenuPemeriksaan');
+        const icon = document.querySelector('.dropdown-icon');
+
+        submenu.classList.toggle('show');
+        icon.classList.toggle('rotate');
+
+        if (submenu.classList.contains('show')) {
+            return;
+        }
+
+        window.location.href = "{{ route('pemeriksaan') }}";
+
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const submenu = document.getElementById('submenuPemeriksaan');
+        const icon = document.querySelector('.dropdown-icon');
+
+        @if(request()->routeIs('pemeriksaan*'))
+            submenu.classList.add('show');
+            icon.classList.add('rotate');
+        @endif
+
+    });
+
+</script>

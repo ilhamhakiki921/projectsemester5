@@ -38,3 +38,31 @@ Route::delete('/pendaftaran/pasien-lama/{id}', [PasienController::class, 'destro
 
 Route::get('/pendaftaran/pasien-baru', [PasienController::class, 'create'])->name('pasien.baru');
 Route::post('/pendaftaran/pasien-baru', [PasienController::class, 'store'])->name('pasien.baru.store');
+
+// ===========================
+// PEMERIKSAAN
+// ===========================
+
+Route::get('/pemeriksaan', function () {
+    return view('pemeriksaan.index');
+})->name('pemeriksaan');
+
+Route::get('/pemeriksaan/poli-umum', function () {
+    return view('pemeriksaan.poli-umum');
+})->name('pemeriksaan.umum');
+
+Route::get('/pemeriksaan/poli-dalam', function () {
+    return view('pemeriksaan.poli-dalam');
+})->name('pemeriksaan.dalam');
+
+Route::get('/pemeriksaan/poli-gigi', function () {
+    return view('pemeriksaan.poli-gigi');
+})->name('pemeriksaan.gigi');
+
+Route::get('/pemeriksaan/fisioterapi', function () {
+    return view('pemeriksaan.fisioterapi');
+})->name('pemeriksaan.fisioterapi');
+
+Route::get('/pemeriksaan/mikrobiologi', function () {
+    return view('pemeriksaan.mikrobiologi');
+})->name('pemeriksaan.mikrobiologi');
