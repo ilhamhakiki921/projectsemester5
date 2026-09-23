@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\PemeriksaanController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -43,26 +44,4 @@ Route::post('/pendaftaran/pasien-baru', [PasienController::class, 'store'])->nam
 // PEMERIKSAAN
 // ===========================
 
-Route::get('/pemeriksaan', function () {
-    return view('pemeriksaan.index');
-})->name('pemeriksaan');
-
-Route::get('/pemeriksaan/poli-umum', function () {
-    return view('pemeriksaan.poli-umum');
-})->name('pemeriksaan.umum');
-
-Route::get('/pemeriksaan/poli-dalam', function () {
-    return view('pemeriksaan.poli-dalam');
-})->name('pemeriksaan.dalam');
-
-Route::get('/pemeriksaan/poli-gigi', function () {
-    return view('pemeriksaan.poli-gigi');
-})->name('pemeriksaan.gigi');
-
-Route::get('/pemeriksaan/fisioterapi', function () {
-    return view('pemeriksaan.fisioterapi');
-})->name('pemeriksaan.fisioterapi');
-
-Route::get('/pemeriksaan/mikrobiologi', function () {
-    return view('pemeriksaan.mikrobiologi');
-})->name('pemeriksaan.mikrobiologi');
+Route::get('/pemeriksaan/{poli?}', [PemeriksaanController::class, 'index'])->name('pemeriksaan.index');

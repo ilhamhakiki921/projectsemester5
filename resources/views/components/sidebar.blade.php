@@ -5,25 +5,16 @@
     ========================== --}}
     <div class="logo">
 
-    <div class="logo-icon">
-        <span>SR</span>
+        <div class="logo-icon">
+            <span>SR</span>
+        </div>
+
+        <div class="logo-text">
+            <strong>Klinik</strong>
+            <span>Merah Putih</span>
+        </div>
+
     </div>
-
-    <div class="logo-text">
-        <strong>Klinik</strong>
-        <span>Merah Putih</span>
-    </div>
-
-    <button
-    type="button"
-    class="sidebar-close"
-    onclick="toggleSidebar()"
-    title="Tutup menu"
->
-    <i class="bi bi-chevron-left"></i>
-</button>
-
-</div>
 
 
     {{-- =========================
@@ -54,46 +45,46 @@
 
 
         {{-- Pemeriksaan --}}
-<div class="menu-dropdown">
+        <a href="#"
+           class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
+           onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('open');">
 
-    <a href="{{ route('pemeriksaan') }}"
-       class="menu-item pemeriksaan-toggle {{ request()->routeIs('pemeriksaan*') ? 'active' : '' }}"
-       onclick="togglePemeriksaan(event)">
-        <i class="bi bi-heart-pulse-fill"></i>
-        <span>Pemeriksaan</span>
-        <i class="bi bi-chevron-down dropdown-icon"></i>
-    </a>
+            <i class="bi bi-heart-pulse-fill"></i>
 
-    <div class="submenu" id="submenuPemeriksaan">
+            <span>Pemeriksaan</span>
 
-        <a href="{{ route('pemeriksaan.umum') }}"
-           class="submenu-item {{ request()->routeIs('pemeriksaan.umum') ? 'active' : '' }}">
-            Poli Umum
+            <i class="bi bi-chevron-down submenu-arrow"></i>
+
         </a>
 
-        <a href="{{ route('pemeriksaan.dalam') }}"
-           class="submenu-item {{ request()->routeIs('pemeriksaan.dalam') ? 'active' : '' }}">
-            Poli Dalam
-        </a>
+        <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}">
 
-        <a href="{{ route('pemeriksaan.gigi') }}"
-           class="submenu-item {{ request()->routeIs('pemeriksaan.gigi') ? 'active' : '' }}">
-            Poli Gigi
-        </a>
+            <a href="{{ route('pemeriksaan.index', 'umum') }}"
+               class="submenu-item {{ request()->routeIs('pemeriksaan.*') && (request()->route('poli') === 'umum' || request()->route('poli') === null) ? 'active' : '' }}">
+                Poli Umum
+            </a>
 
-        <a href="{{ route('pemeriksaan.fisioterapi') }}"
-           class="submenu-item {{ request()->routeIs('pemeriksaan.fisioterapi') ? 'active' : '' }}">
-            Fisioterapi
-        </a>
+            <a href="{{ route('pemeriksaan.index', 'gigi') }}"
+               class="submenu-item {{ request()->route('poli') === 'gigi' ? 'active' : '' }}">
+                Poli Gigi
+            </a>
 
-        <a href="{{ route('pemeriksaan.mikrobiologi') }}"
-           class="submenu-item {{ request()->routeIs('pemeriksaan.mikrobiologi') ? 'active' : '' }}">
-            Mikrobiologi
-        </a>
+            <a href="{{ route('pemeriksaan.index', 'dalam') }}"
+               class="submenu-item {{ request()->route('poli') === 'dalam' ? 'active' : '' }}">
+                Poli Dalam
+            </a>
 
-    </div>
+            <a href="{{ route('pemeriksaan.index', 'mikrobiologi') }}"
+               class="submenu-item {{ request()->route('poli') === 'mikrobiologi' ? 'active' : '' }}">
+                Mikrobiologi
+            </a>
 
-</div>
+            <a href="{{ route('pemeriksaan.index', 'fisioterapi') }}"
+               class="submenu-item {{ request()->route('poli') === 'fisioterapi' ? 'active' : '' }}">
+                Fisioterapi
+            </a>
+
+        </div>
 
 
         {{-- Penunjang --}}
@@ -156,28 +147,26 @@
     ================================== */
 
     .sidebar {
-    width: 230px;
-    height: 100vh;
+        width: 230px;
+        height: 100vh;
 
-    position: fixed;
-    left: 0;
-    top: 0;
+        position: fixed;
+        left: 0;
+        top: 0;
 
-    display: flex;
-    flex-direction: column;
+        display: flex;
+        flex-direction: column;
 
-    color: white;
+        color: white;
 
-    background: linear-gradient(
-        180deg,
-        #980000 0%,
-        #570000 100%
-    );
+        background: linear-gradient(
+            180deg,
+            #980000 0%,
+            #570000 100%
+        );
 
-    z-index: 1000;
-
-    transition: height 0.25s ease;
-}
+        z-index: 1000;
+    }
 
 
     /* =================================
@@ -238,29 +227,6 @@
         opacity: 0.85;
     }
 
-    .sidebar-close {
-    margin-left: auto;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    border-radius: 6px;
-
-    background: transparent;
-    color: white;
-
-    font-size: 15px;
-    cursor: pointer;
-
-    transition: background 0.2s ease;
-}
-
-.sidebar-close:hover {
-    background: rgba(255, 255, 255, 0.12);
-}
 
     /* =================================
        MENU
@@ -327,6 +293,67 @@
 
     .menu-item:hover i {
         transform: translateX(1px);
+    }
+
+
+    /* =================================
+       SUBMENU
+    ================================== */
+
+    .submenu-arrow {
+        margin-left: auto;
+
+        font-size: 10px !important;
+
+        width: auto !important;
+
+        transition: transform 0.2s ease;
+    }
+
+    .menu-group.open .submenu-arrow {
+        transform: rotate(180deg);
+    }
+
+    .menu-group {
+        max-height: 0;
+        overflow: hidden;
+
+        transition: max-height 0.25s ease;
+    }
+
+    .menu-group.open {
+        max-height: 260px;
+    }
+
+    .submenu-item {
+        display: block;
+
+        padding: 9px 14px 9px 47px;
+        margin-bottom: 3px;
+
+        color: rgba(255, 255, 255, 0.75);
+
+        text-decoration: none;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+
+        border-radius: 7px;
+
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .submenu-item:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.1);
+
+        text-decoration: none;
+    }
+
+    .submenu-item.active {
+        color: #ffffff;
+        background: #ed1111;
     }
 
 
@@ -398,203 +425,4 @@
         font-size: 17px;
     }
 
-    /* =================================
-   PEMERIKSAAN DROPDOWN
-================================= */
-
-.menu-dropdown {
-    width: 100%;
-}
-
-.pemeriksaan-toggle {
-    position: relative;
-}
-
-.dropdown-icon {
-    width: auto !important;
-    margin-left: auto;
-    font-size: 11px !important;
-    transition: transform 0.2s ease;
-}
-
-.submenu {
-    display: none;
-    padding: 2px 0 6px 0;
-}
-
-/* =================================
-   PEMERIKSAAN DROPDOWN
-================================= */
-
-.menu-dropdown {
-    width: 100%;
-}
-
-.pemeriksaan-toggle {
-    position: relative;
-}
-
-.dropdown-icon {
-    width: auto !important;
-    margin-left: auto;
-    font-size: 11px !important;
-    transition: transform 0.2s ease;
-}
-
-.submenu {
-    display: none;
-    padding: 2px 0 6px 0;
-}
-
-.submenu.show {
-    display: block;
-}
-
-.dropdown-icon.rotate {
-    transform: rotate(180deg);
-}
-
-.submenu-item {
-    display: flex;
-    align-items: center;
-    height: 38px;
-    margin: 3px 0 3px 14px;
-    padding: 0 10px 0 29px;
-    color: rgba(255, 255, 255, 0.82);
-    text-decoration: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    border-radius: 6px;
-    transition: background 0.2s ease;
-}
-
-.submenu-item:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.12);
-    text-decoration: none;
-}
-
-.submenu-item.active {
-    color: white;
-    background: rgba(255, 255, 255, 0.18);
-    font-weight: 500;
-}
-
-.menu-dropdown:hover .dropdown-icon {
-    transform: rotate(180deg);
-}
-
-.submenu-item {
-    display: flex;
-    align-items: center;
-    height: 38px;
-    margin: 3px 0 3px 14px;
-    padding: 0 10px 0 29px;
-    color: rgba(255, 255, 255, 0.82);
-    text-decoration: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    border-radius: 6px;
-    transition: background 0.2s ease;
-}
-
-.submenu-item:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.12);
-    text-decoration: none;
-}
-
-.submenu-item.active {
-    color: white;
-    background: rgba(255, 255, 255, 0.18);
-    font-weight: 500;
-}
-
-/* =================================
-   SIDEBAR COLLAPSE
-================================= */
-
-/* =================================
-   SIDEBAR COLLAPSE
-================================= */
-
-.sidebar {
-    width: 230px;
-    height: 100vh;
-    transition: transform 0.25s ease;
-}
-
-body.sidebar-collapsed .sidebar {
-    transform: translateX(-162px);
-}
-
-body.sidebar-collapsed .sidebar-close i {
-    transform: rotate(180deg);
-}
-
 </style>
-
-<script>
-
-    function toggleSidebar() {
-
-        const body = document.body;
-        const tombol = document.querySelector('.sidebar-close');
-
-        if (body.classList.contains('sidebar-collapsed')) {
-
-            body.classList.remove('sidebar-collapsed');
-
-            if (tombol) {
-                tombol.innerHTML = '<i class="bi bi-chevron-left"></i>';
-                tombol.title = 'Tutup menu';
-            }
-
-        } else {
-
-            body.classList.add('sidebar-collapsed');
-
-            if (tombol) {
-                tombol.innerHTML = '<i class="bi bi-chevron-right"></i>';
-                tombol.title = 'Buka menu';
-            }
-
-        }
-
-    }
-
-
-    function togglePemeriksaan(event) {
-
-        event.preventDefault();
-
-        const submenu = document.getElementById('submenuPemeriksaan');
-        const icon = document.querySelector('.dropdown-icon');
-
-        submenu.classList.toggle('show');
-        icon.classList.toggle('rotate');
-
-        if (submenu.classList.contains('show')) {
-            return;
-        }
-
-        window.location.href = "{{ route('pemeriksaan') }}";
-
-    }
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const submenu = document.getElementById('submenuPemeriksaan');
-        const icon = document.querySelector('.dropdown-icon');
-
-        @if(request()->routeIs('pemeriksaan*'))
-            submenu.classList.add('show');
-            icon.classList.add('rotate');
-        @endif
-
-    });
-
-</script>

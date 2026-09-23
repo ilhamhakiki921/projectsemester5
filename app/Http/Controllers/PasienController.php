@@ -51,10 +51,12 @@ class PasienController extends Controller
  
         Kunjungan::create([
             'pasien_id'         => $pasien->id,
+            'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
             'tanggal_kunjungan' => $request->tanggal_kunjungan,
             'dokter'            => $request->dokter,
             'poli'              => $request->poli,
             'pembayaran'        => $request->pembayaran,
+            'status'            => 'Menunggu',
         ]);
  
         return redirect()
@@ -84,10 +86,12 @@ class PasienController extends Controller
  
         Kunjungan::create([
             'pasien_id'         => $pasien->id,
+            'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
             'tanggal_kunjungan' => $request->tanggal_kunjungan,
             'dokter'            => $request->dokter,
             'poli'              => $request->poli,
             'pembayaran'        => $request->pembayaran,
+            'status'            => 'Menunggu',
         ]);
  
         return redirect()
