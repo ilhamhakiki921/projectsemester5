@@ -47,42 +47,48 @@ body {
 }
 
 /* =========================
-   TAB POLI
+   DROPDOWN POLI
 ========================= */
 
-.poli-tabs {
-    display: flex;
-    gap: 8px;
-
+.poli-filter {
     margin-bottom: 18px;
-
-    border-bottom: 1px solid #ccc;
 }
 
-.poli-tab {
-    padding: 9px 16px;
+.poli-filter label {
+    display: block;
+
+    margin-bottom: 6px;
 
     font-size: 11px;
     font-weight: 500;
 
-    color: #555;
-
-    text-decoration: none;
-
-    border-bottom: 2px solid transparent;
-
-    transition: 0.2s;
+    color: #333;
 }
 
-.poli-tab:hover {
-    color: #980000;
+.poli-select {
+    width: 240px;
+    height: 36px;
+
+    padding: 0 10px;
+
+    border: 1px solid #999;
+    border-radius: 6px;
+
+    outline: none;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+
+    color: #222;
+
+    background: #ffffff;
+
+    cursor: pointer;
 }
 
-.poli-tab.active {
-    color: #980000;
-    font-weight: 700;
-
-    border-bottom: 2px solid #980000;
+.poli-select:focus {
+    border-color: #980000;
 }
 
 /* =========================
@@ -269,19 +275,29 @@ body {
                 Antrian Pemeriksaan
             </h1>
 
-            {{-- TAB POLI --}}
-            <div class="poli-tabs">
+            {{-- DROPDOWN POLI --}}
+            <div class="poli-filter">
 
-                @foreach ($daftarPoli as $kode => $nama)
+                <label for="poli-select">Pilih Poli</label>
 
-                    <a
-                        href="{{ route('pemeriksaan.index', ['poli' => $kode]) }}"
-                        class="poli-tab {{ $poli === $kode ? 'active' : '' }}"
-                    >
-                        {{ $nama }}
-                    </a>
+                <select
+                    id="poli-select"
+                    class="poli-select"
+                    onchange="window.location.href = this.value"
+                >
 
-                @endforeach
+                    @foreach ($daftarPoli as $kode => $nama)
+
+                        <option
+                            value="{{ route('pemeriksaan.index', ['poli' => $kode]) }}"
+                            {{ $poli === $kode ? 'selected' : '' }}
+                        >
+                            {{ $nama }}
+                        </option>
+
+                    @endforeach
+
+                </select>
 
             </div>
 

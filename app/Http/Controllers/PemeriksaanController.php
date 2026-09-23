@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 
 class PemeriksaanController extends Controller
 {
-    // Daftar poli yang tersedia (ditampilkan sebagai tab)
+    // Daftar poli yang tersedia (ditampilkan sebagai dropdown)
     protected array $daftarPoli = [
-        'umum' => 'Poli Umum',
-        'gigi' => 'Poli Gigi',
-        'anak' => 'Poli Anak',
+        'umum'         => 'Poli Umum',
+        'gigi'         => 'Poli Gigi',
+        'dalam'        => 'Poli Dalam',
+        'mikrobiologi' => 'Mikrobiologi',
+        'fisioterapi'  => 'Fisioterapi',
     ];
 
     // Tabel antrian pemeriksaan sesuai poli yang dipilih
