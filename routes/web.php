@@ -45,3 +45,4 @@ Route::post('/pendaftaran/pasien-baru', [PasienController::class, 'store'])->nam
 // ===========================
 
 Route::get('/pemeriksaan', [PemeriksaanController::class, 'index'])->name('pemeriksaan.index');
+Route::get('/pemeriksaan/{id}', [PemeriksaanController::class, 'show'])->name('pemeriksaan.show');

@@ -37,4 +37,12 @@ class PemeriksaanController extends Controller
             'daftarPoli' => $this->daftarPoli,
         ]);
     }
+
+    // Halaman detail pemeriksaan pasien (saat tombol "Periksa" diklik)
+    public function show($id)
+    {
+        $antrian = Kunjungan::with('pasien')->findOrFail($id);
+
+        return view('pemeriksaan.show', compact('antrian'));
+    }
 }

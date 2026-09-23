@@ -14,7 +14,6 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: #ffffff;
     color: #222;
 }
 
@@ -26,58 +25,46 @@ body {
     width: calc(100% - 230px);
     min-height: 100vh;
     margin-left: 230px;
-    background: #ffffff;
+    background: #f3f4f6;
 }
 
 .content {
     width: 100%;
     padding: 25px 22px;
-    background: #ffffff;
-}
-
-.page-title {
-    margin-bottom: 15px;
-
-    font-size: 21px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-
-    color: #222;
+    background: #f3f4f6;
 }
 
 /* =========================
-   DROPDOWN POLI
+   FILTER POLI
 ========================= */
 
 .poli-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
     margin-bottom: 18px;
 }
 
 .poli-filter label {
-    display: block;
+    font-size: 12px;
+    font-weight: 600;
 
-    margin-bottom: 6px;
-
-    font-size: 11px;
-    font-weight: 500;
-
-    color: #333;
+    color: #222;
 }
 
 .poli-select {
-    width: 240px;
     height: 36px;
 
-    padding: 0 10px;
+    padding: 0 12px;
 
-    border: 1px solid #999;
-    border-radius: 6px;
+    border: 1px solid #d0d3d8;
+    border-radius: 8px;
 
     outline: none;
 
     font-family: 'Poppins', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
 
     color: #222;
@@ -88,65 +75,78 @@ body {
 }
 
 .poli-select:focus {
-    border-color: #980000;
+    border-color: #0f3d33;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card {
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    padding: 22px 24px 8px;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    font-size: 17px;
+    font-weight: 700;
+
+    color: #1a1a1a;
+}
+
+.card-subtitle {
+    margin-top: 3px;
+    margin-bottom: 16px;
+
+    font-size: 11px;
+    color: #8a8f98;
 }
 
 /* =========================
    TABLE
 ========================= */
 
-.table-wrapper {
-    width: 100%;
-
-    overflow-x: auto;
-
-    border: 1px solid #777;
-}
-
 .patient-table {
     width: 100%;
 
     border-collapse: collapse;
-
-    table-layout: fixed;
 }
 
-.patient-table th,
-.patient-table td {
-    border: 1px solid #999;
+.patient-table th {
+    padding: 10px 12px;
 
-    padding: 8px 7px;
+    border-bottom: 1px solid #ececec;
 
-    font-size: 9px;
+    font-size: 10px;
+    font-weight: 700;
 
     text-align: left;
+    text-transform: uppercase;
+
+    color: #8a8f98;
+
+    letter-spacing: 0.3px;
+}
+
+.patient-table td {
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    font-size: 12px;
+
+    color: #333;
 
     vertical-align: middle;
 }
 
-.patient-table th {
-    height: 34px;
-
-    background: #e5e5e5;
-
-    font-size: 9px;
-    font-weight: 600;
-
-    color: #222;
-
-    text-align: center;
-}
-
-.patient-table td {
-    height: 38px;
-
-    color: #444;
-
-    background: #ffffff;
-}
-
-.patient-table tbody tr:hover td {
-    background: #f8f8f8;
+.patient-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .col-no {
@@ -154,40 +154,64 @@ body {
 }
 
 .col-antrian {
-    width: 10%;
+    width: 12%;
 }
 
 .col-rm {
-    width: 10%;
+    width: 11%;
 }
 
 .col-nama {
-    width: 20%;
+    width: 18%;
 }
 
 .col-alamat {
-    width: 25%;
+    width: 22%;
 }
 
 .col-status {
-    width: 15%;
+    width: 17%;
 }
 
 .col-action {
     width: 10%;
 }
 
-.text-center {
-    text-align: center !important;
+.nama-pasien {
+    font-weight: 600;
+    color: #1a1a1a;
 }
 
 .empty-state {
-    padding: 20px;
+    padding: 22px 12px;
 
     text-align: center;
 
-    font-size: 10px;
-    color: #888;
+    font-size: 11px;
+    color: #8a8f98;
+}
+
+/* =========================
+   NOMOR ANTRIAN
+========================= */
+
+.antrian-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 34px;
+    height: 30px;
+
+    padding: 0 6px;
+
+    border-radius: 8px;
+
+    background: #0f3d33;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 700;
 }
 
 /* =========================
@@ -195,31 +219,42 @@ body {
 ========================= */
 
 .badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 
-    padding: 4px 9px;
+    padding: 5px 11px;
 
     border-radius: 20px;
 
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 600;
+}
 
-    text-transform: uppercase;
+.badge::before {
+    content: "";
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: currentColor;
 }
 
 .badge-menunggu {
-    background: #fff3cd;
-    color: #8a6300;
+    background: #fdecd2;
+    color: #b3691a;
 }
 
 .badge-diperiksa {
-    background: #cfe2ff;
-    color: #084298;
+    background: #dbe9fe;
+    color: #1d5fd6;
 }
 
 .badge-selesai {
-    background: #d1e7dd;
-    color: #0f5132;
+    background: #d7f2e3;
+    color: #158a4c;
 }
 
 /* =========================
@@ -229,21 +264,21 @@ body {
 .btn-periksa {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
 
-    padding: 5px 10px;
+    padding: 8px 18px;
 
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
 
-    background: #1111b8;
+    background: #0f3d33;
     color: #ffffff;
 
     text-decoration: none;
 
     font-family: 'Poppins', sans-serif;
-    font-size: 8px;
-    font-weight: 500;
+    font-size: 11px;
+    font-weight: 600;
 
     cursor: pointer;
 
@@ -251,7 +286,7 @@ body {
 }
 
 .btn-periksa:hover {
-    background: #08088f;
+    background: #0a2b24;
 }
 
 </style>
@@ -271,14 +306,10 @@ body {
 
         <section class="content">
 
-            <h1 class="page-title">
-                Antrian Pemeriksaan
-            </h1>
-
-            {{-- DROPDOWN POLI --}}
+            {{-- FILTER POLI --}}
             <div class="poli-filter">
 
-                <label for="poli-select">Pilih Poli</label>
+                <label for="poli-select">Pilih Poli:</label>
 
                 <select
                     id="poli-select"
@@ -301,8 +332,16 @@ body {
 
             </div>
 
-            {{-- TABLE ANTRIAN --}}
-            <div class="table-wrapper">
+            {{-- CARD ANTRIAN --}}
+            <div class="card">
+
+                <div class="card-title">
+                    Antrian Pemeriksaan — {{ $daftarPoli[$poli] }}
+                </div>
+
+                <div class="card-subtitle">
+                    {{ $antrians->count() }} pasien dalam antrian
+                </div>
 
                 <table class="patient-table">
 
@@ -310,8 +349,8 @@ body {
 
                         <tr>
                             <th class="col-no">No</th>
-                            <th class="col-antrian">No Antrian</th>
-                            <th class="col-rm">No RM</th>
+                            <th class="col-antrian">No. Antrian</th>
+                            <th class="col-rm">No. RM</th>
                             <th class="col-nama">Nama Pasien</th>
                             <th class="col-alamat">Alamat</th>
                             <th class="col-status">Status</th>
@@ -326,19 +365,21 @@ body {
 
                             <tr>
 
-                                <td class="text-center">
+                                <td>
                                     {{ $index + 1 }}
                                 </td>
 
-                                <td class="text-center">
-                                    {{ $antrian->no_antrian }}
+                                <td>
+                                    <span class="antrian-badge">
+                                        {{ str_pad($antrian->no_antrian, 2, '0', STR_PAD_LEFT) }}
+                                    </span>
                                 </td>
 
                                 <td>
                                     {{ $antrian->pasien->no_rm }}
                                 </td>
 
-                                <td>
+                                <td class="nama-pasien">
                                     {{ $antrian->pasien->nama }}
                                 </td>
 
@@ -346,7 +387,7 @@ body {
                                     {{ $antrian->pasien->alamat }}
                                 </td>
 
-                                <td class="text-center">
+                                <td>
 
                                     @if ($antrian->status === 'Menunggu')
                                         <span class="badge badge-menunggu">Menunggu</span>
@@ -358,10 +399,12 @@ body {
 
                                 </td>
 
-                                <td class="text-center">
+                                <td>
 
-                                    <a href="#" class="btn-periksa">
-                                        <i class="bi bi-clipboard2-pulse"></i>
+                                    <a
+                                        href="{{ route('pemeriksaan.show', $antrian->id) }}"
+                                        class="btn-periksa"
+                                    >
                                         Periksa
                                     </a>
 
