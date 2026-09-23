@@ -45,43 +45,44 @@
 
 
         {{-- Pemeriksaan --}}
-        <div class="menu-group">
+        <a href="#"
+           class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
+           onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('open');">
 
-            <button
-                type="button"
-                class="menu-dropdown {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
-                onclick="togglePemeriksaan()"
-            >
+            <i class="bi bi-heart-pulse-fill"></i>
 
-                <span class="menu-left">
-                    <i class="bi bi-heart-pulse-fill"></i>
-                    <span>Pemeriksaan</span>
-                </span>
+            <span>Pemeriksaan</span>
 
-                <i
-                    id="pemeriksaan-arrow"
-                    class="bi bi-chevron-down arrow {{ request()->routeIs('pemeriksaan.*') ? 'rotate' : '' }}"
-                ></i>
+            <i class="bi bi-chevron-down submenu-arrow"></i>
 
-            </button>
+        </a>
 
-            <div
-                id="pemeriksaan-submenu"
-                class="submenu {{ request()->routeIs('pemeriksaan.*') ? 'show' : '' }}"
-            >
+        <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}">
 
-                @foreach (['umum' => 'Poli Umum', 'gigi' => 'Poli Gigi', 'dalam' => 'Poli Dalam', 'mikrobiologi' => 'Mikrobiologi', 'fisioterapi' => 'Fisioterapi'] as $kode => $nama)
+            <a href="{{ route('pemeriksaan.index', 'umum') }}"
+               class="submenu-item {{ request()->routeIs('pemeriksaan.*') && (request()->route('poli') === 'umum' || request()->route('poli') === null) ? 'active' : '' }}">
+                Poli Umum
+            </a>
 
-                    <a
-                        href="{{ route('pemeriksaan.index', ['poli' => $kode]) }}"
-                        class="{{ request()->routeIs('pemeriksaan.*') && request('poli', 'umum') === $kode ? 'submenu-active' : '' }}"
-                    >
-                        {{ $nama }}
-                    </a>
+            <a href="{{ route('pemeriksaan.index', 'gigi') }}"
+               class="submenu-item {{ request()->route('poli') === 'gigi' ? 'active' : '' }}">
+                Poli Gigi
+            </a>
 
-                @endforeach
+            <a href="{{ route('pemeriksaan.index', 'dalam') }}"
+               class="submenu-item {{ request()->route('poli') === 'dalam' ? 'active' : '' }}">
+                Poli Dalam
+            </a>
 
-            </div>
+            <a href="{{ route('pemeriksaan.index', 'mikrobiologi') }}"
+               class="submenu-item {{ request()->route('poli') === 'mikrobiologi' ? 'active' : '' }}">
+                Mikrobiologi
+            </a>
+
+            <a href="{{ route('pemeriksaan.index', 'fisioterapi') }}"
+               class="submenu-item {{ request()->route('poli') === 'fisioterapi' ? 'active' : '' }}">
+                Fisioterapi
+            </a>
 
         </div>
 
@@ -109,8 +110,8 @@
 
 
         {{-- Rekam Medis --}}
-        <a href="{{ route('rekam-medis.index') }}"
-           class="menu-item {{ request()->routeIs('rekam-medis.*') ? 'active' : '' }}">
+        <a href="#"
+           class="menu-item">
 
             <i class="bi bi-folder-fill"></i>
 
@@ -296,6 +297,67 @@
 
 
     /* =================================
+       SUBMENU
+    ================================== */
+
+    .submenu-arrow {
+        margin-left: auto;
+
+        font-size: 10px !important;
+
+        width: auto !important;
+
+        transition: transform 0.2s ease;
+    }
+
+    .menu-group.open .submenu-arrow {
+        transform: rotate(180deg);
+    }
+
+    .menu-group {
+        max-height: 0;
+        overflow: hidden;
+
+        transition: max-height 0.25s ease;
+    }
+
+    .menu-group.open {
+        max-height: 260px;
+    }
+
+    .submenu-item {
+        display: block;
+
+        padding: 9px 14px 9px 47px;
+        margin-bottom: 3px;
+
+        color: rgba(255, 255, 255, 0.75);
+
+        text-decoration: none;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+
+        border-radius: 7px;
+
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .submenu-item:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.1);
+
+        text-decoration: none;
+    }
+
+    .submenu-item.active {
+        color: #ffffff;
+        background: #ed1111;
+    }
+
+
+    /* =================================
        ACTIVE MENU
     ================================== */
 
@@ -310,142 +372,6 @@
 
     .menu-item.active:hover {
         background: #ed1111;
-    }
-
-
-    /* =================================
-       MENU DROPDOWN (misal: Pemeriksaan)
-    ================================== */
-
-    .menu-group {
-        width: 100%;
-    }
-
-    .menu-dropdown {
-        width: 100%;
-        height: 44px;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        padding: 0 14px;
-        margin-bottom: 7px;
-
-        color: white;
-
-        text-decoration: none;
-
-        font-family: 'Poppins', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-
-        border: none;
-        border-radius: 7px;
-
-        background: transparent;
-
-        cursor: pointer;
-
-        transition:
-            background 0.2s ease,
-            transform 0.15s ease;
-    }
-
-    .menu-dropdown .menu-left {
-        display: flex;
-        align-items: center;
-    }
-
-    .menu-dropdown i {
-        width: 29px;
-
-        font-size: 16px;
-
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-    }
-
-    .menu-dropdown .arrow {
-        width: auto;
-
-        font-size: 11px;
-
-        transition: transform 0.25s ease;
-    }
-
-    .menu-dropdown .arrow.rotate {
-        transform: rotate(180deg);
-    }
-
-    .menu-dropdown:hover {
-        background: rgba(255, 255, 255, 0.12);
-    }
-
-    .menu-dropdown.active {
-        background: #ed1111;
-
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-    }
-
-
-    /* =================================
-       SUBMENU
-    ================================== */
-
-    .submenu {
-        max-height: 0;
-
-        overflow: hidden;
-
-        opacity: 0;
-
-        transition:
-            max-height 0.3s ease,
-            opacity 0.2s ease;
-
-        margin-bottom: 5px;
-    }
-
-    .submenu.show {
-        max-height: 220px;
-
-        opacity: 1;
-    }
-
-    .submenu a {
-        display: flex;
-        align-items: center;
-
-        min-height: 34px;
-
-        margin: 2px 0 2px 28px;
-        padding: 7px 10px;
-
-        color: rgba(255, 255, 255, 0.82);
-
-        text-decoration: none;
-
-        font-size: 10px;
-        font-weight: 400;
-
-        border-radius: 4px;
-
-        transition: 0.2s;
-    }
-
-    .submenu a:hover {
-        color: white;
-
-        background: rgba(255, 255, 255, 0.12);
-    }
-
-    .submenu a.submenu-active {
-        color: white;
-        font-weight: 600;
-
-        background: rgba(255, 255, 255, 0.18);
     }
 
 
@@ -500,17 +426,3 @@
     }
 
 </style>
-
-<script>
-
-function togglePemeriksaan() {
-
-    const submenu = document.getElementById('pemeriksaan-submenu');
-    const arrow = document.getElementById('pemeriksaan-arrow');
-
-    submenu.classList.toggle('show');
-    arrow.classList.toggle('rotate');
-
-}
-
-</script>

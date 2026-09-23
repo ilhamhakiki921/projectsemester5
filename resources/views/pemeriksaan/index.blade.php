@@ -6,288 +6,194 @@
 
 <style>
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #ffffff;
+        color: #222;
+    }
+
+    .main {
+        width: calc(100% - 230px);
+        min-height: 100vh;
+        margin-left: 230px;
+        background: #f5f5f5;
+    }
+
+    .content {
+        width: 100%;
+        padding: 25px 22px;
+    }
+
+    /* =========================
+       PILIH POLI
+    ========================== */
+
+    .poli-select-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        margin-bottom: 20px;
+    }
+
+    .poli-select-wrapper label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #222;
+    }
+
+    .poli-select {
+        height: 34px;
+        min-width: 180px;
+
+        padding: 0 10px;
 
-body {
-    font-family: 'Poppins', sans-serif;
-    color: #222;
-}
+        border: 1px solid #999;
+        border-radius: 6px;
 
-/* =========================
-   MAIN
-========================= */
+        background: #ffffff;
 
-.main {
-    width: calc(100% - 230px);
-    min-height: 100vh;
-    margin-left: 230px;
-    background: #f3f4f6;
-}
+        font-family: 'Poppins', sans-serif;
+        font-size: 11px;
+        color: #222;
 
-.content {
-    width: 100%;
-    padding: 25px 22px;
-    background: #f3f4f6;
-}
+        outline: none;
+        cursor: pointer;
+    }
 
-/* =========================
-   FILTER POLI
-========================= */
+    /* =========================
+       CARD ANTRIAN
+    ========================== */
 
-.poli-filter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    .antrian-card {
+        background: #ffffff;
 
-    margin-bottom: 18px;
-}
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
 
-.poli-filter label {
-    font-size: 12px;
-    font-weight: 600;
+        padding: 20px 22px;
 
-    color: #222;
-}
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
 
-.poli-select {
-    height: 36px;
+    .antrian-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #222;
+    }
 
-    padding: 0 12px;
+    .antrian-subtitle {
+        margin-top: 2px;
+        margin-bottom: 16px;
 
-    border: 1px solid #d0d3d8;
-    border-radius: 8px;
+        font-size: 10px;
+        color: #777;
+    }
 
-    outline: none;
+    /* =========================
+       TABLE
+    ========================== */
 
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
 
-    color: #222;
+    .antrian-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-    background: #ffffff;
+    .antrian-table th {
+        padding: 10px 8px;
 
-    cursor: pointer;
-}
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #888;
+        text-align: left;
 
-.poli-select:focus {
-    border-color: #0f3d33;
-}
+        border-bottom: 1px solid #e2e2e2;
+    }
 
-/* =========================
-   CARD
-========================= */
+    .antrian-table td {
+        padding: 12px 8px;
 
-.card {
-    background: #ffffff;
+        font-size: 10px;
+        color: #333;
 
-    border-radius: 14px;
+        border-bottom: 1px solid #f0f0f0;
+    }
 
-    padding: 22px 24px 8px;
+    .antrian-table tbody tr:hover td {
+        background: #fafafa;
+    }
 
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
+    .empty-row td {
+        padding: 30px 8px;
 
-.card-title {
-    font-size: 17px;
-    font-weight: 700;
+        text-align: center;
+        color: #888;
+        font-size: 10px;
+    }
 
-    color: #1a1a1a;
-}
+    /* =========================
+       STATUS BADGE
+    ========================== */
 
-.card-subtitle {
-    margin-top: 3px;
-    margin-bottom: 16px;
+    .status-badge {
+        display: inline-block;
 
-    font-size: 11px;
-    color: #8a8f98;
-}
+        padding: 3px 10px;
 
-/* =========================
-   TABLE
-========================= */
+        border-radius: 20px;
 
-.patient-table {
-    width: 100%;
+        font-size: 9px;
+        font-weight: 600;
+    }
 
-    border-collapse: collapse;
-}
+    .status-menunggu {
+        background: #fff4e5;
+        color: #b06a00;
+    }
 
-.patient-table th {
-    padding: 10px 12px;
+    .status-diperiksa {
+        background: #e6f4ea;
+        color: #1a7f37;
+    }
 
-    border-bottom: 1px solid #ececec;
+    /* =========================
+       ACTION BUTTON
+    ========================== */
 
-    font-size: 10px;
-    font-weight: 700;
+    .btn-periksa {
+        height: 26px;
 
-    text-align: left;
-    text-transform: uppercase;
+        padding: 0 12px;
 
-    color: #8a8f98;
+        border: none;
+        border-radius: 5px;
 
-    letter-spacing: 0.3px;
-}
+        background: #ed1111;
+        color: #ffffff;
 
-.patient-table td {
-    padding: 14px 12px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 9px;
+        font-weight: 500;
 
-    border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+    }
 
-    font-size: 12px;
-
-    color: #333;
-
-    vertical-align: middle;
-}
-
-.patient-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.col-no {
-    width: 5%;
-}
-
-.col-antrian {
-    width: 12%;
-}
-
-.col-rm {
-    width: 11%;
-}
-
-.col-nama {
-    width: 18%;
-}
-
-.col-alamat {
-    width: 22%;
-}
-
-.col-status {
-    width: 17%;
-}
-
-.col-action {
-    width: 10%;
-}
-
-.nama-pasien {
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
-.empty-state {
-    padding: 22px 12px;
-
-    text-align: center;
-
-    font-size: 11px;
-    color: #8a8f98;
-}
-
-/* =========================
-   NOMOR ANTRIAN
-========================= */
-
-.antrian-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-width: 34px;
-    height: 30px;
-
-    padding: 0 6px;
-
-    border-radius: 8px;
-
-    background: #0f3d33;
-    color: #ffffff;
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-/* =========================
-   STATUS BADGE
-========================= */
-
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-
-    padding: 5px 11px;
-
-    border-radius: 20px;
-
-    font-size: 10px;
-    font-weight: 600;
-}
-
-.badge::before {
-    content: "";
-
-    width: 6px;
-    height: 6px;
-
-    border-radius: 50%;
-
-    background: currentColor;
-}
-
-.badge-menunggu {
-    background: #fdecd2;
-    color: #b3691a;
-}
-
-.badge-diperiksa {
-    background: #dbe9fe;
-    color: #1d5fd6;
-}
-
-.badge-selesai {
-    background: #d7f2e3;
-    color: #158a4c;
-}
-
-/* =========================
-   ACTION
-========================= */
-
-.btn-periksa {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 8px 18px;
-
-    border: none;
-    border-radius: 8px;
-
-    background: #0f3d33;
-    color: #ffffff;
-
-    text-decoration: none;
-
-    font-family: 'Poppins', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-}
-
-.btn-periksa:hover {
-    background: #0a2b24;
-}
+    .btn-periksa:hover {
+        background: #c40d0d;
+    }
 
 </style>
 
@@ -298,133 +204,100 @@ body {
 
 <div class="dashboard">
 
+    {{-- SIDEBAR --}}
     <x-sidebar />
 
-    <main class="main">
 
+    {{-- MAIN --}}
+    <main class="main">
         <x-topbar title="Pemeriksaan" icon="heart-pulse-fill" />
 
         <section class="content">
 
-            {{-- FILTER POLI --}}
-            <div class="poli-filter">
+            {{-- PILIH POLI --}}
+            <div class="poli-select-wrapper">
 
-                <label for="poli-select">Pilih Poli:</label>
+                <label for="poli">Pilih Poli:</label>
 
                 <select
-                    id="poli-select"
+                    id="poli"
                     class="poli-select"
                     onchange="window.location.href = this.value"
                 >
-
-                    @foreach ($daftarPoli as $kode => $nama)
-
+                    @foreach ($daftarPoli as $slug => $nama)
                         <option
-                            value="{{ route('pemeriksaan.index', ['poli' => $kode]) }}"
-                            {{ $poli === $kode ? 'selected' : '' }}
+                            value="{{ route('pemeriksaan.index', $slug) }}"
+                            {{ $poli === $slug ? 'selected' : '' }}
                         >
                             {{ $nama }}
                         </option>
-
                     @endforeach
-
                 </select>
 
             </div>
 
+
             {{-- CARD ANTRIAN --}}
-            <div class="card">
+            <div class="antrian-card">
 
-                <div class="card-title">
-                    Antrian Pemeriksaan — {{ $daftarPoli[$poli] }}
-                </div>
+                <h1 class="antrian-title">
+                    Antrian Pemeriksaan &mdash; {{ $namaPoli }}
+                </h1>
 
-                <div class="card-subtitle">
-                    {{ $antrians->count() }} pasien dalam antrian
-                </div>
+                <p class="antrian-subtitle">
+                    {{ count($antrian) }} pasien dalam antrian
+                </p>
 
-                <table class="patient-table">
 
-                    <thead>
+                <div class="table-wrapper">
 
-                        <tr>
-                            <th class="col-no">No</th>
-                            <th class="col-antrian">No. Antrian</th>
-                            <th class="col-rm">No. RM</th>
-                            <th class="col-nama">Nama Pasien</th>
-                            <th class="col-alamat">Alamat</th>
-                            <th class="col-status">Status</th>
-                            <th class="col-action">Action</th>
-                        </tr>
+                    <table class="antrian-table">
 
-                    </thead>
-
-                    <tbody>
-
-                        @forelse ($antrians as $index => $antrian)
-
+                        <thead>
                             <tr>
-
-                                <td>
-                                    {{ $index + 1 }}
-                                </td>
-
-                                <td>
-                                    <span class="antrian-badge">
-                                        {{ str_pad($antrian->no_antrian, 2, '0', STR_PAD_LEFT) }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    {{ $antrian->pasien->no_rm }}
-                                </td>
-
-                                <td class="nama-pasien">
-                                    {{ $antrian->pasien->nama }}
-                                </td>
-
-                                <td>
-                                    {{ $antrian->pasien->alamat }}
-                                </td>
-
-                                <td>
-
-                                    @if ($antrian->status === 'Menunggu')
-                                        <span class="badge badge-menunggu">Menunggu</span>
-                                    @elseif ($antrian->status === 'Sedang Diperiksa')
-                                        <span class="badge badge-diperiksa">Sedang Diperiksa</span>
-                                    @else
-                                        <span class="badge badge-selesai">Selesai</span>
-                                    @endif
-
-                                </td>
-
-                                <td>
-
-                                    <a
-                                        href="{{ route('pemeriksaan.show', $antrian->id) }}"
-                                        class="btn-periksa"
-                                    >
-                                        Periksa
-                                    </a>
-
-                                </td>
-
+                                <th>No</th>
+                                <th>No. Antrian</th>
+                                <th>No. RM</th>
+                                <th>Nama Pasien</th>
+                                <th>Alamat</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
+                        </thead>
 
-                        @empty
+                        <tbody>
 
-                            <tr>
-                                <td colspan="7" class="empty-state">
-                                    Belum ada pasien di antrian poli ini hari ini.
-                                </td>
-                            </tr>
+                            @forelse ($antrian as $index => $item)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $item['no_antrian'] }}</td>
+                                    <td>{{ $item['no_rm'] }}</td>
+                                    <td>{{ $item['nama_pasien'] }}</td>
+                                    <td>{{ $item['alamat'] }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ strtolower($item['status']) }}">
+                                            {{ $item['status'] }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-periksa">
+                                            Periksa
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="7">
+                                        Belum ada pasien di antrian poli ini hari ini.
+                                    </td>
+                                </tr>
+                            @endforelse
 
-                        @endforelse
+                        </tbody>
 
-                    </tbody>
+                    </table>
 
-                </table>
+                </div>
 
             </div>
 
