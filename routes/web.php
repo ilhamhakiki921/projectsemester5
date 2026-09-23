@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\PemeriksaanController;
+use App\Http\Controllers\RekamMedisController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -46,3 +47,11 @@ Route::post('/pendaftaran/pasien-baru', [PasienController::class, 'store'])->nam
 
 Route::get('/pemeriksaan', [PemeriksaanController::class, 'index'])->name('pemeriksaan.index');
 Route::get('/pemeriksaan/{id}', [PemeriksaanController::class, 'show'])->name('pemeriksaan.show');
+Route::post('/pemeriksaan/{id}/simpan-asesmen', [PemeriksaanController::class, 'simpanAsesmen'])->name('pemeriksaan.simpanAsesmen');
+
+// ===========================
+// REKAM MEDIS
+// ===========================
+
+Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
+Route::get('/rekam-medis/{id}/pdf', [RekamMedisController::class, 'exportPdf'])->name('rekam-medis.pdf');

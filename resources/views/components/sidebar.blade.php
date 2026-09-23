@@ -109,8 +109,8 @@
 
 
         {{-- Rekam Medis --}}
-        <a href="#"
-           class="menu-item">
+        <a href="{{ route('rekam-medis.index') }}"
+           class="menu-item {{ request()->routeIs('rekam-medis.*') ? 'active' : '' }}">
 
             <i class="bi bi-folder-fill"></i>
 

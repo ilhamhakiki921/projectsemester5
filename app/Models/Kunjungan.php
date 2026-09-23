@@ -23,6 +23,11 @@ class Kunjungan extends Model
         return $this->belongsTo(Pasien::class);
     }
 
+    public function rekamMedis()
+    {
+        return $this->hasOne(RekamMedis::class);
+    }
+
     // Nomor antrian berikutnya untuk poli & tanggal tertentu
     public static function nomorAntrianBerikutnya(string $poli, string $tanggal): int
     {

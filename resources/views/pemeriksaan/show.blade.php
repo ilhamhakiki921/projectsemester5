@@ -26,7 +26,7 @@ body {
 
 .content {
     width: 100%;
-    padding: 25px 22px;
+    padding: 25px 22px 50px;
     background: #f3f4f6;
 }
 
@@ -45,67 +45,270 @@ body {
 }
 
 .back-link:hover {
-    color: #0f3d33;
+    color: #b30000;
 }
 
 .card {
     background: #ffffff;
 
-    border-radius: 14px;
+    border-radius: 12px;
 
-    padding: 22px 24px;
-    margin-bottom: 18px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
 
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.pasien-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+/* IDENTITAS PASIEN */
 
+.identitas-label {
+    margin-bottom: 4px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #222;
+}
+
+.pasien-nama {
+    margin-bottom: 14px;
+
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+
+    color: #1a1a1a;
+    text-transform: uppercase;
+}
+
+.identitas-grid {
+    display: flex;
     flex-wrap: wrap;
 
     gap: 14px;
 }
 
-.pasien-nama {
-    font-size: 18px;
+.identitas-item {
+    min-width: 140px;
+    flex: 1;
+}
+
+.identitas-item label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    color: #666;
+}
+
+.identitas-box {
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 10px;
+
+    border-radius: 6px;
+
+    background: #eceef0;
+
+    font-size: 11px;
+    color: #333;
+}
+
+/* TABS */
+
+.tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-bottom: 16px;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    padding: 9px 16px;
+
+    border: none;
+    border-radius: 8px 8px 0 0;
+
+    background: transparent;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+
+    color: #777;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.tab-btn:hover {
+    color: #b30000;
+}
+
+.tab-btn.active {
+    color: #b30000;
+    font-weight: 700;
+
+    background: #fbe4e4;
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.placeholder-box {
+    padding: 40px 20px;
+
+    text-align: center;
+
+    border: 1px dashed #d0d3d8;
+    border-radius: 10px;
+
+    font-size: 11px;
+    color: #8a8f98;
+}
+
+/* FORM ASESMEN */
+
+.section-title {
+    margin-bottom: 14px;
+
+    font-size: 14px;
     font-weight: 700;
 
     color: #1a1a1a;
 }
 
-.pasien-meta {
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-row {
     display: flex;
     flex-wrap: wrap;
 
-    gap: 22px;
+    gap: 16px;
 
-    margin-top: 12px;
+    margin-bottom: 16px;
 }
 
-.meta-item label {
+.form-row .form-group {
+    flex: 1;
+    min-width: 220px;
+
+    margin-bottom: 0;
+}
+
+.form-row-3 {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    margin-bottom: 16px;
+}
+
+.form-row-3 .form-group {
+    flex: 1;
+    min-width: 160px;
+
+    margin-bottom: 0;
+}
+
+.form-group label {
     display: block;
 
-    margin-bottom: 3px;
+    margin-bottom: 6px;
 
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 600;
 
-    text-transform: uppercase;
-
-    color: #8a8f98;
+    color: #333;
 }
 
-.meta-item span {
-    font-size: 12px;
-    font-weight: 500;
+.form-group textarea,
+.form-group input {
+    width: 100%;
+
+    padding: 9px 11px;
+
+    border: 1px solid #d8dade;
+    border-radius: 7px;
+
+    outline: none;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
 
     color: #222;
+
+    background: #f7f7f8;
+
+    resize: vertical;
 }
 
-.badge {
+.form-group textarea {
+    min-height: 70px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #b30000;
+    background: #ffffff;
+}
+
+.vital-title {
+    margin: 6px 0 14px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #1a1a1a;
+}
+
+.btn-simpan {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 11px 24px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #b30000;
+    color: #ffffff;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.btn-simpan:hover {
+    background: #8a0000;
+}
+
+.status-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -118,7 +321,7 @@ body {
     font-weight: 600;
 }
 
-.badge::before {
+.status-badge::before {
     content: "";
 
     width: 6px;
@@ -129,40 +332,19 @@ body {
     background: currentColor;
 }
 
-.badge-menunggu {
+.status-menunggu {
     background: #fdecd2;
     color: #b3691a;
 }
 
-.badge-diperiksa {
+.status-diperiksa {
     background: #dbe9fe;
     color: #1d5fd6;
 }
 
-.badge-selesai {
+.status-selesai {
     background: #d7f2e3;
     color: #158a4c;
-}
-
-.section-title {
-    margin-bottom: 12px;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    color: #1a1a1a;
-}
-
-.placeholder-box {
-    padding: 30px 20px;
-
-    text-align: center;
-
-    border: 1px dashed #d0d3d8;
-    border-radius: 10px;
-
-    font-size: 11px;
-    color: #8a8f98;
 }
 
 </style>
@@ -178,7 +360,7 @@ body {
 
     <main class="main">
 
-        <x-topbar title="Pemeriksaan Pasien" icon="heart-pulse-fill" />
+        <x-topbar title="Pemeriksaan" icon="heart-pulse-fill" />
 
         <section class="content">
 
@@ -187,77 +369,219 @@ body {
                 Kembali ke Antrian
             </a>
 
-            {{-- DATA PASIEN --}}
+            {{-- IDENTITAS PASIEN --}}
             <div class="card">
 
-                <div class="pasien-header">
-
-                    <div class="pasien-nama">
-                        {{ $antrian->pasien->nama }}
-                    </div>
-
-                    @if ($antrian->status === 'Menunggu')
-                        <span class="badge badge-menunggu">Menunggu</span>
-                    @elseif ($antrian->status === 'Sedang Diperiksa')
-                        <span class="badge badge-diperiksa">Sedang Diperiksa</span>
-                    @else
-                        <span class="badge badge-selesai">Selesai</span>
-                    @endif
-
+                <div class="identitas-label">
+                    Identitas Pasien
                 </div>
 
-                <div class="pasien-meta">
+                <div class="pasien-nama">
+                    {{ $antrian->pasien->nama }}
+                </div>
 
-                    <div class="meta-item">
+                <div class="identitas-grid">
+
+                    <div class="identitas-item">
                         <label>No. RM</label>
-                        <span>{{ $antrian->pasien->no_rm }}</span>
+                        <div class="identitas-box">{{ $antrian->pasien->no_rm }}</div>
                     </div>
 
-                    <div class="meta-item">
+                    <div class="identitas-item">
                         <label>NIK</label>
-                        <span>{{ $antrian->pasien->nik }}</span>
+                        <div class="identitas-box">{{ $antrian->pasien->nik }}</div>
                     </div>
 
-                    <div class="meta-item">
+                    <div class="identitas-item">
                         <label>Jenis Kelamin</label>
-                        <span>{{ $antrian->pasien->jenis_kelamin }}</span>
+                        <div class="identitas-box">{{ $antrian->pasien->jenis_kelamin }}</div>
                     </div>
 
-                    <div class="meta-item">
-                        <label>Umur</label>
-                        <span>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} th</span>
+                    <div class="identitas-item">
+                        <label>Tanggal Lahir</label>
+                        <div class="identitas-box">
+                            {{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->translatedFormat('d M Y') }}
+                        </div>
                     </div>
 
-                    <div class="meta-item">
-                        <label>Alamat</label>
-                        <span>{{ $antrian->pasien->alamat }}</span>
+                    <div class="identitas-item">
+                        <label>Usia</label>
+                        <div class="identitas-box">
+                            {{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} th
+                        </div>
                     </div>
 
-                    <div class="meta-item">
-                        <label>Poli</label>
-                        <span>{{ $antrian->poli }}</span>
-                    </div>
+                    <div class="identitas-item">
+                        <label>Status</label>
+                        <div>
 
-                    <div class="meta-item">
-                        <label>Tgl Kunjungan</label>
-                        <span>{{ \Carbon\Carbon::parse($antrian->tanggal_kunjungan)->translatedFormat('d M Y') }}</span>
+                            @if ($antrian->status === 'Menunggu')
+                                <span class="status-badge status-menunggu">Menunggu</span>
+                            @elseif ($antrian->status === 'Sedang Diperiksa')
+                                <span class="status-badge status-diperiksa">Sedang Diperiksa</span>
+                            @else
+                                <span class="status-badge status-selesai">Selesai</span>
+                            @endif
+
+                        </div>
                     </div>
 
                 </div>
 
             </div>
 
-            {{-- FORM PEMERIKSAAN (BELUM DIBUAT) --}}
+            {{-- TAB NAVIGASI --}}
             <div class="card">
 
-                <div class="section-title">
-                    Asesmen Pemeriksaan
+                <div class="tab-nav">
+                    <button type="button" class="tab-btn active" onclick="bukaTab('assesment', this)">Assesment</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('soap', this)">SOAP</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('diagnosa', this)">Diagnosa</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('resep', this)">Resep</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('clinical', this)">Clinical Pathway</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('penunjang', this)">Penunjang</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('rujukan', this)">Rujukan</button>
+                    <button type="button" class="tab-btn" onclick="bukaTab('autentikasi', this)">Autentikasi</button>
                 </div>
 
-                <div class="placeholder-box">
-                    Form asesmen pemeriksaan (keluhan utama, riwayat penyakit, tanda vital, dll)
-                    akan dibuat di tahap selanjutnya.
+                {{-- TAB: ASSESMENT --}}
+                <div id="tab-assesment" class="tab-panel active">
+
+                    <form action="{{ route('pemeriksaan.simpanAsesmen', $antrian->id) }}" method="POST">
+                        @csrf
+
+                        <div class="section-title">Asesmen Pemeriksaan</div>
+
+                        <div class="form-group">
+                            <label>Keluhan Utama</label>
+                            <textarea name="keluhan_utama">{{ old('keluhan_utama', $rekamMedis->keluhan_utama ?? '') }}</textarea>
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+                                <label>Riwayat Penyakit Sekarang</label>
+                                <textarea name="riwayat_penyakit_sekarang">{{ old('riwayat_penyakit_sekarang', $rekamMedis->riwayat_penyakit_sekarang ?? '') }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Riwayat Penyakit Terdahulu</label>
+                                <textarea name="riwayat_penyakit_terdahulu">{{ old('riwayat_penyakit_terdahulu', $rekamMedis->riwayat_penyakit_terdahulu ?? '') }}</textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+                                <label>Riwayat Alergi</label>
+                                <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi', $rekamMedis->riwayat_alergi ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Riwayat Pengobatan</label>
+                                <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan', $rekamMedis->riwayat_pengobatan ?? '') }}">
+                            </div>
+
+                        </div>
+
+                        <div class="vital-title">Tanda Vital</div>
+
+                        <div class="form-row-3">
+
+                            <div class="form-group">
+                                <label>TB (Tinggi Badan)</label>
+                                <input type="text" name="tb" value="{{ old('tb', $rekamMedis->tb ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>TD (Tekanan Darah)</label>
+                                <input type="text" name="td" value="{{ old('td', $rekamMedis->td ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>LP (Lingkar Perut)</label>
+                                <input type="text" name="lp" value="{{ old('lp', $rekamMedis->lp ?? '') }}">
+                            </div>
+
+                        </div>
+
+                        <div class="form-row-3">
+
+                            <div class="form-group">
+                                <label>Respiratory Rate</label>
+                                <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', $rekamMedis->respiratory_rate ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Berat Badan</label>
+                                <input type="text" name="berat_badan" value="{{ old('berat_badan', $rekamMedis->berat_badan ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Detak Jantung</label>
+                                <input type="text" name="detak_jantung" value="{{ old('detak_jantung', $rekamMedis->detak_jantung ?? '') }}">
+                            </div>
+
+                        </div>
+
+                        <div class="form-row-3">
+
+                            <div class="form-group">
+                                <label>Lingkar Dada</label>
+                                <input type="text" name="lingkar_dada" value="{{ old('lingkar_dada', $rekamMedis->lingkar_dada ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Saturasi</label>
+                                <input type="text" name="saturasi" value="{{ old('saturasi', $rekamMedis->saturasi ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>IMT</label>
+                                <input type="text" name="imt" value="{{ old('imt', $rekamMedis->imt ?? '') }}">
+                            </div>
+
+                        </div>
+
+                        <div class="form-row-3">
+
+                            <div class="form-group">
+                                <label>Suhu Badan</label>
+                                <input type="text" name="suhu_badan" value="{{ old('suhu_badan', $rekamMedis->suhu_badan ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Lingkar Kepala</label>
+                                <input type="text" name="lingkar_kepala" value="{{ old('lingkar_kepala', $rekamMedis->lingkar_kepala ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>GCS</label>
+                                <input type="text" name="gcs" value="{{ old('gcs', $rekamMedis->gcs ?? '') }}">
+                            </div>
+
+                        </div>
+
+                        <button type="submit" class="btn-simpan">
+                            <i class="bi bi-save2"></i>
+                            Simpan Asesmen
+                        </button>
+
+                    </form>
+
                 </div>
+
+                {{-- TAB LAIN (BELUM DIBUAT) --}}
+                @foreach (['soap' => 'SOAP', 'diagnosa' => 'Diagnosa', 'resep' => 'Resep', 'clinical' => 'Clinical Pathway', 'penunjang' => 'Penunjang', 'rujukan' => 'Rujukan', 'autentikasi' => 'Autentikasi'] as $kode => $label)
+
+                    <div id="tab-{{ $kode }}" class="tab-panel">
+                        <div class="placeholder-box">
+                            Form {{ $label }} akan dibuat di tahap selanjutnya.
+                        </div>
+                    </div>
+
+                @endforeach
 
             </div>
 
@@ -266,5 +590,24 @@ body {
     </main>
 
 </div>
+
+<script>
+
+function bukaTab(nama, tombol) {
+
+    document.querySelectorAll('.tab-panel').forEach(function (panel) {
+        panel.classList.remove('active');
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(function (btn) {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById('tab-' + nama).classList.add('active');
+    tombol.classList.add('active');
+
+}
+
+</script>
 
 @endsection
