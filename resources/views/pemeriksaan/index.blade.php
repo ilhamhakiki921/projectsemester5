@@ -164,7 +164,12 @@
         color: #b06a00;
     }
 
-    .status-diperiksa {
+    .status-proses {
+        background: #e8f0fe;
+        color: #1967d2;
+    }
+
+    .status-selesai {
         background: #e6f4ea;
         color: #1a7f37;
     }
@@ -220,17 +225,7 @@
 
         <section class="content">
 
-            @if (session('success'))
-                <div style="margin-bottom: 16px; padding: 10px 14px; background: #e6f4ea; color: #1a7f37; border-radius: 6px; font-size: 11px; font-weight: 500;">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('warning'))
-                <div style="margin-bottom: 16px; padding: 10px 14px; background: #fff4e5; color: #b06a00; border-radius: 6px; font-size: 11px; font-weight: 500;">
-                    {{ session('warning') }}
-                </div>
-            @endif
+            <x-popup-alert />
 
             {{-- PILIH POLI --}}
             <div class="poli-select-wrapper">
@@ -293,7 +288,7 @@
                                     <td>{{ $item['nama_pasien'] }}</td>
                                     <td>{{ $item['alamat'] }}</td>
                                     <td>
-                                        <span class="status-badge status-{{ strtolower($item['status']) }}">
+                                        <span class="status-badge status-{{ $item['status_kode'] }}">
                                             {{ $item['status'] }}
                                         </span>
                                     </td>

@@ -39,7 +39,6 @@ Route::delete('/pendaftaran/pasien-lama/{id}', [PasienController::class, 'destro
 
 Route::get('/pendaftaran/pasien-baru', [PasienController::class, 'create'])->name('pasien.baru');
 Route::post('/pendaftaran/pasien-baru', [PasienController::class, 'store'])->name('pasien.baru.store');
-Route::get('/pendaftaran/pasien/cari', [PasienController::class, 'cari'])->name('pasien.cari');
 
 // ===========================
 // PEMERIKSAAN

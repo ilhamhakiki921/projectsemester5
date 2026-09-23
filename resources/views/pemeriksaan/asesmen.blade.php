@@ -284,6 +284,8 @@
 
         <section class="content">
 
+            <x-popup-alert />
+
             {{-- KEMBALI --}}
             <a href="{{ route('pemeriksaan.index', $poli) }}" class="back-link">
                 <i class="bi bi-arrow-left"></i>
@@ -331,7 +333,7 @@
             <div class="tabs">
                 <span class="tab-item active">Asesment</span>
                 <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="tab-item">SOAP</a>
-                <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien['no_rm']]) }}" class="tab-item">Diagnosa</a>
+                <span class="tab-item disabled">Diagnosa</span>
                 <span class="tab-item disabled">Resep</span>
                 <span class="tab-item disabled">Clinical Pathway</span>
                 <span class="tab-item disabled">Penunjang</span>

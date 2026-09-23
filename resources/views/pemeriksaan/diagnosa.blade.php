@@ -159,11 +159,24 @@
     }
 
     .form-card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
         margin-bottom: 18px;
 
         font-size: 15px;
         font-weight: 700;
         color: #ed1111;
+    }
+
+    .form-card-title .title-badge {
+        width: 90px;
+        height: 14px;
+
+        border-radius: 8px;
+
+        background: linear-gradient(180deg, #980000 0%, #570000 100%);
     }
 
     .field-group {
@@ -179,7 +192,6 @@
         color: #333;
     }
 
-    .field input,
     .field textarea {
         width: 100%;
 
@@ -196,7 +208,6 @@
         resize: vertical;
     }
 
-    .field input:focus,
     .field textarea:focus {
         border-color: #3b82f6;
     }
@@ -239,22 +250,20 @@
 
 <div class="dashboard">
 
-    {{-- SIDEBAR --}}
     <x-sidebar />
 
-    {{-- MAIN --}}
     <main class="main">
         <x-topbar title="Pemeriksaan" icon="heart-pulse-fill" />
 
         <section class="content">
 
-            {{-- KEMBALI --}}
+            <x-popup-alert />
+
             <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="back-link">
                 <i class="bi bi-arrow-left"></i>
-                Kembali ke SOAP
+                Kembali ke Diagnosa
             </a>
 
-            {{-- IDENTITAS PASIEN --}}
             <div class="identity-bar">
 
                 <div class="identity-name-block">
@@ -289,7 +298,6 @@
 
             </div>
 
-            {{-- TABS --}}
             <div class="tabs">
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien['no_rm']]) }}" class="tab-item">Asesment</a>
                 <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="tab-item">SOAP</a>
@@ -310,29 +318,32 @@
             {{-- FORM DIAGNOSA --}}
             <div class="form-card">
 
-                <h2 class="form-card-title">Diagnosis</h2>
+                <h2 class="form-card-title">
+                    Diagnosa
+                    <span class="title-badge"></span>
+                </h2>
 
                 <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien['no_rm']]) }}" id="form-diagnosa">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Diagnosis Utama</label>
-                            <textarea name="diagnosis_utama" rows="2" placeholder="isi diagnosis utama" required>{{ old('diagnosis_utama', $diagnosa['diagnosis_utama'] ?? '') }}</textarea>
+                            <label>Diagnosa Kerja</label>
+                            <input type="text" name="diagnosa_kerja" value="{{ old('diagnosa_kerja') }}" placeholder="Contoh: ISPA (Infeksi Saluran Pernapasan Akut)" required>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Diagnosis Sekunder</label>
-                            <textarea name="diagnosis_sekunder" rows="2" placeholder="isi diagnosis sekunder" required>{{ old('diagnosis_sekunder', $diagnosa['diagnosis_sekunder'] ?? '') }}</textarea>
+                            <label>Kode ICD-10 <span style="font-weight: 400; color: #888;">(opsional)</span></label>
+                            <input type="text" name="kode_icd10" value="{{ old('kode_icd10') }}" placeholder="Contoh: J06.9">
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Tindakan</label>
-                            <textarea name="tindakan" rows="2" placeholder="isi tindakan" required>{{ old('tindakan', $diagnosa['tindakan'] ?? '') }}</textarea>
+                            <label>Diagnosa Banding <span style="font-weight: 400; color: #888;">(opsional)</span></label>
+                            <textarea name="diagnosa_banding" rows="3">{{ old('diagnosa_banding') }}</textarea>
                         </div>
                     </div>
 
@@ -348,19 +359,19 @@
 
         </section>
 
-        <script>
-            document.querySelectorAll('#form-diagnosa [required]').forEach(function (field) {
-                field.addEventListener('invalid', function () {
-                    field.setCustomValidity('Kolom ini wajib diisi.');
-                });
-                field.addEventListener('input', function () {
-                    field.setCustomValidity('');
-                });
-            });
-        </script>
-
     </main>
 
 </div>
+
+<script>
+    document.querySelectorAll('#form-diagnosa [required]').forEach(function (field) {
+        field.addEventListener('invalid', function () {
+            field.setCustomValidity('Kolom ini wajib diisi.');
+        });
+        field.addEventListener('input', function () {
+            field.setCustomValidity('');
+        });
+    });
+</script>
 
 @endsection
