@@ -226,6 +226,12 @@
                 </div>
             @endif
 
+            @if (session('warning'))
+                <div style="margin-bottom: 16px; padding: 10px 14px; background: #fff4e5; color: #b06a00; border-radius: 6px; font-size: 11px; font-weight: 500;">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             {{-- PILIH POLI --}}
             <div class="poli-select-wrapper">
 

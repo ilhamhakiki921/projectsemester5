@@ -69,9 +69,60 @@ class PemeriksaanController extends Controller
         ];
     }
 
+    /**
+     * Field-field yang wajib diisi di form Asesmen.
+     */
+    protected function aturanAsesmen()
+    {
+        return [
+            'keluhan_utama'      => 'required|string',
+            'riwayat_sekarang'   => 'required|string',
+            'riwayat_terdahulu'  => 'required|string',
+            'riwayat_alergi'     => 'required|string',
+            'riwayat_pengobatan' => 'required|string',
+            'tb'                 => 'required|string',
+            'td'                 => 'required|string',
+            'lp'                 => 'required|string',
+            'respiratory_rate'   => 'required|string',
+            'berat_badan'        => 'required|string',
+            'detak_jantung'      => 'required|string',
+            'lingkar_dada'       => 'required|string',
+            'saturasi'           => 'required|string',
+            'imt'                => 'required|string',
+            'suhu_badan'         => 'required|string',
+            'lingkar_kepala'     => 'required|string',
+            'gcs'                => 'required|string',
+        ];
+    }
+
+    protected function pesanAsesmen()
+    {
+        return [
+            'required' => 'Kolom :attribute wajib diisi.',
+        ];
+    }
+
+    /**
+     * Cari data pasien dari antrian dummy berdasarkan poli + no_rm.
+     */
+    protected function carikanPasien($poli, $no_rm)
+    {
+        if (! array_key_exists($poli, $this->daftarPoli)) {
+            abort(404);
+        }
+
+        $antrian = $this->dataDummy()[$poli] ?? [];
+        $pasien  = collect($antrian)->firstWhere('no_rm', $no_rm);
+
+        if (! $pasien) {
+            abort(404, 'Data pasien tidak ditemukan di antrian poli ini.');
+        }
+
+        return $pasien;
+    }
+
     public function index($poli = 'umum')
     {
-        // Kalau slug tidak dikenal, fallback ke 'umum'
         if (! array_key_exists($poli, $this->daftarPoli)) {
             $poli = 'umum';
         }
@@ -91,17 +142,7 @@ class PemeriksaanController extends Controller
      */
     public function asesmen($poli, $no_rm)
     {
-        if (! array_key_exists($poli, $this->daftarPoli)) {
-            abort(404);
-        }
-
-        $antrian = $this->dataDummy()[$poli] ?? [];
-
-        $pasien = collect($antrian)->firstWhere('no_rm', $no_rm);
-
-        if (! $pasien) {
-            abort(404, 'Data pasien tidak ditemukan di antrian poli ini.');
-        }
+        $pasien = $this->carikanPasien($poli, $no_rm);
 
         return view('pemeriksaan.asesmen', [
             'poli'     => $poli,
@@ -111,21 +152,69 @@ class PemeriksaanController extends Controller
     }
 
     /**
-     * Simpan asesmen (sementara dummy, belum ke database).
+     * Simpan asesmen. Semua field wajib diisi.
+     * Sementara disimpan di session (belum ke database), lalu lanjut ke tab SOAP.
      */
     public function simpanAsesmen(Request $request, $poli, $no_rm)
     {
+        $pasien = $this->carikanPasien($poli, $no_rm);
+
+        $data = $request->validate($this->aturanAsesmen(), $this->pesanAsesmen());
+
         // ==================================================
-        // Nanti bagian ini diganti simpan ke database, contoh:
-        // RekamMedis::create([
-        //     'no_rm' => $no_rm,
-        //     'keluhan_utama' => $request->keluhan_utama,
-        //     ...
-        // ]);
+        // NANTI diganti simpan ke tabel rekam_medis, contoh:
+        // RekamMedis::updateOrCreate(
+        //     ['no_rm' => $no_rm],
+        //     ['asesmen' => $data]
+        // );
         // ==================================================
+        session()->put("rekam_medis.$no_rm.asesmen", $data);
+
+        return redirect()
+            ->route('pemeriksaan.soap', [$poli, $no_rm])
+            ->with('success', 'Asesmen berhasil disimpan.');
+    }
+
+    /**
+     * Halaman SOAP, dibuka otomatis setelah Asesmen disimpan.
+     */
+    public function soap($poli, $no_rm)
+    {
+        $pasien = $this->carikanPasien($poli, $no_rm);
+
+        // Kalau asesmen belum pernah disimpan, balikkan ke halaman asesmen dulu
+        if (! session()->has("rekam_medis.$no_rm.asesmen")) {
+            return redirect()
+                ->route('pemeriksaan.asesmen', [$poli, $no_rm])
+                ->with('warning', 'Isi Asesmen Pemeriksaan terlebih dahulu sebelum lanjut ke SOAP.');
+        }
+
+        return view('pemeriksaan.soap', [
+            'poli'     => $poli,
+            'namaPoli' => $this->daftarPoli[$poli],
+            'pasien'   => $pasien,
+            'asesmen'  => session("rekam_medis.$no_rm.asesmen"),
+        ]);
+    }
+
+    /**
+     * Simpan SOAP (sementara di session juga, belum ke database).
+     */
+    public function simpanSoap(Request $request, $poli, $no_rm)
+    {
+        $this->carikanPasien($poli, $no_rm);
+
+        $data = $request->validate([
+            'subjective' => 'required|string',
+            'objective'  => 'required|string',
+            'assessment' => 'required|string',
+            'plan'       => 'required|string',
+        ], $this->pesanAsesmen());
+
+        session()->put("rekam_medis.$no_rm.soap", $data);
 
         return redirect()
             ->route('pemeriksaan.index', $poli)
-            ->with('success', 'Asesmen berhasil disimpan (sementara, belum tersambung ke database).');
+            ->with('success', 'SOAP berhasil disimpan. Pemeriksaan selesai.');
     }
 }

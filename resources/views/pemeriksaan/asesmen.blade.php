@@ -332,7 +332,7 @@
             {{-- TABS --}}
             <div class="tabs">
                 <span class="tab-item active">Asesment</span>
-                <span class="tab-item disabled">SOAP</span>
+                <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="tab-item">SOAP</a>
                 <span class="tab-item disabled">Diagnosa</span>
                 <span class="tab-item disabled">Resep</span>
                 <span class="tab-item disabled">Clinical Pathway</span>
@@ -341,41 +341,47 @@
                 <span class="tab-item disabled">Autentikasi</span>
             </div>
 
+            @if ($errors->any())
+                <div style="margin-bottom: 16px; padding: 10px 14px; background: #fdecea; color: #b3261e; border-radius: 6px; font-size: 11px; font-weight: 500;">
+                    Semua kolom asesmen wajib diisi. Silakan lengkapi dulu sebelum menyimpan.
+                </div>
+            @endif
+
 
             {{-- FORM ASESMEN --}}
             <div class="form-card">
 
                 <h2 class="form-card-title">Asesmen Pemeriksaan</h2>
 
-                <form method="POST" action="{{ route('pemeriksaan.asesmen.store', [$poli, $pasien['no_rm']]) }}">
+                <form method="POST" action="{{ route('pemeriksaan.asesmen.store', [$poli, $pasien['no_rm']]) }}" id="form-asesmen">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
                             <label>Keluhan Utama</label>
-                            <input type="text" name="keluhan_utama" placeholder="Tulis keluhan utama pasien">
+                            <input type="text" name="keluhan_utama" value="{{ old('keluhan_utama') }}" placeholder="Tulis keluhan utama pasien" required>
                         </div>
                     </div>
 
                     <div class="field-row">
                         <div class="field">
                             <label>Riwayat Penyakit Sekarang</label>
-                            <input type="text" name="riwayat_sekarang">
+                            <input type="text" name="riwayat_sekarang" value="{{ old('riwayat_sekarang') }}" required>
                         </div>
                         <div class="field">
                             <label>Riwayat Penyakit Terdahulu</label>
-                            <input type="text" name="riwayat_terdahulu">
+                            <input type="text" name="riwayat_terdahulu" value="{{ old('riwayat_terdahulu') }}" required>
                         </div>
                     </div>
 
                     <div class="field-row">
                         <div class="field">
                             <label>Riwayat Alergi</label>
-                            <input type="text" name="riwayat_alergi">
+                            <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi') }}" required>
                         </div>
                         <div class="field">
                             <label>Riwayat Pengobatan</label>
-                            <input type="text" name="riwayat_pengobatan">
+                            <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan') }}" required>
                         </div>
                     </div>
 
@@ -384,66 +390,66 @@
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>TB (Tinggi Badan)</label>
-                            <input type="text" name="tb">
+                            <input type="text" name="tb" value="{{ old('tb') }}" required>
                         </div>
                         <div class="field">
                             <label>TD (Tekanan Darah)</label>
-                            <input type="text" name="td">
+                            <input type="text" name="td" value="{{ old('td') }}" required>
                         </div>
                         <div class="field">
                             <label>LP (Lingkar Perut)</label>
-                            <input type="text" name="lp">
+                            <input type="text" name="lp" value="{{ old('lp') }}" required>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Respiratory Rate</label>
-                            <input type="text" name="respiratory_rate">
+                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate') }}" required>
                         </div>
                         <div class="field">
                             <label>Berat Badan</label>
-                            <input type="text" name="berat_badan">
+                            <input type="text" name="berat_badan" value="{{ old('berat_badan') }}" required>
                         </div>
                         <div class="field">
                             <label>Detak Jantung</label>
-                            <input type="text" name="detak_jantung">
+                            <input type="text" name="detak_jantung" value="{{ old('detak_jantung') }}" required>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Lingkar Dada</label>
-                            <input type="text" name="lingkar_dada">
+                            <input type="text" name="lingkar_dada" value="{{ old('lingkar_dada') }}" required>
                         </div>
                         <div class="field">
                             <label>Saturasi</label>
-                            <input type="text" name="saturasi">
+                            <input type="text" name="saturasi" value="{{ old('saturasi') }}" required>
                         </div>
                         <div class="field">
                             <label>IMT</label>
-                            <input type="text" name="imt">
+                            <input type="text" name="imt" value="{{ old('imt') }}" required>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Suhu Badan</label>
-                            <input type="text" name="suhu_badan">
+                            <input type="text" name="suhu_badan" value="{{ old('suhu_badan') }}" required>
                         </div>
                         <div class="field">
                             <label>Lingkar Kepala</label>
-                            <input type="text" name="lingkar_kepala">
+                            <input type="text" name="lingkar_kepala" value="{{ old('lingkar_kepala') }}" required>
                         </div>
                         <div class="field">
                             <label>GCS</label>
-                            <input type="text" name="gcs">
+                            <input type="text" name="gcs" value="{{ old('gcs') }}" required>
                         </div>
                     </div>
 
                     <div class="form-footer">
                         <button type="submit" class="btn-simpan">
-                            Simpan Asesmen
+                            Simpan
                         </button>
                     </div>
 
@@ -452,6 +458,18 @@
             </div>
 
         </section>
+
+        <script>
+            // Pop-up peringatan custom (bahasa Indonesia) untuk field yang wajib diisi
+            document.querySelectorAll('#form-asesmen [required]').forEach(function (field) {
+                field.addEventListener('invalid', function () {
+                    field.setCustomValidity('Kolom ini wajib diisi.');
+                });
+                field.addEventListener('input', function () {
+                    field.setCustomValidity('');
+                });
+            });
+        </script>
 
     </main>
 
