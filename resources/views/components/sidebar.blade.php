@@ -5,20 +5,16 @@
     ========================== --}}
     <div class="logo">
 
-    <div class="logo-icon">
-        <span>SR</span>
+        <div class="logo-icon">
+            <span>SR</span>
+        </div>
+
+        <div class="logo-text">
+            <strong>Klinik</strong>
+            <span>Merah Putih</span>
+        </div>
+
     </div>
-
-    <div class="logo-text">
-        <strong>Klinik</strong>
-        <span>Merah Putih</span>
-    </div>
-
-    <button type="button" class="sidebar-toggle" onclick="toggleSidebar()">
-        <i class="bi bi-chevron-left"></i>
-    </button>
-
-</div>
 
 
     {{-- =========================
@@ -114,8 +110,8 @@
 
 
         {{-- Rekam Medis --}}
-        <a href="#"
-           class="menu-item">
+        <a href="{{ route('rekam-medis.index') }}"
+           class="menu-item {{ request()->routeIs('rekam-medis.*') ? 'active' : '' }}">
 
             <i class="bi bi-folder-fill"></i>
 
@@ -143,24 +139,6 @@
 
 </aside>
 
-<script>
-    function toggleSidebar() {
-        document.querySelector('.sidebar').classList.toggle('collapsed');
-        document.body.classList.toggle('sidebar-collapsed');
-
-        localStorage.setItem(
-            'sidebarCollapsed',
-            document.body.classList.contains('sidebar-collapsed') ? '1' : '0'
-        );
-    }
-
-    (function () {
-        if (localStorage.getItem('sidebarCollapsed') === '1') {
-            document.querySelector('.sidebar').classList.add('collapsed');
-            document.body.classList.add('sidebar-collapsed');
-        }
-    })();
-</script>
 
 <style>
 
@@ -169,121 +147,26 @@
     ================================== */
 
     .sidebar {
-    width: 230px;
-    height: 100vh;
+        width: 230px;
+        height: 100vh;
 
-    position: fixed;
-    left: 0;
-    top: 0;
+        position: fixed;
+        left: 0;
+        top: 0;
 
-    display: flex;
-    flex-direction: column;
+        display: flex;
+        flex-direction: column;
 
-    color: white;
+        color: white;
 
-    background: linear-gradient(
-        180deg,
-        #980000 0%,
-        #570000 100%
-    );
+        background: linear-gradient(
+            180deg,
+            #980000 0%,
+            #570000 100%
+        );
 
-    z-index: 1000;
-
-    overflow: hidden;
-
-    transition: width 0.25s ease;
-}
-
-
-/* ================================= 
-   SIDEBAR - COLLAPSED
-================================== */
-
-.sidebar.collapsed {
-    width: 78px;
-}
-
-.sidebar.collapsed .logo {
-    padding: 12px 0;
-    justify-content: center;
-}
-
-.sidebar.collapsed .logo-icon {
-    margin-right: 0;
-}
-
-.sidebar.collapsed .logo-text,
-.sidebar.collapsed .menu-item span,
-.sidebar.collapsed .submenu-arrow,
-.sidebar.collapsed .menu-group,
-.sidebar.collapsed .logout a span {
-    display: none;
-}
-
-.sidebar.collapsed .menu-item {
-    justify-content: center;
-    padding: 0;
-}
-
-.sidebar.collapsed .menu-item i {
-    width: auto;
-    justify-content: center;
-}
-
-.sidebar.collapsed .logout a {
-    justify-content: center;
-    padding: 0;
-}
-
-
-/* ================================= 
-   TOGGLE BUTTON
-================================== */
-
-.sidebar-toggle {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-
-    width: 24px;
-    height: 24px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    border-radius: 50%;
-
-    background: #ed1111;
-    color: white;
-
-    font-size: 11px;
-    cursor: pointer;
-
-    z-index: 1001;
-
-    transition: transform 0.25s ease;
-}
-
-.sidebar.collapsed .sidebar-toggle {
-    transform: translateY(-50%) rotate(180deg);
-}
-
-
-/* ================================= 
-   MAIN CONTENT - RESPON KE COLLAPSE
-================================== */
-
-body.sidebar-collapsed .main {
-    margin-left: 78px;
-    width: calc(100% - 78px);
-}
-
-.main {
-    transition: margin-left 0.25s ease, width 0.25s ease;
-}
+        z-index: 1000;
+    }
 
 
     /* =================================

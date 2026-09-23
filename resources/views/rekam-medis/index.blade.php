@@ -6,192 +6,140 @@
 
 <style>
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    color: #222;
-}
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #ffffff;
+        color: #222;
+    }
 
-.main {
-    width: calc(100% - 230px);
-    min-height: 100vh;
-    margin-left: 230px;
-    background: #f3f4f6;
-}
+    .main {
+        width: calc(100% - 230px);
+        min-height: 100vh;
+        margin-left: 230px;
+        background: #f5f5f5;
+    }
 
-.content {
-    width: 100%;
-    padding: 25px 22px;
-    background: #f3f4f6;
-}
+    .content {
+        width: 100%;
+        padding: 25px 22px;
+    }
 
-.alert-success {
-    margin-bottom: 16px;
-    padding: 12px 16px;
+    .rm-card {
+        background: #ffffff;
 
-    border-radius: 8px;
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
 
-    background: #d7f2e3;
-    color: #158a4c;
+        padding: 20px 22px;
 
-    font-size: 12px;
-    font-weight: 500;
-}
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
 
-.card {
-    background: #ffffff;
+    .rm-title {
+        margin-bottom: 4px;
 
-    border-radius: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #222;
+    }
 
-    padding: 22px 24px 8px;
+    .rm-subtitle {
+        margin-bottom: 16px;
 
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
+        font-size: 10px;
+        color: #777;
+    }
 
-.card-title {
-    margin-bottom: 3px;
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
 
-    font-size: 17px;
-    font-weight: 700;
+    .rm-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-    color: #1a1a1a;
-}
+    .rm-table th {
+        padding: 10px 8px;
 
-.card-subtitle {
-    margin-bottom: 16px;
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #888;
+        text-align: left;
 
-    font-size: 11px;
-    color: #8a8f98;
-}
+        border-bottom: 1px solid #e2e2e2;
+    }
 
-.patient-table {
-    width: 100%;
+    .rm-table td {
+        padding: 12px 8px;
 
-    border-collapse: collapse;
-}
+        font-size: 10px;
+        color: #333;
 
-.patient-table th {
-    padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+    }
 
-    border-bottom: 1px solid #ececec;
+    .rm-table tbody tr:hover td {
+        background: #fafafa;
+    }
 
-    font-size: 10px;
-    font-weight: 700;
+    .empty-row td {
+        padding: 30px 8px;
 
-    text-align: left;
-    text-transform: uppercase;
+        text-align: center;
+        color: #888;
+        font-size: 10px;
+    }
 
-    color: #8a8f98;
+    .status-badge {
+        display: inline-block;
 
-    letter-spacing: 0.3px;
-}
+        padding: 3px 10px;
 
-.patient-table td {
-    padding: 14px 12px;
+        border-radius: 20px;
 
-    border-bottom: 1px solid #f0f0f0;
+        font-size: 9px;
+        font-weight: 600;
+    }
 
-    font-size: 12px;
+    .status-menunggu { background: #fff4e5; color: #b06a00; }
+    .status-sedang-diperiksa { background: #e8f0fe; color: #1967d2; }
+    .status-selesai { background: #e6f4ea; color: #1a7f37; }
 
-    color: #333;
+    .btn-lihat {
+        height: 26px;
 
-    vertical-align: middle;
-}
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
 
-.patient-table tbody tr:last-child td {
-    border-bottom: none;
-}
+        padding: 0 12px;
 
-.nama-pasien {
-    font-weight: 600;
-    color: #1a1a1a;
-}
+        border: none;
+        border-radius: 5px;
 
-.empty-state {
-    padding: 22px 12px;
+        background: #ed1111;
+        color: #ffffff;
 
-    text-align: center;
+        text-decoration: none;
 
-    font-size: 11px;
-    color: #8a8f98;
-}
+        font-family: 'Poppins', sans-serif;
+        font-size: 9px;
+        font-weight: 500;
+    }
 
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-
-    padding: 5px 11px;
-
-    border-radius: 20px;
-
-    font-size: 10px;
-    font-weight: 600;
-}
-
-.status-selesai {
-    background: #d7f2e3;
-    color: #158a4c;
-}
-
-.status-proses {
-    background: #dbe9fe;
-    color: #1d5fd6;
-}
-
-.status-belum {
-    background: #eceef0;
-    color: #777;
-}
-
-.aksi-group {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-aksi {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-
-    padding: 7px 12px;
-
-    border: none;
-    border-radius: 7px;
-
-    text-decoration: none;
-
-    font-family: 'Poppins', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-}
-
-.btn-lihat {
-    background: #eceef0;
-    color: #333;
-}
-
-.btn-lihat:hover {
-    background: #dcdfe3;
-}
-
-.btn-pdf {
-    background: #b30000;
-    color: #ffffff;
-}
-
-.btn-pdf:hover {
-    background: #8a0000;
-}
+    .btn-lihat:hover {
+        background: #c40d0d;
+    }
 
 </style>
 
@@ -205,110 +153,57 @@ body {
     <x-sidebar />
 
     <main class="main">
-
         <x-topbar title="Rekam Medis" icon="folder-fill" />
 
         <section class="content">
 
-            @if (session('success'))
-                <div class="alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
+            <div class="rm-card">
 
-            <div class="card">
+                <h1 class="rm-title">Rekam Medis Pasien</h1>
+                <p class="rm-subtitle">{{ $daftar->count() }} kunjungan tercatat</p>
 
-                <div class="card-title">
-                    Rekam Medis Pasien
-                </div>
-
-                <div class="card-subtitle">
-                    Menampilkan kunjungan tanggal {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d M Y') }}
-                </div>
-
-                <table class="patient-table">
-
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>No RM</th>
-                            <th>Nama Pasien</th>
-                            <th>Poli</th>
-                            <th>Status Asesmen</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @forelse ($kunjungans as $index => $kunjungan)
-
+                <div class="table-wrapper">
+                    <table class="rm-table">
+                        <thead>
                             <tr>
-
-                                <td>{{ $index + 1 }}</td>
-
-                                <td>{{ $kunjungan->pasien->no_rm }}</td>
-
-                                <td class="nama-pasien">{{ $kunjungan->pasien->nama }}</td>
-
-                                <td>{{ ucfirst($kunjungan->poli) }}</td>
-
-                                <td>
-
-                                    @if ($kunjungan->rekamMedis)
-                                        <span class="status-badge status-selesai">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                            Sudah Diisi
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>No. RM</th>
+                                <th>Nama Pasien</th>
+                                <th>Poli</th>
+                                <th>Dokter</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($daftar as $index => $item)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $item->tanggal_kunjungan->format('d-m-Y') }}</td>
+                                    <td>{{ $item->pasien->no_rm }}</td>
+                                    <td>{{ $item->pasien->nama }}</td>
+                                    <td>{{ ucfirst($item->poli) }}</td>
+                                    <td>{{ $item->dokter }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ str_replace(' ', '-', strtolower($item->status)) }}">
+                                            {{ $item->status }}
                                         </span>
-                                    @elseif ($kunjungan->status === 'Sedang Diperiksa')
-                                        <span class="status-badge status-proses">
-                                            <i class="bi bi-hourglass-split"></i>
-                                            Proses
-                                        </span>
-                                    @else
-                                        <span class="status-badge status-belum">
-                                            <i class="bi bi-dash-circle"></i>
-                                            Belum Diisi
-                                        </span>
-                                    @endif
-
-                                </td>
-
-                                <td>
-
-                                    <div class="aksi-group">
-
-                                        <a href="{{ route('pemeriksaan.show', $kunjungan->id) }}" class="btn-aksi btn-lihat">
-                                            <i class="bi bi-eye"></i>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('rekam-medis.show', $item->id) }}" class="btn-lihat">
                                             Lihat
                                         </a>
-
-                                        @if ($kunjungan->rekamMedis)
-                                            <a href="{{ route('rekam-medis.pdf', $kunjungan->id) }}" class="btn-aksi btn-pdf">
-                                                <i class="bi bi-file-earmark-pdf"></i>
-                                                PDF
-                                            </a>
-                                        @endif
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-                                <td colspan="6" class="empty-state">
-                                    Belum ada kunjungan pada tanggal ini.
-                                </td>
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="empty-row">
+                                    <td colspan="8">Belum ada rekam medis tercatat.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
 

@@ -164,7 +164,7 @@
         color: #b06a00;
     }
 
-    .status-proses {
+    .status-sedang-diperiksa {
         background: #e8f0fe;
         color: #1967d2;
     }
@@ -258,7 +258,7 @@
                 </h1>
 
                 <p class="antrian-subtitle">
-                    {{ count($antrian) }} pasien dalam antrian
+                    {{ $antrian->count() }} pasien dalam antrian
                 </p>
 
 
@@ -283,18 +283,18 @@
                             @forelse ($antrian as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item['no_antrian'] }}</td>
-                                    <td>{{ $item['no_rm'] }}</td>
-                                    <td>{{ $item['nama_pasien'] }}</td>
-                                    <td>{{ $item['alamat'] }}</td>
+                                    <td>{{ str_pad($item->no_antrian, 3, '0', STR_PAD_LEFT) }}</td>
+                                    <td>{{ $item->pasien->no_rm }}</td>
+                                    <td>{{ $item->pasien->nama }}</td>
+                                    <td>{{ $item->pasien->alamat }}</td>
                                     <td>
-                                        <span class="status-badge status-{{ $item['status_kode'] }}">
-                                            {{ $item['status'] }}
+                                        <span class="status-badge status-{{ str_replace(' ', '-', strtolower($item->status)) }}">
+                                            {{ $item->status }}
                                         </span>
                                     </td>
                                     <td>
                                         <a
-                                            href="{{ route('pemeriksaan.asesmen', [$poli, $item['no_rm']]) }}"
+                                            href="{{ route('pemeriksaan.asesmen', [$poli, $item->pasien->no_rm]) }}"
                                             class="btn-periksa"
                                         >
                                             Periksa

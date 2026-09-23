@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Diagnosa — ' . $pasien['nama_pasien'])
+@section('title', 'Diagnosa — ' . $pasien->nama)
 
 @section('style')
 
@@ -259,7 +259,7 @@
 
             <x-popup-alert />
 
-            <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="back-link">
+            <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="back-link">
                 <i class="bi bi-arrow-left"></i>
                 Kembali ke Diagnosa
             </a>
@@ -268,39 +268,39 @@
 
                 <div class="identity-name-block">
                     <div class="identity-label-top">Identitas Pasien</div>
-                    <div class="identity-name">{{ strtoupper($pasien['nama_pasien']) }}</div>
+                    <div class="identity-name">{{ strtoupper($pasien->nama) }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>No.RM</label>
-                    <div class="value-box">{{ $pasien['no_rm'] }}</div>
+                    <div class="value-box">{{ $pasien->no_rm }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>NIK</label>
-                    <div class="value-box">{{ $pasien['nik'] }}</div>
+                    <div class="value-box">{{ $pasien->nik }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Jenis Kelamin</label>
-                    <div class="value-box">{{ $pasien['jenis_kelamin'] }}</div>
+                    <div class="value-box">{{ $pasien->jenis_kelamin }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Tanggal Lahir</label>
-                    <div class="value-box">{{ $pasien['tanggal_lahir'] }}</div>
+                    <div class="value-box">{{ $pasien->tanggal_lahir->format('d-m-Y') }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Usia</label>
-                    <div class="value-box">{{ $pasien['usia'] }}</div>
+                    <div class="value-box">{{ $pasien->tanggal_lahir->age }} Tahun</div>
                 </div>
 
             </div>
 
             <div class="tabs">
-                <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien['no_rm']]) }}" class="tab-item">Asesment</a>
-                <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="tab-item">SOAP</a>
+                <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Asesment</a>
+                <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="tab-item">SOAP</a>
                 <span class="tab-item active">Diagnosa</span>
                 <span class="tab-item disabled">Resep</span>
                 <span class="tab-item disabled">Clinical Pathway</span>
@@ -323,27 +323,27 @@
                     <span class="title-badge"></span>
                 </h2>
 
-                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien['no_rm']]) }}" id="form-diagnosa">
+                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
                             <label>Diagnosa Kerja</label>
-                            <input type="text" name="diagnosa_kerja" value="{{ old('diagnosa_kerja') }}" placeholder="Contoh: ISPA (Infeksi Saluran Pernapasan Akut)" required>
+                            <input type="text" name="diagnosa_kerja" value="{{ old('diagnosa_kerja', optional($rekam)->diagnosa_kerja) }}" placeholder="Contoh: ISPA (Infeksi Saluran Pernapasan Akut)" required>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
                             <label>Kode ICD-10 <span style="font-weight: 400; color: #888;">(opsional)</span></label>
-                            <input type="text" name="kode_icd10" value="{{ old('kode_icd10') }}" placeholder="Contoh: J06.9">
+                            <input type="text" name="kode_icd10" value="{{ old('kode_icd10', optional($rekam)->kode_icd10) }}" placeholder="Contoh: J06.9">
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
                             <label>Diagnosa Banding <span style="font-weight: 400; color: #888;">(opsional)</span></label>
-                            <textarea name="diagnosa_banding" rows="3">{{ old('diagnosa_banding') }}</textarea>
+                            <textarea name="diagnosa_banding" rows="3">{{ old('diagnosa_banding', optional($rekam)->diagnosa_banding) }}</textarea>
                         </div>
                     </div>
 

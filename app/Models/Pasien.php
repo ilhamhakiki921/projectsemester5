@@ -17,4 +17,13 @@ class Pasien extends Model
         'no_telepon',
         'alamat',
     ];
+
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+    ];
+
+    public function kunjungan()
+    {
+        return $this->hasMany(Kunjungan::class);
+    }
 }

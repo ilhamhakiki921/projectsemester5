@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Asesmen Pemeriksaan — ' . $pasien['nama_pasien'])
+@section('title', 'Asesmen Pemeriksaan — ' . $pasien->nama)
 
 @section('style')
 
@@ -298,32 +298,32 @@
 
                 <div class="identity-name-block">
                     <div class="identity-label-top">Identitas Pasien</div>
-                    <div class="identity-name">{{ strtoupper($pasien['nama_pasien']) }}</div>
+                    <div class="identity-name">{{ strtoupper($pasien->nama) }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>No.RM</label>
-                    <div class="value-box">{{ $pasien['no_rm'] }}</div>
+                    <div class="value-box">{{ $pasien->no_rm }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>NIK</label>
-                    <div class="value-box">{{ $pasien['nik'] }}</div>
+                    <div class="value-box">{{ $pasien->nik }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Jenis Kelamin</label>
-                    <div class="value-box">{{ $pasien['jenis_kelamin'] }}</div>
+                    <div class="value-box">{{ $pasien->jenis_kelamin }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Tanggal Lahir</label>
-                    <div class="value-box">{{ $pasien['tanggal_lahir'] }}</div>
+                    <div class="value-box">{{ $pasien->tanggal_lahir->format('d-m-Y') }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Usia</label>
-                    <div class="value-box">{{ $pasien['usia'] }}</div>
+                    <div class="value-box">{{ $pasien->tanggal_lahir->age }} Tahun</div>
                 </div>
 
             </div>
@@ -332,7 +332,7 @@
             {{-- TABS --}}
             <div class="tabs">
                 <span class="tab-item active">Asesment</span>
-                <a href="{{ route('pemeriksaan.soap', [$poli, $pasien['no_rm']]) }}" class="tab-item">SOAP</a>
+                <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="tab-item">SOAP</a>
                 <span class="tab-item disabled">Diagnosa</span>
                 <span class="tab-item disabled">Resep</span>
                 <span class="tab-item disabled">Clinical Pathway</span>
@@ -353,35 +353,35 @@
 
                 <h2 class="form-card-title">Asesmen Pemeriksaan</h2>
 
-                <form method="POST" action="{{ route('pemeriksaan.asesmen.store', [$poli, $pasien['no_rm']]) }}" id="form-asesmen">
+                <form method="POST" action="{{ route('pemeriksaan.asesmen.store', [$poli, $pasien->no_rm]) }}" id="form-asesmen">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
                             <label>Keluhan Utama</label>
-                            <input type="text" name="keluhan_utama" value="{{ old('keluhan_utama') }}" placeholder="Tulis keluhan utama pasien" required>
+                            <input type="text" name="keluhan_utama" value="{{ old('keluhan_utama', optional($rekam)->keluhan_utama) }}" placeholder="Tulis keluhan utama pasien" required>
                         </div>
                     </div>
 
                     <div class="field-row">
                         <div class="field">
                             <label>Riwayat Penyakit Sekarang</label>
-                            <input type="text" name="riwayat_sekarang" value="{{ old('riwayat_sekarang') }}" required>
+                            <input type="text" name="riwayat_penyakit_sekarang" value="{{ old('riwayat_penyakit_sekarang', optional($rekam)->riwayat_penyakit_sekarang) }}" required>
                         </div>
                         <div class="field">
                             <label>Riwayat Penyakit Terdahulu</label>
-                            <input type="text" name="riwayat_terdahulu" value="{{ old('riwayat_terdahulu') }}" required>
+                            <input type="text" name="riwayat_penyakit_terdahulu" value="{{ old('riwayat_penyakit_terdahulu', optional($rekam)->riwayat_penyakit_terdahulu) }}" required>
                         </div>
                     </div>
 
                     <div class="field-row">
                         <div class="field">
                             <label>Riwayat Alergi</label>
-                            <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi') }}" required>
+                            <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi', optional($rekam)->riwayat_alergi) }}" required>
                         </div>
                         <div class="field">
                             <label>Riwayat Pengobatan</label>
-                            <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan') }}" required>
+                            <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan', optional($rekam)->riwayat_pengobatan) }}" required>
                         </div>
                     </div>
 
@@ -390,60 +390,60 @@
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>TB (Tinggi Badan)</label>
-                            <input type="text" name="tb" value="{{ old('tb') }}" required>
+                            <input type="text" name="tb" value="{{ old('tb', optional($rekam)->tb) }}" required>
                         </div>
                         <div class="field">
                             <label>TD (Tekanan Darah)</label>
-                            <input type="text" name="td" value="{{ old('td') }}" required>
+                            <input type="text" name="td" value="{{ old('td', optional($rekam)->td) }}" required>
                         </div>
                         <div class="field">
                             <label>LP (Lingkar Perut)</label>
-                            <input type="text" name="lp" value="{{ old('lp') }}" required>
+                            <input type="text" name="lp" value="{{ old('lp', optional($rekam)->lp) }}" required>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Respiratory Rate</label>
-                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate') }}" required>
+                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', optional($rekam)->respiratory_rate) }}" required>
                         </div>
                         <div class="field">
                             <label>Berat Badan</label>
-                            <input type="text" name="berat_badan" value="{{ old('berat_badan') }}" required>
+                            <input type="text" name="berat_badan" value="{{ old('berat_badan', optional($rekam)->berat_badan) }}" required>
                         </div>
                         <div class="field">
                             <label>Detak Jantung</label>
-                            <input type="text" name="detak_jantung" value="{{ old('detak_jantung') }}" required>
+                            <input type="text" name="detak_jantung" value="{{ old('detak_jantung', optional($rekam)->detak_jantung) }}" required>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Lingkar Dada</label>
-                            <input type="text" name="lingkar_dada" value="{{ old('lingkar_dada') }}" required>
+                            <input type="text" name="lingkar_dada" value="{{ old('lingkar_dada', optional($rekam)->lingkar_dada) }}" required>
                         </div>
                         <div class="field">
                             <label>Saturasi</label>
-                            <input type="text" name="saturasi" value="{{ old('saturasi') }}" required>
+                            <input type="text" name="saturasi" value="{{ old('saturasi', optional($rekam)->saturasi) }}" required>
                         </div>
                         <div class="field">
                             <label>IMT</label>
-                            <input type="text" name="imt" value="{{ old('imt') }}" required>
+                            <input type="text" name="imt" value="{{ old('imt', optional($rekam)->imt) }}" required>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Suhu Badan</label>
-                            <input type="text" name="suhu_badan" value="{{ old('suhu_badan') }}" required>
+                            <input type="text" name="suhu_badan" value="{{ old('suhu_badan', optional($rekam)->suhu_badan) }}" required>
                         </div>
                         <div class="field">
                             <label>Lingkar Kepala</label>
-                            <input type="text" name="lingkar_kepala" value="{{ old('lingkar_kepala') }}" required>
+                            <input type="text" name="lingkar_kepala" value="{{ old('lingkar_kepala', optional($rekam)->lingkar_kepala) }}" required>
                         </div>
                         <div class="field">
                             <label>GCS</label>
-                            <input type="text" name="gcs" value="{{ old('gcs') }}" required>
+                            <input type="text" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" required>
                         </div>
                     </div>
 

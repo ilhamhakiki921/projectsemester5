@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\PemeriksaanController;
+use App\Http\Controllers\RekamMedisController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -51,3 +52,10 @@ Route::get('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 's
 Route::post('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'simpanSoap'])->name('pemeriksaan.soap.store');
 Route::get('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'diagnosa'])->name('pemeriksaan.diagnosa');
 Route::post('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'simpanDiagnosa'])->name('pemeriksaan.diagnosa.store');
+
+// ===========================
+// REKAM MEDIS
+// ===========================
+
+Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
+Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');

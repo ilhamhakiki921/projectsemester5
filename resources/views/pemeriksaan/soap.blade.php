@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'SOAP — ' . $pasien['nama_pasien'])
+@section('title', 'SOAP — ' . $pasien->nama)
 
 @section('style')
 
@@ -259,7 +259,7 @@
 
             <x-popup-alert />
 
-            <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien['no_rm']]) }}" class="back-link">
+            <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="back-link">
                 <i class="bi bi-arrow-left"></i>
                 Kembali ke Asesmen
             </a>
@@ -268,38 +268,38 @@
 
                 <div class="identity-name-block">
                     <div class="identity-label-top">Identitas Pasien</div>
-                    <div class="identity-name">{{ strtoupper($pasien['nama_pasien']) }}</div>
+                    <div class="identity-name">{{ strtoupper($pasien->nama) }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>No.RM</label>
-                    <div class="value-box">{{ $pasien['no_rm'] }}</div>
+                    <div class="value-box">{{ $pasien->no_rm }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>NIK</label>
-                    <div class="value-box">{{ $pasien['nik'] }}</div>
+                    <div class="value-box">{{ $pasien->nik }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Jenis Kelamin</label>
-                    <div class="value-box">{{ $pasien['jenis_kelamin'] }}</div>
+                    <div class="value-box">{{ $pasien->jenis_kelamin }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Tanggal Lahir</label>
-                    <div class="value-box">{{ $pasien['tanggal_lahir'] }}</div>
+                    <div class="value-box">{{ $pasien->tanggal_lahir->format('d-m-Y') }}</div>
                 </div>
 
                 <div class="identity-field">
                     <label>Usia</label>
-                    <div class="value-box">{{ $pasien['usia'] }}</div>
+                    <div class="value-box">{{ $pasien->tanggal_lahir->age }} Tahun</div>
                 </div>
 
             </div>
 
             <div class="tabs">
-                <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien['no_rm']]) }}" class="tab-item">Asesment</a>
+                <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Asesment</a>
                 <span class="tab-item active">SOAP</span>
                 <span class="tab-item disabled">Diagnosa</span>
                 <span class="tab-item disabled">Resep</span>
@@ -323,34 +323,34 @@
                     <span class="title-badge"></span>
                 </h2>
 
-                <form method="POST" action="{{ route('pemeriksaan.soap.store', [$poli, $pasien['no_rm']]) }}" id="form-soap">
+                <form method="POST" action="{{ route('pemeriksaan.soap.store', [$poli, $pasien->no_rm]) }}" id="form-soap">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
                             <label>S (subjek)</label>
-                            <textarea name="subjective" rows="3" required>{{ old('subjective') }}</textarea>
+                            <textarea name="subjective" rows="3" required>{{ old('subjective', optional($rekam)->subjective) }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
                             <label>O (object)</label>
-                            <textarea name="objective" rows="3" required>{{ old('objective') }}</textarea>
+                            <textarea name="objective" rows="3" required>{{ old('objective', optional($rekam)->objective) }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
                             <label>A (assesmen)</label>
-                            <textarea name="assessment" rows="3" required>{{ old('assessment') }}</textarea>
+                            <textarea name="assessment" rows="3" required>{{ old('assessment', optional($rekam)->assessment) }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
                             <label>P (plan)</label>
-                            <textarea name="plan" rows="3" required>{{ old('plan') }}</textarea>
+                            <textarea name="plan" rows="3" required>{{ old('plan', optional($rekam)->plan) }}</textarea>
                         </div>
                     </div>
 

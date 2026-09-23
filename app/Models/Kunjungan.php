@@ -18,6 +18,10 @@ class Kunjungan extends Model
         'status',
     ];
 
+    protected $casts = [
+        'tanggal_kunjungan' => 'date',
+    ];
+
     public function pasien()
     {
         return $this->belongsTo(Pasien::class);
@@ -26,15 +30,5 @@ class Kunjungan extends Model
     public function rekamMedis()
     {
         return $this->hasOne(RekamMedis::class);
-    }
-
-    // Nomor antrian berikutnya untuk poli & tanggal tertentu
-    public static function nomorAntrianBerikutnya(string $poli, string $tanggal): int
-    {
-        $terakhir = self::where('poli', $poli)
-            ->whereDate('tanggal_kunjungan', $tanggal)
-            ->max('no_antrian');
-
-        return $terakhir ? $terakhir + 1 : 1;
     }
 }

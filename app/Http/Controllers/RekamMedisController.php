@@ -3,36 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kunjungan;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 
 class RekamMedisController extends Controller
 {
-    // Daftar semua kunjungan + status asesmennya
-    public function index(Request $request)
+    public function index()
     {
-        $tanggal = $request->query('tanggal', today()->toDateString());
-
-        $kunjungans = Kunjungan::with(['pasien', 'rekamMedis'])
-            ->whereDate('tanggal_kunjungan', $tanggal)
-            ->orderByDesc('created_at')
+        $daftar = Kunjungan::with('pasien')
+            ->latest('tanggal_kunjungan')
+            ->latest('id')
             ->get();
 
-        return view('rekam-medis.index', compact('kunjungans', 'tanggal'));
+        return view('rekam-medis.index', [
+            'daftar' => $daftar,
+        ]);
     }
 
-    // Export hasil asesmen ke PDF
-    public function exportPdf($id)
+    public function show(Kunjungan $kunjungan)
     {
-        $antrian = Kunjungan::with(['pasien', 'rekamMedis'])->findOrFail($id);
+        $kunjungan->load('pasien', 'rekamMedis');
 
-        abort_if(!$antrian->rekamMedis, 404, 'Asesmen untuk pasien ini belum diisi.');
-
-        $pdf = Pdf::loadView('rekam-medis.pdf', compact('antrian'))
-            ->setPaper('a4', 'portrait');
-
-        $namaFile = 'rekam-medis-' . $antrian->pasien->no_rm . '.pdf';
-
-        return $pdf->download($namaFile);
+        return view('rekam-medis.show', [
+            'kunjungan' => $kunjungan,
+            'pasien'    => $kunjungan->pasien,
+            'rekam'     => $kunjungan->rekamMedis,
+        ]);
     }
 }

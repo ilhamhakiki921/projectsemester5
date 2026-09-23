@@ -10,6 +10,8 @@ class RekamMedis extends Model
 
     protected $fillable = [
         'kunjungan_id',
+
+        // Asesmen
         'keluhan_utama',
         'riwayat_penyakit_sekarang',
         'riwayat_penyakit_terdahulu',
@@ -27,6 +29,17 @@ class RekamMedis extends Model
         'suhu_badan',
         'lingkar_kepala',
         'gcs',
+
+        // SOAP
+        'subjective',
+        'objective',
+        'assessment',
+        'plan',
+
+        // Diagnosa
+        'diagnosa_kerja',
+        'kode_icd10',
+        'diagnosa_banding',
     ];
 
     public function kunjungan()
