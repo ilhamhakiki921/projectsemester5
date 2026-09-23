@@ -6,25 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pasien extends Model
 {
-    protected $table = 'pasien_baru';
-
-    protected $primaryKey = 'No_RM';
-
-    public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    public $timestamps = false;
+    protected $table = 'pasien';
 
     protected $fillable = [
-        'Nama_Lengkap',
-        'NIK',
-        'Alamat',
-        'Jenis_Kelamin',
-        'Tanggal_Lahir',
-        'Nomor_Telepon',
-        'Tanggal_Kunjungan',
-        'Poli_Tujuan',
-        'Nama_Dokter',
+        'no_rm',
+        'nama',
+        'jenis_kelamin',
+        'tanggal_lahir',
+        'nik',
+        'no_telepon',
+        'alamat',
     ];
 }
