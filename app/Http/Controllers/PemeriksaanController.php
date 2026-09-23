@@ -182,18 +182,14 @@ class PemeriksaanController extends Controller
     {
         $pasien = $this->carikanPasien($poli, $no_rm);
 
-        // Kalau asesmen belum pernah disimpan, balikkan ke halaman asesmen dulu
-        if (! session()->has("rekam_medis.$no_rm.asesmen")) {
-            return redirect()
-                ->route('pemeriksaan.asesmen', [$poli, $no_rm])
-                ->with('warning', 'Isi Asesmen Pemeriksaan terlebih dahulu sebelum lanjut ke SOAP.');
-        }
-
+        // Prototipe: tab SOAP bisa dibuka langsung dari tab manapun,
+        // tidak dipaksa harus isi Asesmen dulu. Data asesmen (kalau sudah
+        // pernah diisi & disimpan di session) tetap ditampilkan kalau ada.
         return view('pemeriksaan.soap', [
             'poli'     => $poli,
             'namaPoli' => $this->daftarPoli[$poli],
             'pasien'   => $pasien,
-            'asesmen'  => session("rekam_medis.$no_rm.asesmen"),
+            'asesmen'  => session("rekam_medis.$no_rm.asesmen", []),
         ]);
     }
 
@@ -216,5 +212,48 @@ class PemeriksaanController extends Controller
         return redirect()
             ->route('pemeriksaan.index', $poli)
             ->with('success', 'SOAP berhasil disimpan. Pemeriksaan selesai.');
+    }
+
+    /**
+     * Halaman Diagnosa. Prototipe: bisa dibuka langsung dari tab manapun,
+     * tidak dipaksa harus isi Asesmen/SOAP dulu.
+     */
+    public function diagnosa($poli, $no_rm)
+    {
+        $pasien = $this->carikanPasien($poli, $no_rm);
+
+        return view('pemeriksaan.diagnosa', [
+            'poli'     => $poli,
+            'namaPoli' => $this->daftarPoli[$poli],
+            'pasien'   => $pasien,
+            'diagnosa' => session("rekam_medis.$no_rm.diagnosa", []),
+        ]);
+    }
+
+    /**
+     * Simpan Diagnosa (sementara di session juga, belum ke database).
+     */
+    public function simpanDiagnosa(Request $request, $poli, $no_rm)
+    {
+        $this->carikanPasien($poli, $no_rm);
+
+        $data = $request->validate([
+            'diagnosis_utama'    => 'required|string',
+            'diagnosis_sekunder' => 'required|string',
+            'tindakan'           => 'required|string',
+        ], $this->pesanAsesmen());
+
+        // ==================================================
+        // NANTI diganti simpan ke tabel rekam_medis, contoh:
+        // RekamMedis::updateOrCreate(
+        //     ['no_rm' => $no_rm],
+        //     ['diagnosa' => $data]
+        // );
+        // ==================================================
+        session()->put("rekam_medis.$no_rm.diagnosa", $data);
+
+        return redirect()
+            ->route('pemeriksaan.index', $poli)
+            ->with('success', 'Diagnosa berhasil disimpan.');
     }
 }

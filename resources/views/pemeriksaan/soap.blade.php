@@ -299,7 +299,7 @@
             <div class="tabs">
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien['no_rm']]) }}" class="tab-item">Asesment</a>
                 <span class="tab-item active">SOAP</span>
-                <span class="tab-item disabled">Diagnosa</span>
+                <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien['no_rm']]) }}" class="tab-item">Diagnosa</a>
                 <span class="tab-item disabled">Resep</span>
                 <span class="tab-item disabled">Clinical Pathway</span>
                 <span class="tab-item disabled">Penunjang</span>

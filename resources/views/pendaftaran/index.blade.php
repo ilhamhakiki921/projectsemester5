@@ -1673,7 +1673,7 @@ body.sidebar-collapsed .main {
 
                             <td>
                                 <span class="rm-number">
-                                    RM001010
+                                    123456
                                 </span>
                             </td>
 
@@ -1723,7 +1723,7 @@ body.sidebar-collapsed .main {
     type="button"
     class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
     onclick="bukaDetailPasien(this)"
-    data-rm="RM001010"
+    data-rm="123456"
     data-nama="Hendra Gunawan"
     data-nik="3204012208650005"
     data-jk="Laki-laki"
@@ -1749,7 +1749,7 @@ body.sidebar-collapsed .main {
 
                             <td>
                                 <span class="rm-number">
-                                    RM001010
+                                    123456
                                 </span>
                             </td>
 
@@ -1814,7 +1814,7 @@ body.sidebar-collapsed .main {
 
                             <td>
                                 <span class="rm-number">
-                                    RM001009
+                                    123457
                                 </span>
                             </td>
 
@@ -1879,7 +1879,7 @@ body.sidebar-collapsed .main {
 
                             <td>
                                 <span class="rm-number">
-                                    RM001008
+                                    123458
                                 </span>
                             </td>
 
@@ -1944,7 +1944,7 @@ body.sidebar-collapsed .main {
 
                             <td>
                                 <span class="rm-number">
-                                    RM001007
+                                    123459
                                 </span>
                             </td>
 
@@ -2009,7 +2009,7 @@ body.sidebar-collapsed .main {
 
                             <td>
                                 <span class="rm-number">
-                                    RM001006
+                                    123460
                                 </span>
                             </td>
 
@@ -2213,7 +2213,7 @@ body.sidebar-collapsed .main {
                 <h2 id="detailNama">Hendra Gunawan</h2>
 
                 <p>
-                    No. RM <span id="detailRm">RM001010</span>
+                    No. RM <span id="detailRm">123456</span>
                 </p>
             </div>
 
