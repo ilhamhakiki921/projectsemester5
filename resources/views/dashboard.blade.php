@@ -566,26 +566,7 @@
              HEADER
         ========================== --}}
 
-        <header class="dashboard-header">
-
-            <div class="header-title">
-
-                <i class="bi bi-house-fill"></i>
-
-                <span>Dashboard</span>
-
-            </div>
-
-
-            <div class="admin-profile">
-
-                <i class="bi bi-person-circle"></i>
-
-                <span>Admin</span>
-
-            </div>
-
-        </header>
+        <x-topbar title="Dashboard" icon="house-fill" />
 
 
         {{-- =========================

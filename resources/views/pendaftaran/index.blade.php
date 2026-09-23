@@ -150,15 +150,15 @@ body.sidebar-collapsed .main {
     ========================== */
 
     .btn-new {
-    height: 43px;
+    height: 36px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    gap: 7px;
+    gap: 6px;
 
-    padding: 0 18px;
+    padding: 0 14px;
 
     border: none;
     border-radius: 8px;
@@ -169,7 +169,7 @@ body.sidebar-collapsed .main {
     text-decoration: none;
 
     font-family: 'Poppins', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
@@ -187,7 +187,7 @@ body.sidebar-collapsed .main {
 
 
     .btn-new i {
-        font-size: 14px;
+        font-size: 13px;
     }
 
 
@@ -308,7 +308,7 @@ body.sidebar-collapsed .main {
 }
 
 .col-action {
-    width: 17%;
+    width: 10%;
 }
 
 
@@ -1201,6 +1201,354 @@ body.sidebar-collapsed .main {
 
 }
 
+/* =========================
+   TELUSURI DATA PASIEN
+   (tombol di baris "tidak ditemukan" + modal pencarian)
+========================= */
+
+.no-result-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 0 10px;
+}
+
+.no-result-box > i {
+    font-size: 26px;
+    color: #b0bec5;
+}
+
+.no-result-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #78909c;
+}
+
+.btn-telusuri {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    margin-top: 6px;
+    padding: 0 20px;
+    border: 1px solid #0f766e;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f766e;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-telusuri:hover {
+    background: #0f766e;
+    color: #ffffff;
+}
+
+#modalCariPasien {
+    z-index: 10000;
+}
+
+.modal-cari {
+    width: 860px;
+    max-width: 100%;
+    max-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    animation: modalMasuk 0.2s ease;
+}
+
+.cari-body {
+    padding: 22px 28px 26px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.cari-body .form-grid {
+    gap: 16px 18px;
+}
+
+.cari-body .form-group input {
+    height: 42px;
+}
+
+.cari-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 18px 0 20px;
+}
+
+.btn-cari,
+.btn-cari-baru,
+.btn-pilih {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-cari {
+    border: none;
+    background: #0f766e;
+    color: #ffffff;
+}
+
+.btn-cari:hover {
+    background: #0b5f59;
+}
+
+.btn-cari-baru {
+    border: 1px solid #0f766e;
+    background: #ffffff;
+    color: #0f766e;
+}
+
+.btn-cari-baru:hover {
+    background: #f0f7f6;
+}
+
+.cari-hasil {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.cari-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f8faf9;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.btn-pilih {
+    height: 36px;
+    border: none;
+    background: #0f766e;
+    color: #ffffff;
+}
+
+.btn-pilih:hover {
+    background: #0b5f59;
+}
+
+.cari-info {
+    font-size: 12px;
+    color: #78909c;
+}
+
+.cari-info.warn {
+    color: #c62828;
+}
+
+.cari-scroll {
+    max-height: 260px;
+    overflow: auto;
+}
+
+.cari-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.cari-table th {
+    position: sticky;
+    top: 0;
+    padding: 10px 14px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #455a64;
+    white-space: nowrap;
+}
+
+.cari-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f3f3;
+    color: #222;
+}
+
+.cari-table tbody tr {
+    cursor: pointer;
+}
+
+.cari-table tbody tr:hover {
+    background: #f5f9f9;
+}
+
+.cari-table tbody tr.terpilih {
+    background: #d9efec;
+}
+
+.cari-table tbody tr.cari-kosong {
+    cursor: default;
+}
+
+.cari-table tbody tr.cari-kosong:hover {
+    background: transparent;
+}
+
+.cari-kosong td {
+    padding: 26px 14px;
+    text-align: center;
+    color: #78909c;
+}
+
+@media (max-width: 700px) {
+    .cari-body .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   MODAL PASIEN BARU - UKURAN COMPACT
+========================= */
+
+#modalPasienBaru .modal-pasien-baru {
+    width: 820px;
+}
+
+#modalPasienBaru .modal-header {
+    min-height: 68px;
+    padding: 14px 24px;
+}
+
+#modalPasienBaru .modal-header h2 {
+    margin: 0 0 2px;
+    font-size: 17px;
+}
+
+#modalPasienBaru .modal-header p {
+    font-size: 12px;
+}
+
+#modalPasienBaru .modal-close {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+}
+
+#modalPasienBaru .pasien-baru-body {
+    padding: 18px 24px 22px;
+}
+
+#modalPasienBaru .form-section-title {
+    margin: 0 0 12px;
+    font-size: 13px;
+}
+
+#modalPasienBaru .form-section-title:not(:first-child) {
+    margin-top: 20px;
+}
+
+#modalPasienBaru .pasien-baru-body .form-grid {
+    gap: 14px 16px;
+}
+
+#modalPasienBaru .form-group {
+    gap: 5px;
+}
+
+#modalPasienBaru .form-group label {
+    font-size: 12px;
+}
+
+#modalPasienBaru .pasien-baru-body input,
+#modalPasienBaru .pasien-baru-body select {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 12px;
+    border-radius: 7px;
+}
+
+#modalPasienBaru .pasien-baru-body textarea {
+    min-height: 60px;
+    padding: 9px 12px;
+    font-size: 12px;
+    border-radius: 7px;
+}
+
+#modalPasienBaru .input-icon input {
+    padding-right: 36px;
+}
+
+#modalPasienBaru .modal-footer {
+    padding: 12px 24px;
+}
+
+#modalPasienBaru .btn-batal,
+#modalPasienBaru .btn-daftarkan {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 12px;
+}
+
+/* =========================
+   ACTION - ICON SAJA
+========================= */
+
+.action {
+    gap: 8px;
+}
+
+.btn-kunjungan,
+.btn-detail {
+    width: 36px;
+    height: 36px;
+    min-height: 0;
+    padding: 0;
+    line-height: 1;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.btn-kunjungan i,
+.btn-detail i {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.btn-kunjungan {
+    color: #0f766e;
+    border-color: #b7dcd8;
+}
+
+.btn-kunjungan:hover {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #ffffff;
+}
+
+.btn-detail {
+    color: #455a64;
+}
+
+.btn-detail:hover {
+    background: #455a64;
+    border-color: #455a64;
+    color: #ffffff;
+}
+
 </style>
 
 @endsection
@@ -1241,8 +1589,11 @@ body.sidebar-collapsed .main {
 
                     <input
                         type="text"
+                        id="searchInput"
                         class="search-input"
                         placeholder="Cari No. RM atau nama pasien..."
+                        maxlength="16"
+                        oninput="filterPasien()"
                     >
 
                 </div>
@@ -1263,7 +1614,7 @@ body.sidebar-collapsed .main {
             {{-- TABLE --}}
             <div class="table-wrapper">
 
-                <table class="patient-table">
+                <table class="patient-table" id="tabelPasien">
 
                     <thead>
 
@@ -1310,7 +1661,7 @@ body.sidebar-collapsed .main {
                     </thead>
 
 
-                    <tbody>
+                    <tbody id="tabelPasienBody">
 
                         {{-- DATA CONTOH --}}
 
@@ -1350,9 +1701,9 @@ body.sidebar-collapsed .main {
 
                             <td>
 
-                                <span class="status-badge status-diperiksa">
-                                    Sedang Diperiksa
-                                </span>
+                            <span class="status-badge status-terdaftar">
+                                Sudah Terdaftar
+                            </span>
 
                             </td>
 
@@ -1362,16 +1713,15 @@ body.sidebar-collapsed .main {
 
                                     <button
                                         type="button"
-                                        class="btn-kunjungan"
+                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
                                         onclick="bukaModalKunjungan(this)"
                                     >
-                                        Daftarkan<br>
-                                        Kunjungan
+                                        <i class="bi bi-person-plus-fill"></i>
                                     </button>
 
                                     <button
     type="button"
-    class="btn-detail"
+    class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
     onclick="bukaDetailPasien(this)"
     data-rm="RM001010"
     data-nama="Hendra Gunawan"
@@ -1382,9 +1732,7 @@ body.sidebar-collapsed .main {
     data-umur="61 th"
     data-telepon="081234567805"
     data-alamat="Jl. Dahlia No. 3, RT/RW 03/01, Pasteur, Sukajadi, Bandung, Jawa Barat"
->
-    Detail
-</button>
+><i class="bi bi-eye-fill"></i></button>
 
                                 </div>
 
@@ -1429,9 +1777,9 @@ body.sidebar-collapsed .main {
 
                             <td>
 
-                                <span class="status-badge status-selesai">
-                                    Selesai Periksa
-                                </span>
+                                <span class="status-badge status-terdaftar">
+                                Sudah Terdaftar
+                            </span>
 
                             </td>
 
@@ -1441,18 +1789,15 @@ body.sidebar-collapsed .main {
 
                                     <a
                                         href="#"
-                                        class="btn-kunjungan"
+                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
                                     >
-                                        Daftarkan<br>
-                                        Kunjungan
+                                        <i class="bi bi-person-plus-fill"></i>
                                     </a>
 
                                     <a
                                         href="#"
-                                        class="btn-detail"
-                                    >
-                                        Detail
-                                    </a>
+                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
+                                    ><i class="bi bi-eye-fill"></i></a>
 
                                 </div>
 
@@ -1497,8 +1842,8 @@ body.sidebar-collapsed .main {
 
                             <td>
 
-                                <span class="status-badge status-diperiksa">
-                                    Sedang Diperiksa
+                                <span class="status-badge status-terdaftar">
+                                    Sudah Terdaftar
                                 </span>
 
                             </td>
@@ -1509,18 +1854,15 @@ body.sidebar-collapsed .main {
 
                                     <a
                                         href="#"
-                                        class="btn-kunjungan"
+                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
                                     >
-                                        Daftarkan<br>
-                                        Kunjungan
+                                        <i class="bi bi-person-plus-fill"></i>
                                     </a>
 
                                     <a
                                         href="#"
-                                        class="btn-detail"
-                                    >
-                                        Detail
-                                    </a>
+                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
+                                    ><i class="bi bi-eye-fill"></i></a>
 
                                 </div>
 
@@ -1565,8 +1907,8 @@ body.sidebar-collapsed .main {
 
                             <td>
 
-                                <span class="status-badge status-selesai">
-                                    Selesai Periksa
+                                <span class="status-badge status-terdaftar">
+                                    Sudah Terdaftar
                                 </span>
 
                             </td>
@@ -1577,18 +1919,15 @@ body.sidebar-collapsed .main {
 
                                     <a
                                         href="#"
-                                        class="btn-kunjungan"
+                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
                                     >
-                                        Daftarkan<br>
-                                        Kunjungan
+                                        <i class="bi bi-person-plus-fill"></i>
                                     </a>
 
                                     <a
                                         href="#"
-                                        class="btn-detail"
-                                    >
-                                        Detail
-                                    </a>
+                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
+                                    ><i class="bi bi-eye-fill"></i></a>
 
                                 </div>
 
@@ -1633,8 +1972,8 @@ body.sidebar-collapsed .main {
 
                             <td>
 
-                                <span class="status-badge status-menunggu">
-                                    Menunggu
+                                <span class="status-badge status-terdaftar">
+                                    Sudah Terdaftar
                                 </span>
 
                             </td>
@@ -1645,18 +1984,15 @@ body.sidebar-collapsed .main {
 
                                     <a
                                         href="#"
-                                        class="btn-kunjungan"
+                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
                                     >
-                                        Daftarkan<br>
-                                        Kunjungan
+                                        <i class="bi bi-person-plus-fill"></i>
                                     </a>
 
                                     <a
                                         href="#"
-                                        class="btn-detail"
-                                    >
-                                        Detail
-                                    </a>
+                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
+                                    ><i class="bi bi-eye-fill"></i></a>
 
                                 </div>
 
@@ -1701,8 +2037,8 @@ body.sidebar-collapsed .main {
 
                             <td>
 
-                                <span class="status-badge status-diperiksa">
-                                    Sedang Diperiksa
+                                <span class="status-badge status-terdaftar">
+                                    Sudah Terdaftar
                                 </span>
 
                             </td>
@@ -1713,18 +2049,15 @@ body.sidebar-collapsed .main {
 
                                     <a
                                         href="#"
-                                        class="btn-kunjungan"
+                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
                                     >
-                                        Daftarkan<br>
-                                        Kunjungan
+                                        <i class="bi bi-person-plus-fill"></i>
                                     </a>
 
                                     <a
                                         href="#"
-                                        class="btn-detail"
-                                    >
-                                        Detail
-                                    </a>
+                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
+                                    ><i class="bi bi-eye-fill"></i></a>
 
                                 </div>
 
@@ -1741,6 +2074,126 @@ body.sidebar-collapsed .main {
         </section>
 
     </main>
+
+</div>
+
+
+{{-- =========================
+     MODAL PENCARIAN DATA PASIEN
+========================== --}}
+
+<div id="modalCariPasien" class="modal-overlay">
+
+    <div class="modal-cari">
+
+        {{-- HEADER --}}
+        <div class="modal-header">
+
+            <div>
+                <h2>Pencarian Data Pasien</h2>
+                <p>Telusuri pasien yang sudah terdaftar di sistem</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="tutupModalCariPasien()"
+                aria-label="Tutup"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+
+        {{-- BODY --}}
+        <div class="cari-body">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="cariRm">No. RM</label>
+                    <input type="text" id="cariRm" autocomplete="off" onkeydown="cariEnter(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="cariNama">Nama Pasien</label>
+                    <input type="text" id="cariNama" autocomplete="off" onkeydown="cariEnter(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="cariAlamat">Alamat</label>
+                    <input type="text" id="cariAlamat" autocomplete="off" onkeydown="cariEnter(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="cariLahir">Tanggal Lahir</label>
+                    <input type="date" id="cariLahir" onkeydown="cariEnter(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="cariNik">NIK</label>
+                    <input type="text" id="cariNik" placeholder="NIK lengkap" autocomplete="off" onkeydown="cariEnter(event)">
+                </div>
+
+            </div>
+
+            <div class="cari-actions">
+
+                <button type="button" class="btn-cari" onclick="jalankanCariPasien()">
+                    <i class="bi bi-search"></i> Cari
+                </button>
+
+                <button type="button" class="btn-cari-baru" onclick="cariPasienBaru()">
+                    <i class="bi bi-plus-circle-fill"></i> Pasien Baru
+                </button>
+
+            </div>
+
+            <div class="cari-hasil">
+
+                <div class="cari-toolbar">
+
+                    <button type="button" class="btn-pilih" onclick="pilihPasienDariCari()">
+                        <i class="bi bi-check-circle-fill"></i> Pilih
+                    </button>
+
+                    <span class="cari-info" id="cariInfo">
+                        Isi kriteria lalu klik Cari.
+                    </span>
+
+                </div>
+
+                <div class="cari-scroll">
+
+                    <table class="cari-table">
+
+                        <thead>
+                            <tr>
+                                <th>No. RM</th>
+                                <th>NIK</th>
+                                <th>Nama Pasien</th>
+                                <th>Alamat</th>
+                                <th>Usia</th>
+                                <th>Wali Pasien</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="cariHasilBody">
+                            <tr class="cari-kosong">
+                                <td colspan="6">Belum ada pencarian.</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -2306,6 +2759,317 @@ body.sidebar-collapsed .main {
 <script>
 
 // =========================
+// PENCARIAN / FILTER TABEL PASIEN
+// =========================
+
+function filterPasien() {
+
+    const keyword = document.getElementById('searchInput')
+        .value.trim().toLowerCase();
+
+    const tbody = document.getElementById('tabelPasienBody');
+    const baris = tbody.querySelectorAll('tr');
+
+    let adaHasil = false;
+
+    baris.forEach(function(tr) {
+
+        // Lewati baris pesan "tidak ditemukan" saat filter ulang
+        if (tr.classList.contains('no-result-row')) {
+            return;
+        }
+
+        const rm = tr.querySelector('.rm-number');
+        const nama = tr.querySelector('.patient-name');
+
+        const teksRm = rm ? rm.textContent.toLowerCase() : '';
+        const teksNama = nama ? nama.textContent.toLowerCase() : '';
+
+        const cocok = teksRm.includes(keyword) || teksNama.includes(keyword);
+
+        tr.style.display = cocok ? '' : 'none';
+
+        if (cocok) {
+            adaHasil = true;
+        }
+
+    });
+
+    let baristKosong = tbody.querySelector('.no-result-row');
+
+    if (!adaHasil) {
+
+        if (!baristKosong) {
+
+            baristKosong = document.createElement('tr');
+            baristKosong.className = 'no-result-row';
+
+            const kolom = document.querySelectorAll('#tabelPasien thead th').length || 9;
+
+            baristKosong.innerHTML =
+                '<td colspan="' + kolom + '">' +
+                    '<div class="no-result-box">' +
+                        '<i class="bi bi-search"></i>' +
+                        '<p>Data pasien tidak ditemukan.</p>' +
+                        '<button type="button" class="btn-telusuri" onclick="bukaModalCariPasien()">' +
+                            '<i class="bi bi-person-lines-fill"></i> Telusuri Data Pasien' +
+                        '</button>' +
+                    '</div>' +
+                '</td>';
+
+            tbody.appendChild(baristKosong);
+
+        } else {
+            baristKosong.style.display = '';
+        }
+
+    } else if (baristKosong) {
+        baristKosong.style.display = 'none';
+    }
+
+}
+
+
+// =========================
+// MODAL TELUSURI DATA PASIEN
+// =========================
+
+let cariTerpilih = null;
+
+function bukaModalCariPasien() {
+
+    // Isi otomatis dari kata kunci di kolom pencarian utama
+    const keyword = document.getElementById('searchInput').value.trim();
+
+    ['cariRm', 'cariNama', 'cariAlamat', 'cariLahir', 'cariNik'].forEach(function(id) {
+        document.getElementById(id).value = '';
+    });
+
+    if (keyword) {
+        // Ada angka -> dianggap No. RM, selain itu dianggap nama
+        const target = /\d/.test(keyword) ? 'cariRm' : 'cariNama';
+        document.getElementById(target).value = keyword;
+    }
+
+    resetHasilCari('Belum ada pencarian.');
+
+    document.getElementById('modalCariPasien').classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    if (keyword) {
+        jalankanCariPasien();
+    }
+
+    document.getElementById('cariRm').focus();
+}
+
+
+function tutupModalCariPasien() {
+
+    document.getElementById('modalCariPasien').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+
+function cariEnter(event) {
+
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        jalankanCariPasien();
+    }
+}
+
+
+function setInfoCari(teks, warn) {
+
+    const info = document.getElementById('cariInfo');
+
+    info.textContent = teks;
+    info.classList.toggle('warn', !!warn);
+}
+
+
+function resetHasilCari(pesan) {
+
+    cariTerpilih = null;
+
+    const body = document.getElementById('cariHasilBody');
+    body.innerHTML = '';
+
+    const tr = document.createElement('tr');
+    tr.className = 'cari-kosong';
+
+    const td = document.createElement('td');
+    td.colSpan = 6;
+    td.textContent = pesan;
+
+    tr.appendChild(td);
+    body.appendChild(tr);
+
+    setInfoCari('Isi kriteria lalu klik Cari.');
+}
+
+
+function jalankanCariPasien() {
+
+    const params = new URLSearchParams();
+
+    const kolom = {
+        no_rm: 'cariRm',
+        nama: 'cariNama',
+        alamat: 'cariAlamat',
+        tanggal_lahir: 'cariLahir',
+        nik: 'cariNik'
+    };
+
+    Object.keys(kolom).forEach(function(key) {
+        const nilai = document.getElementById(kolom[key]).value.trim();
+        if (nilai) {
+            params.append(key, nilai);
+        }
+    });
+
+    resetHasilCari('Mencari data pasien...');
+
+    fetch("{{ route('pasien.cari') }}?" + params.toString(), {
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(function(res) {
+            if (!res.ok) {
+                throw new Error('HTTP ' + res.status);
+            }
+            return res.json();
+        })
+        .then(function(data) {
+            tampilkanHasilCari(data);
+        })
+        .catch(function() {
+            resetHasilCari('Gagal mengambil data. Silakan coba lagi.');
+        });
+}
+
+
+function tampilkanHasilCari(data) {
+
+    const body = document.getElementById('cariHasilBody');
+    body.innerHTML = '';
+    cariTerpilih = null;
+
+    if (!data.length) {
+        resetHasilCari('Data pasien tidak ditemukan.');
+        return;
+    }
+
+    data.forEach(function(p) {
+
+        const tr = document.createElement('tr');
+
+        [p.no_rm, p.nik, p.nama, p.alamat, p.usia, p.wali].forEach(function(teks) {
+            const td = document.createElement('td');
+            td.textContent = (teks === null || teks === undefined || teks === '') ? '-' : teks;
+            tr.appendChild(td);
+        });
+
+        tr.addEventListener('click', function() {
+            body.querySelectorAll('tr.terpilih').forEach(function(x) {
+                x.classList.remove('terpilih');
+            });
+            tr.classList.add('terpilih');
+            cariTerpilih = p;
+            setInfoCari('Terpilih: ' + p.nama);
+        });
+
+        tr.addEventListener('dblclick', pilihPasienDariCari);
+
+        body.appendChild(tr);
+    });
+
+    setInfoCari(data.length + ' pasien ditemukan. Klik baris untuk memilih.');
+}
+
+
+function pilihPasienDariCari() {
+
+    if (!cariTerpilih) {
+        setInfoCari('Pilih salah satu pasien terlebih dahulu.', true);
+        return;
+    }
+
+    const p = cariTerpilih;
+
+    tutupModalCariPasien();
+
+    // bukaModalKunjungan membaca button.dataset, jadi cukup kirim objek dataset
+    bukaModalKunjungan({
+        dataset: {
+            rm: p.no_rm,
+            nama: p.nama,
+            nik: p.nik,
+            alamat: p.alamat,
+            lahir: p.lahir,
+            jk: p.jk
+        }
+    });
+}
+
+
+function cariPasienBaru() {
+
+    tutupModalCariPasien();
+    bukaModalPasienBaru();
+}
+
+
+// =========================
+// MODAL DETAIL PASIEN (PENCARIAN DATA PASIEN)
+// =========================
+
+function bukaDetailPasien(button) {
+
+    document.getElementById('detailNama').textContent =
+        button.dataset.nama || '-';
+
+    document.getElementById('detailRm').textContent =
+        button.dataset.rm || '-';
+
+    document.getElementById('detailNik').textContent =
+        button.dataset.nik || '-';
+
+    document.getElementById('detailJk').textContent =
+        button.dataset.jk || '-';
+
+    document.getElementById('detailLahir').textContent =
+        button.dataset.lahir || '-';
+
+    document.getElementById('detailGolongan').textContent =
+        button.dataset.golongan || '-';
+
+    document.getElementById('detailTelepon').textContent =
+        button.dataset.telepon || '-';
+
+    document.getElementById('detailUmur').textContent =
+        button.dataset.umur || '-';
+
+    document.getElementById('detailAlamat').textContent =
+        button.dataset.alamat || '-';
+
+    document.getElementById('modalDetailPasien')
+        .classList.add('show');
+
+    document.body.style.overflow = 'hidden';
+}
+
+
+function tutupDetailPasien() {
+
+    document.getElementById('modalDetailPasien')
+        .classList.remove('show');
+
+    document.body.style.overflow = '';
+}
+
+
+// =========================
 // MODAL PENDAFTARAN KUNJUNGAN
 // =========================
 
@@ -2418,9 +3182,8 @@ document.addEventListener('keydown', function(event) {
         tutupModalKunjungan();
         tutupModalPasienBaru();
 
-        if (typeof tutupDetailPasien === 'function') {
-            tutupDetailPasien();
-        }
+        // Detail Pasien sengaja TIDAK ditutup lewat ESC,
+        // hanya bisa ditutup lewat tombol X sesuai permintaan.
 
     }
 

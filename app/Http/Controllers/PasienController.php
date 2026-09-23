@@ -15,6 +15,13 @@ class PasienController extends Controller
  
         return view('pasien.lama', compact('pasiens'));
     }
+
+    public function pendaftaran()
+{
+    $pasiens = Pasien::orderByDesc('No_RM')->get();
+
+    return view('pendaftaran.index', compact('pasiens'));
+}
  
     // Form tambah pasien baru
     public function create()
@@ -63,6 +70,49 @@ class PasienController extends Controller
             ->route('pasien.lama')
             ->with('success', 'Pasien baru berhasil didaftarkan.');
     }
+
+    public function cari(Request $request)
+{
+    $query = Pasien::query();
+
+    if ($request->filled('no_rm')) {
+        $query->where('no_rm', 'like', '%' . $request->no_rm . '%');
+    }
+
+    if ($request->filled('nama')) {
+        $query->where('nama', 'like', '%' . $request->nama . '%');
+    }
+
+    if ($request->filled('alamat')) {
+        $query->where('alamat', 'like', '%' . $request->alamat . '%');
+    }
+
+    if ($request->filled('nik')) {
+        $query->where('nik', 'like', '%' . $request->nik . '%');
+    }
+
+    if ($request->filled('tanggal_lahir')) {
+        $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
+    }
+
+    $pasiens = $query->latest()->limit(50)->get();
+
+    $data = $pasiens->map(function ($p) {
+        return [
+            'id'     => $p->id,
+            'no_rm'  => $p->no_rm,
+            'nik'    => $p->nik,
+            'nama'   => $p->nama,
+            'alamat' => $p->alamat,
+            'usia'   => \Carbon\Carbon::parse($p->tanggal_lahir)->age . ' th',
+            'jk'     => $p->jenis_kelamin,
+            'lahir'  => \Carbon\Carbon::parse($p->tanggal_lahir)->format('d-m-Y'),
+            'wali'   => '-',
+        ];
+    });
+
+    return response()->json($data);
+}
  
     // Form edit / kunjungan pasien lama (data identitas otomatis terisi)
     public function edit($id)

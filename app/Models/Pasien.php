@@ -6,10 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pasien extends Model
 {
-    protected $table = 'pasien';
+    protected $table = 'pasien_baru';
 
-    public function kunjungans()
-    {
-        return $this->hasMany(Kunjungan::class);
-    }
+    protected $primaryKey = 'No_RM';
+
+    public $incrementing = true;
+
+    protected $keyType = 'int';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'Nama_Lengkap',
+        'NIK',
+        'Alamat',
+        'Jenis_Kelamin',
+        'Tanggal_Lahir',
+        'Nomor_Telepon',
+        'Tanggal_Kunjungan',
+        'Poli_Tujuan',
+        'Nama_Dokter',
+    ];
 }

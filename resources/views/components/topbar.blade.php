@@ -10,10 +10,39 @@
         <span>{{ $title }}</span>
     </div>
 
-    <div class="topbar-admin">
+    <div class="topbar-admin-wrapper">
+    <div class="topbar-admin" onclick="document.getElementById('adminDropdown').classList.toggle('show')">
         <i class="bi bi-person-circle"></i>
         <span>Admin</span>
     </div>
+
+    <div class="admin-dropdown" id="adminDropdown">
+        <a href="#" class="dropdown-item">
+            <i class="bi bi-person"></i> Profil Saya
+        </a>
+
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-label">DATA MASTER</div>
+
+        <a href="#" class="dropdown-item">Data User</a>
+        <a href="#" class="dropdown-item">Data Poli</a>
+        <a href="#" class="dropdown-item">Data Diagnosa/Penyakit</a>
+        <a href="#" class="dropdown-item">Data Obat</a>
+        <a href="#" class="dropdown-item">Data Pasien</a>
+
+        <div class="dropdown-divider"></div>
+
+        <a href="#" class="dropdown-item">
+            <i class="bi bi-gear"></i> Pengaturan
+        </a>
+
+        <div class="dropdown-divider"></div>
+
+        <a href="#" class="dropdown-item text-danger">
+            <i class="bi bi-box-arrow-in-left"></i> Logout
+        </a>
+    </div>
+</div>
 </header>
 
 <style>
@@ -88,4 +117,85 @@
 .topbar-red .topbar-admin i {
     color: #ffffff;
 }
+
+.topbar-admin-wrapper {
+    position: relative;
+}
+
+.topbar-admin {
+    cursor: pointer;
+    user-select: none;
+}
+
+.admin-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+
+    width: 190px;              
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;       
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+
+    padding: 6px 0;            
+    z-index: 2000;
+}
+
+.admin-dropdown.show {
+    display: block;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;                  
+
+    padding: 7px 14px;         
+
+    font-size: 12px;          
+    font-weight: 500;
+    color: #111827;
+
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background: #f3f4f6;
+    color: #111827;
+    text-decoration: none;
+}
+
+.dropdown-item.text-danger {
+    color: #d00000;
+}
+
+.dropdown-item.text-danger:hover {
+    background: #fdecec;
+    color: #d00000;
+}
+
+.dropdown-label {
+    padding: 4px 14px 2px;    
+    font-size: 10px;           
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #9ca3af;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 4px 0;              
+}
 </style>
+<script>
+    document.addEventListener('click', function (e) {
+        const wrapper = document.querySelector('.topbar-admin-wrapper');
+        const dropdown = document.getElementById('adminDropdown');
+        if (wrapper && !wrapper.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+</script>
