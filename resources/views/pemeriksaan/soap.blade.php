@@ -124,74 +124,25 @@
 
         padding: 0 16px;
 
-        border-radius: 6px;
+        border-radius: 20px;
 
         font-size: 10px;
         font-weight: 500;
 
         text-decoration: none;
 
-        color: #555;
-        background: #ffffff;
-        border: 1px solid #e2e2e2;
+        color: #333;
+        background: transparent;
     }
 
     .tab-item.active {
-        background: #ed1111;
-        border-color: #ed1111;
+        background: #7a0000;
         color: #ffffff;
     }
 
     .tab-item.disabled {
         cursor: not-allowed;
-        opacity: 0.55;
-    }
-
-    /* =========================
-       RINGKASAN ASESMEN
-    ========================== */
-
-    .summary-card {
-        background: #f7f9fb;
-
-        border: 1px solid #dbe3ea;
-        border-radius: 10px;
-
-        padding: 16px 20px;
-        margin-bottom: 16px;
-    }
-
-    .summary-title {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        margin-bottom: 10px;
-
-        font-size: 11px;
-        font-weight: 700;
-        color: #1a7f37;
-    }
-
-    .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px 20px;
-    }
-
-    .summary-item {
-        font-size: 9.5px;
-        color: #444;
-    }
-
-    .summary-item strong {
-        display: block;
-        margin-bottom: 2px;
-        color: #777;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 8.5px;
-        letter-spacing: 0.3px;
+        opacity: 0.5;
     }
 
     /* =========================
@@ -208,11 +159,24 @@
     }
 
     .form-card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
         margin-bottom: 18px;
 
         font-size: 15px;
         font-weight: 700;
         color: #ed1111;
+    }
+
+    .form-card-title .title-badge {
+        width: 90px;
+        height: 14px;
+
+        border-radius: 8px;
+
+        background: linear-gradient(180deg, #980000 0%, #570000 100%);
     }
 
     .field-group {
@@ -349,62 +313,48 @@
                 </div>
             @endif
 
-            {{-- RINGKASAN HASIL ASESMEN --}}
-            <div class="summary-card">
-                <div class="summary-title">
-                    <i class="bi bi-check-circle-fill"></i>
-                    Hasil Asesmen (tersimpan di rekam medis pasien ini)
-                </div>
-
-                <div class="summary-grid">
-                    <div class="summary-item"><strong>Keluhan Utama</strong>{{ $asesmen['keluhan_utama'] }}</div>
-                    <div class="summary-item"><strong>TD</strong>{{ $asesmen['td'] }}</div>
-                    <div class="summary-item"><strong>Suhu Badan</strong>{{ $asesmen['suhu_badan'] }}</div>
-                    <div class="summary-item"><strong>Berat Badan</strong>{{ $asesmen['berat_badan'] }}</div>
-                    <div class="summary-item"><strong>TB</strong>{{ $asesmen['tb'] }}</div>
-                    <div class="summary-item"><strong>Detak Jantung</strong>{{ $asesmen['detak_jantung'] }}</div>
-                </div>
-            </div>
-
             {{-- FORM SOAP --}}
             <div class="form-card">
 
-                <h2 class="form-card-title">SOAP</h2>
+                <h2 class="form-card-title">
+                    SOAP
+                    <span class="title-badge"></span>
+                </h2>
 
                 <form method="POST" action="{{ route('pemeriksaan.soap.store', [$poli, $pasien['no_rm']]) }}" id="form-soap">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Subjective</label>
-                            <textarea name="subjective" rows="3" placeholder="Keluhan dari sudut pandang pasien" required>{{ old('subjective') }}</textarea>
+                            <label>S (subjek)</label>
+                            <textarea name="subjective" rows="3" required>{{ old('subjective') }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Objective</label>
-                            <textarea name="objective" rows="3" placeholder="Hasil pemeriksaan fisik/penunjang" required>{{ old('objective') }}</textarea>
+                            <label>O (object)</label>
+                            <textarea name="objective" rows="3" required>{{ old('objective') }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Assessment</label>
-                            <textarea name="assessment" rows="3" placeholder="Analisis/diagnosis sementara" required>{{ old('assessment') }}</textarea>
+                            <label>A (assesmen)</label>
+                            <textarea name="assessment" rows="3" required>{{ old('assessment') }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Plan</label>
-                            <textarea name="plan" rows="3" placeholder="Rencana tindakan/terapi selanjutnya" required>{{ old('plan') }}</textarea>
+                            <label>P (plan)</label>
+                            <textarea name="plan" rows="3" required>{{ old('plan') }}</textarea>
                         </div>
                     </div>
 
                     <div class="form-footer">
                         <button type="submit" class="btn-simpan">
-                            Simpan
+                            Simpan SOAP
                         </button>
                     </div>
 

@@ -136,27 +136,25 @@
 
         padding: 0 16px;
 
-        border-radius: 6px;
+        border-radius: 20px;
 
         font-size: 10px;
         font-weight: 500;
 
         text-decoration: none;
 
-        color: #555;
-        background: #ffffff;
-        border: 1px solid #e2e2e2;
+        color: #333;
+        background: transparent;
     }
 
     .tab-item.active {
-        background: #ed1111;
-        border-color: #ed1111;
+        background: #7a0000;
         color: #ffffff;
     }
 
     .tab-item.disabled {
         cursor: not-allowed;
-        opacity: 0.55;
+        opacity: 0.5;
     }
 
     /* =========================
