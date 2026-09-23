@@ -46,3 +46,7 @@ Route::get('/pendaftaran/pasien/cari', [PasienController::class, 'cari'])->name(
 // ===========================
 
 Route::get('/pemeriksaan/{poli?}', [PemeriksaanController::class, 'index'])->name('pemeriksaan.index');
+Route::get('/pemeriksaan/{poli}/{no_rm}/asesmen', [PemeriksaanController::class, 'asesmen'])->name('pemeriksaan.asesmen');
+Route::post('/pemeriksaan/{poli}/{no_rm}/asesmen', [PemeriksaanController::class, 'simpanAsesmen'])->name('pemeriksaan.asesmen.store');
+Route::get('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'soap'])->name('pemeriksaan.soap');
+Route::post('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'simpanSoap'])->name('pemeriksaan.soap.store');

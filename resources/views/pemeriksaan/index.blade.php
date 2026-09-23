@@ -176,6 +176,10 @@
     .btn-periksa {
         height: 26px;
 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
         padding: 0 12px;
 
         border: none;
@@ -183,6 +187,8 @@
 
         background: #ed1111;
         color: #ffffff;
+
+        text-decoration: none;
 
         font-family: 'Poppins', sans-serif;
         font-size: 9px;
@@ -213,6 +219,18 @@
         <x-topbar title="Pemeriksaan" icon="heart-pulse-fill" />
 
         <section class="content">
+
+            @if (session('success'))
+                <div style="margin-bottom: 16px; padding: 10px 14px; background: #e6f4ea; color: #1a7f37; border-radius: 6px; font-size: 11px; font-weight: 500;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('warning'))
+                <div style="margin-bottom: 16px; padding: 10px 14px; background: #fff4e5; color: #b06a00; border-radius: 6px; font-size: 11px; font-weight: 500;">
+                    {{ session('warning') }}
+                </div>
+            @endif
 
             {{-- PILIH POLI --}}
             <div class="poli-select-wrapper">
@@ -280,9 +298,12 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn-periksa">
+                                        <a
+                                            href="{{ route('pemeriksaan.asesmen', [$poli, $item['no_rm']]) }}"
+                                            class="btn-periksa"
+                                        >
                                             Periksa
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             @empty
