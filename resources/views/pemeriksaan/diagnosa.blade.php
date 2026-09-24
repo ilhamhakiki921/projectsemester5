@@ -212,6 +212,33 @@
         border-color: #3b82f6;
     }
 
+    .field select {
+        width: 100%;
+        height: 36px;
+
+        padding: 0 10px;
+
+        border: 1px solid #ccc;
+        border-radius: 6px;
+
+        background: #ffffff;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 10px;
+        color: #222;
+
+        outline: none;
+        cursor: pointer;
+    }
+
+    .field select:focus {
+        border-color: #3b82f6;
+    }
+
+    .field select:invalid {
+        color: #888;
+    }
+
     .form-footer {
         display: flex;
         justify-content: flex-end;
@@ -315,12 +342,11 @@
                 </div>
             @endif
 
-            {{-- FORM DIAGNOSA --}}
+            {{-- FORM DIAGNOSIS --}}
             <div class="form-card">
 
                 <h2 class="form-card-title">
-                    Diagnosa
-                    <span class="title-badge"></span>
+                    DIAGNOSIS
                 </h2>
 
                 <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa">
@@ -328,22 +354,22 @@
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Diagnosa Kerja</label>
-                            <input type="text" name="diagnosa_kerja" value="{{ old('diagnosa_kerja', optional($rekam)->diagnosa_kerja) }}" placeholder="Contoh: ISPA (Infeksi Saluran Pernapasan Akut)" required>
+                            <label>Diagnosis Utama</label>
+                            <input type="text" name="diagnosis_utama" value="{{ old('diagnosis_utama', optional($rekam)->diagnosis_utama) }}" placeholder="isi diagnosis utama" required>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Kode ICD-10 <span style="font-weight: 400; color: #888;">(opsional)</span></label>
-                            <input type="text" name="kode_icd10" value="{{ old('kode_icd10', optional($rekam)->kode_icd10) }}" placeholder="Contoh: J06.9">
+                            <label>Diagnosis Sekunder</label>
+                            <input type="text" name="diagnosis_sekunder" value="{{ old('diagnosis_sekunder', optional($rekam)->diagnosis_sekunder) }}" placeholder="isi diagnosis sekunder" required>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Diagnosa Banding <span style="font-weight: 400; color: #888;">(opsional)</span></label>
-                            <textarea name="diagnosa_banding" rows="3">{{ old('diagnosa_banding', optional($rekam)->diagnosa_banding) }}</textarea>
+                            <label>Tindakan</label>
+                            <input type="text" name="tindakan" value="{{ old('tindakan', optional($rekam)->tindakan) }}" placeholder="isi tindakan" required>
                         </div>
                     </div>
 

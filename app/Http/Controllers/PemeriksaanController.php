@@ -217,9 +217,9 @@ class PemeriksaanController extends Controller
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
 
         $data = $request->validate([
-            'diagnosa_kerja'   => 'required|string',
-            'kode_icd10'       => 'nullable|string',
-            'diagnosa_banding' => 'nullable|string',
+            'diagnosis_utama'    => 'required|string',
+            'diagnosis_sekunder' => 'required|string',
+            'tindakan'           => 'required|string',
         ], $this->pesanValidasi());
 
         RekamMedis::updateOrCreate(

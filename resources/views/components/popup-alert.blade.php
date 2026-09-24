@@ -1,113 +1,105 @@
 @php $popup = session('popup'); @endphp
 
 @if ($popup)
-    <div class="popup-alert-overlay" id="popupAlertOverlay">
-        <div class="popup-alert-box popup-alert-{{ $popup['type'] ?? 'success' }}">
+    <div class="toast-alert toast-alert-{{ $popup['type'] ?? 'success' }}" id="toastAlert">
 
-            <div class="popup-alert-icon">
-                @if (($popup['type'] ?? 'success') === 'warning')
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                @else
-                    <i class="bi bi-check-circle-fill"></i>
-                @endif
-            </div>
-
-            <h3 class="popup-alert-title">{{ $popup['title'] }}</h3>
-            <p class="popup-alert-message">{{ $popup['message'] }}</p>
-
-            <button
-                type="button"
-                class="popup-alert-btn"
-                onclick="document.getElementById('popupAlertOverlay').remove()"
-            >
-                Oke, Mengerti
-            </button>
-
+        <div class="toast-alert-icon">
+            @if (($popup['type'] ?? 'success') === 'warning')
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            @else
+                <i class="bi bi-check-circle-fill"></i>
+            @endif
         </div>
+
+        <div class="toast-alert-text">
+            <strong>{{ $popup['title'] }}</strong>
+            <span>{{ $popup['message'] }}</span>
+        </div>
+
     </div>
 
     <style>
 
-        .popup-alert-overlay {
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(-10px); }
+        }
+
+        .toast-alert {
             position: fixed;
-            inset: 0;
+            top: 18px;
+            right: 18px;
             z-index: 9999;
 
             display: flex;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
 
-            background: rgba(0, 0, 0, 0.45);
+            max-width: 320px;
 
-            font-family: 'Poppins', sans-serif;
-        }
+            padding: 12px 16px;
 
-        .popup-alert-box {
-            width: 320px;
+            border-radius: 8px;
 
             background: #ffffff;
-            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 
-            padding: 28px 24px 22px;
+            font-family: 'Poppins', sans-serif;
 
-            text-align: center;
-
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: toastIn 0.25s ease;
         }
 
-        .popup-alert-icon {
-            font-size: 34px;
-            margin-bottom: 10px;
+        .toast-alert.toast-hide {
+            animation: toastOut 0.25s ease forwards;
         }
 
-        .popup-alert-success .popup-alert-icon {
-            color: #16a34a;
+        .toast-alert-icon {
+            font-size: 16px;
+            margin-top: 1px;
         }
 
-        .popup-alert-warning .popup-alert-icon {
-            color: #d97706;
+        .toast-alert-success .toast-alert-icon { color: #16a34a; }
+        .toast-alert-warning .toast-alert-icon { color: #d97706; }
+
+        .toast-alert-success { border-left: 3px solid #16a34a; }
+        .toast-alert-warning { border-left: 3px solid #d97706; }
+
+        .toast-alert-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        .popup-alert-title {
-            margin-bottom: 6px;
-
-            font-size: 14px;
+        .toast-alert-text strong {
+            font-size: 11px;
             font-weight: 700;
             color: #222;
         }
 
-        .popup-alert-message {
-            margin-bottom: 18px;
-
-            font-size: 11px;
-            line-height: 1.5;
-            color: #555;
-        }
-
-        .popup-alert-btn {
-            height: 34px;
-
-            padding: 0 22px;
-
-            border: none;
-            border-radius: 6px;
-
-            color: #ffffff;
-
-            font-family: 'Poppins', sans-serif;
-            font-size: 11px;
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-        .popup-alert-success .popup-alert-btn {
-            background: #16a34a;
-        }
-
-        .popup-alert-warning .popup-alert-btn {
-            background: #d97706;
+        .toast-alert-text span {
+            font-size: 9.5px;
+            line-height: 1.4;
+            color: #666;
         }
 
     </style>
+
+    <script>
+        (function () {
+            var toast = document.getElementById('toastAlert');
+            if (! toast) return;
+
+            setTimeout(function () {
+                toast.classList.add('toast-hide');
+                setTimeout(function () {
+                    toast.remove();
+                }, 250);
+            }, 3000);
+        })();
+    </script>
 @endif

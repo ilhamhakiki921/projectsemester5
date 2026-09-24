@@ -37,9 +37,9 @@ class RekamMedis extends Model
         'plan',
 
         // Diagnosa
-        'diagnosa_kerja',
-        'kode_icd10',
-        'diagnosa_banding',
+        'diagnosis_utama',
+        'diagnosis_sekunder',
+        'tindakan',
     ];
 
     public function kunjungan()

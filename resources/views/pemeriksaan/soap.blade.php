@@ -379,6 +379,17 @@
             field.setCustomValidity('');
         });
     });
+
+    // Tekan Enter di textarea SOAP -> loncat/validasi ke field wajib berikutnya,
+    // sama seperti perilaku default input text di halaman Asesmen (Shift+Enter tetap bisa ganti baris)
+    document.querySelectorAll('#form-soap textarea').forEach(function (textarea) {
+        textarea.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && ! e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('form-soap').requestSubmit();
+            }
+        });
+    });
 </script>
 
 @endsection

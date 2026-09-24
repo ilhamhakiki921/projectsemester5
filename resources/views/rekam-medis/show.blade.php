@@ -272,13 +272,13 @@
 
                 {{-- DIAGNOSA --}}
                 <div class="section-card">
-                    <h2 class="section-card-title"><i class="bi bi-journal-medical"></i> Diagnosa</h2>
+                    <h2 class="section-card-title"><i class="bi bi-journal-medical"></i> Diagnosis</h2>
 
-                    @if ($rekam->diagnosa_kerja)
+                    @if ($rekam->diagnosis_utama)
                         <div class="kv-grid">
-                            <div class="kv-item"><strong>Diagnosa Kerja</strong>{{ $rekam->diagnosa_kerja }}</div>
-                            <div class="kv-item"><strong>Kode ICD-10</strong>{{ $rekam->kode_icd10 ?: '-' }}</div>
-                            <div class="kv-item full"><strong>Diagnosa Banding</strong>{{ $rekam->diagnosa_banding ?: '-' }}</div>
+                            <div class="kv-item"><strong>Diagnosis Utama</strong>{{ $rekam->diagnosis_utama }}</div>
+                            <div class="kv-item"><strong>Diagnosis Sekunder</strong>{{ $rekam->diagnosis_sekunder ?: '-' }}</div>
+                            <div class="kv-item"><strong>Tindakan</strong>{{ $rekam->tindakan ?: '-' }}</div>
                         </div>
                     @else
                         <p class="empty-note">Belum diisi.</p>
