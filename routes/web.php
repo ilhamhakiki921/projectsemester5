@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\RekamMedisController;
+use App\Http\Controllers\FarmasiController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -67,3 +68,5 @@ Route::post('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::clas
 
 Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
 Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
+
+Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');
