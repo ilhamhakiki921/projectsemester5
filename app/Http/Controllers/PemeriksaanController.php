@@ -229,8 +229,9 @@ class PemeriksaanController extends Controller
             $data
         );
 
-        // Diagnosa selesai diisi -> pemeriksaan inti pasien ini dianggap selesai
-        $kunjungan->update(['status' => 'Selesai']);
+        // Status tetap "Sedang Diperiksa" -- baru jadi "Selesai" nanti setelah
+        // ke-8 form (Asesmen, SOAP, Diagnosa, Resep, Clinical Pathway, Penunjang,
+        // Rujukan, Autentikasi) sudah lengkap semua. 4 form terakhir belum dibuat.
 
         session()->flash('popup', [
             'type'    => 'success',
