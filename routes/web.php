@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\PemeriksaanController;
+use App\Http\Controllers\ClinicalPathwayController;
 use App\Http\Controllers\RekamMedisController;
 use App\Http\Controllers\FarmasiController;
 
@@ -73,3 +74,8 @@ Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-
 Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
 
 Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');
+
+Route::prefix('pemeriksaan/{poli}/{rm}')->group(function () {
+    Route::get('clinical-pathway', [ClinicalPathwayController::class, 'index'])->name('clinical-pathway.index');
+    Route::post('clinical-pathway', [ClinicalPathwayController::class, 'store'])->name('clinical-pathway.store');
+});
