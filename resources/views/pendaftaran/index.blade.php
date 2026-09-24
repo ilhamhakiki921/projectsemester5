@@ -1741,75 +1741,13 @@ body.sidebar-collapsed .main {
                         </tr>
 
 
+                        
+
+
                         <tr>
 
                             <td class="col-no">
                                 2
-                            </td>
-
-                            <td>
-                                <span class="rm-number">
-                                    123456
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="patient-name">
-                                    Hendra Gunawan
-                                </span>
-                            </td>
-
-                            <td>
-                                Jl. Dahlia No. 3
-                            </td>
-
-                            <td>
-                                Laki-laki
-                            </td>
-
-                            <td>
-                                18 Sep 2026
-                            </td>
-
-                            <td>
-                                Poli Dalam
-                            </td>
-
-                            <td>
-
-                                <span class="status-badge status-terdaftar">
-                                Sudah Terdaftar
-                            </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                    >
-                                        <i class="bi bi-person-plus-fill"></i>
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
-                                    ><i class="bi bi-eye-fill"></i></a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <tr>
-
-                            <td class="col-no">
-                                3
                             </td>
 
                             <td>
@@ -1874,7 +1812,7 @@ body.sidebar-collapsed .main {
                         <tr>
 
                             <td class="col-no">
-                                4
+                                3
                             </td>
 
                             <td>
@@ -1939,7 +1877,7 @@ body.sidebar-collapsed .main {
                         <tr>
 
                             <td class="col-no">
-                                5
+                                4
                             </td>
 
                             <td>
@@ -2004,7 +1942,7 @@ body.sidebar-collapsed .main {
                         <tr>
 
                             <td class="col-no">
-                                6
+                                5
                             </td>
 
                             <td>
