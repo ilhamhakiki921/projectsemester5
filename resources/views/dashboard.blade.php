@@ -108,7 +108,7 @@
 
 .stat-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 14px;
     width: 100%;
     margin-bottom: 24px;
@@ -191,14 +191,6 @@
 
 /* Responsive */
 
-@media (max-width: 1100px) {
-
-    .stat-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-}
-
 @media (max-width: 600px) {
 
     .stat-grid {
@@ -258,6 +250,37 @@
 .chart-area {
     height: 250px;
     padding: 15px;
+}
+
+/* Filter kalender kunjungan per poli */
+
+.box-filter-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 12px;
+
+    background: #f1f1f1;
+    border-radius: 20px;
+}
+
+.box-filter-date i {
+    font-size: 11px;
+    color: #c90000;
+}
+
+.box-filter-date input[type="date"] {
+    border: none;
+    background: transparent;
+    outline: none;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: #555;
+
+    cursor: pointer;
 }
 
 .chart-container {
@@ -632,6 +655,19 @@
             </div>
         </div>
 
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-clipboard2-check"></i>
+            </div>
+
+            <div class="stat-title">Pasien Selesai</div>
+            <div class="stat-number">{{ $pasienSelesaiHariIni }}</div>
+            <div class="stat-description">
+                dari {{ $totalKunjunganHariIni }} kunjungan hari ini, rekam medis lengkap
+            </div>
+        </div>
+
     </div>
 
 
@@ -651,8 +687,14 @@
                     Kunjungan Pasien Per Poli
                 </div>
 
-                <div class="box-filter">
-                    Hari Ini
+                <div class="box-filter-date">
+                    <i class="bi bi-calendar3"></i>
+                    <input
+                        type="date"
+                        id="filterTanggalPoli"
+                        value="{{ $tanggalPoliDefault }}"
+                        max="{{ now()->toDateString() }}"
+                    >
                 </div>
 
             </div>
@@ -940,24 +982,21 @@
 </script>
 
 <script>
+    const kunjunganPoliAwal = @json($kunjunganPoliChart);
+    const urlKunjunganPerPoli = "{{ route('dashboard.kunjungan-per-poli') }}";
+
     const ctx = document.getElementById('kunjunganPoliChart');
 
-    new Chart(ctx, {
+    const kunjunganPoliChart = new Chart(ctx, {
         type: 'bar',
 
         data: {
-            labels: [
-                'Poli Umum',
-                'Poli Gigi',
-                'Poli Anak',
-                'Poli Penyakit Dalam',
-                'Poli Mata'
-            ],
+            labels: kunjunganPoliAwal.labels,
 
             datasets: [{
                 label: 'Jumlah Kunjungan',
 
-                data: [32, 18, 25, 14, 11],
+                data: kunjunganPoliAwal.data,
 
                 borderWidth: 0,
 
@@ -1014,6 +1053,34 @@
 
             }
         }
+    });
+
+    // Saat tanggal pada kalender filter diganti, ambil ulang data
+    // kunjungan per poli untuk tanggal tersebut lalu perbarui grafik.
+    document.getElementById('filterTanggalPoli').addEventListener('change', function () {
+        const tanggal = this.value;
+
+        if (!tanggal) {
+            return;
+        }
+
+        fetch(`${urlKunjunganPerPoli}?tanggal=${tanggal}`, {
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data kunjungan per poli.');
+                }
+                return response.json();
+            })
+            .then(hasil => {
+                kunjunganPoliChart.data.labels = hasil.labels;
+                kunjunganPoliChart.data.datasets[0].data = hasil.data;
+                kunjunganPoliChart.update();
+            })
+            .catch(error => {
+                console.error(error);
+            });
     });
 </script>
 

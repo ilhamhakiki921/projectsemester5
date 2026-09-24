@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FarmasiController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\RekamMedisController;
@@ -19,8 +18,15 @@ Route::post('/login', function () {
     return redirect()->route('dashboard');
 })->name('login.process');
 
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
+
+Route::get('/dashboard/kunjungan-per-poli', [DashboardController::class, 'kunjunganPerPoli'])
+    ->name('dashboard.kunjungan-per-poli');
 
 Route::get('/pendaftaran', function () {
     return view('pendaftaran.index');
@@ -54,9 +60,6 @@ Route::get('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 's
 Route::post('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'simpanSoap'])->name('pemeriksaan.soap.store');
 Route::get('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'diagnosa'])->name('pemeriksaan.diagnosa');
 Route::post('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'simpanDiagnosa'])->name('pemeriksaan.diagnosa.store');
-Route::get('/pemeriksaan/{poli}/{no_rm}/resep', [PemeriksaanController::class, 'resep'])->name('pemeriksaan.resep');
-Route::post('/pemeriksaan/{poli}/{no_rm}/resep', [PemeriksaanController::class, 'simpanResep'])->name('pemeriksaan.resep.store');
-Route::get('/pemeriksaan/{poli}/{no_rm}/clinical-pathway', [PemeriksaanController::class, 'clinicalPathway'])->name('pemeriksaan.clinical-pathway');
 
 // ===========================
 // REKAM MEDIS
@@ -64,9 +67,3 @@ Route::get('/pemeriksaan/{poli}/{no_rm}/clinical-pathway', [PemeriksaanControlle
 
 Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
 Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
-
-// ===========================
-// FARMASI
-// ===========================
-
-Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');
