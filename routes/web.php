@@ -61,6 +61,9 @@ Route::get('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 's
 Route::post('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'simpanSoap'])->name('pemeriksaan.soap.store');
 Route::get('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'diagnosa'])->name('pemeriksaan.diagnosa');
 Route::post('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'simpanDiagnosa'])->name('pemeriksaan.diagnosa.store');
+Route::get('/pemeriksaan/{poli}/{no_rm}/resep', [PemeriksaanController::class, 'resep'])->name('pemeriksaan.resep');
+Route::post('/pemeriksaan/{poli}/{no_rm}/resep', [PemeriksaanController::class, 'simpanResep'])->name('pemeriksaan.resep.store');
+Route::get('/pemeriksaan/{poli}/{no_rm}/clinical-pathway', [PemeriksaanController::class, 'clinicalPathway'])->name('pemeriksaan.clinical-pathway');
 
 // ===========================
 // REKAM MEDIS
