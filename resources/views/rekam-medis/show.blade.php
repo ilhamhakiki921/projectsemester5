@@ -156,6 +156,40 @@
         grid-column: 1 / -1;
     }
 
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .rm-mini-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .rm-mini-table th {
+        padding: 8px 6px;
+
+        font-size: 8.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #888;
+        text-align: left;
+
+        border-bottom: 1px solid #e2e2e2;
+        white-space: nowrap;
+    }
+
+    .rm-mini-table td {
+        padding: 9px 6px;
+
+        font-size: 9.5px;
+        color: #333;
+
+        border-bottom: 1px solid #f0f0f0;
+        white-space: nowrap;
+    }
+
     .empty-note {
         font-size: 10px;
         color: #999;
@@ -282,6 +316,42 @@
                         </div>
                     @else
                         <p class="empty-note">Belum diisi.</p>
+                    @endif
+                </div>
+
+                {{-- RESEP OBAT --}}
+                <div class="section-card">
+                    <h2 class="section-card-title"><i class="bi bi-capsule"></i> Resep Obat</h2>
+
+                    @if ($kunjungan->resep->isNotEmpty())
+                        <div class="table-wrapper">
+                            <table class="rm-mini-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Obat</th>
+                                        <th>Sediaan</th>
+                                        <th>Jumlah</th>
+                                        <th>Dosis</th>
+                                        <th>Frekuensi</th>
+                                        <th>Tanggal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($kunjungan->resep as $item)
+                                        <tr>
+                                            <td>{{ $item->obat->nama_obat }}</td>
+                                            <td>{{ $item->obat->sediaan }}</td>
+                                            <td>{{ $item->jumlah_obat }}</td>
+                                            <td>{{ $item->dosis_obat }}</td>
+                                            <td>{{ $item->frekuensi }}</td>
+                                            <td>{{ $item->tanggal_penulisan->format('d-m-Y') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="empty-note">Belum ada resep obat.</p>
                     @endif
                 </div>
 

@@ -127,11 +127,11 @@
         border-radius: 20px;
 
         font-size: 10px;
-        font-weight: 500;
+        font-weight: 600;
 
         text-decoration: none;
 
-        color: #333;
+        color: #1a1a1a;
         background: transparent;
     }
 
@@ -142,7 +142,6 @@
 
     .tab-item.disabled {
         cursor: not-allowed;
-        opacity: 0.5;
     }
 
     /* =========================
@@ -302,8 +301,8 @@
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Asesment</a>
                 <span class="tab-item active">SOAP</span>
                 <span class="tab-item disabled">Diagnosa</span>
-                <span class="tab-item disabled">Resep</span>
-                <span class="tab-item disabled">Clinical Pathway</span>
+                <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
+                <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
                 <span class="tab-item disabled">Penunjang</span>
                 <span class="tab-item disabled">Rujukan</span>
                 <span class="tab-item disabled">Autentikasi</span>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kunjungan;
+use App\Models\Obat;
 use App\Models\Pasien;
 use App\Models\RekamMedis;
+use App\Models\Resep;
 use Illuminate\Http\Request;
 
 class PemeriksaanController extends Controller
@@ -233,9 +235,79 @@ class PemeriksaanController extends Controller
         session()->flash('popup', [
             'type'    => 'success',
             'title'   => 'Diagnosa Tersimpan!',
-            'message' => 'Data diagnosa berhasil masuk ke rekam medis pasien. Status pasien sekarang "Selesai".',
+            'message' => 'Data diagnosa berhasil masuk ke rekam medis pasien. Lanjutkan ke tab Resep.',
         ]);
 
-        return redirect()->route('pemeriksaan.index', $poli);
+        return redirect()->route('pemeriksaan.resep', [$poli, $no_rm]);
+    }
+
+    // ==========================================================
+    // RESEP OBAT
+    // ==========================================================
+
+    public function resep($poli, $no_rm)
+    {
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        if (! $kunjungan->rekamMedis || ! $kunjungan->rekamMedis->diagnosis_utama) {
+            session()->flash('popup', [
+                'type'    => 'warning',
+                'title'   => 'Diagnosa Belum Diisi',
+                'message' => 'Lengkapi dan simpan Diagnosa terlebih dahulu sebelum membuka Resep.',
+            ]);
+
+            return redirect()->route('pemeriksaan.diagnosa', [$poli, $no_rm]);
+        }
+
+        $kunjungan->load(['resep.obat']);
+
+        return view('pemeriksaan.resep', [
+            'poli'       => $poli,
+            'namaPoli'   => $this->daftarPoli[$poli],
+            'kunjungan'  => $kunjungan,
+            'pasien'     => $kunjungan->pasien,
+            'daftarObat' => Obat::orderBy('nama_obat')->get(),
+        ]);
+    }
+
+    public function simpanResep(Request $request, $poli, $no_rm)
+    {
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        $data = $request->validate([
+            'obat_id'           => 'required|exists:obat,id',
+            'jumlah_obat'       => 'required|integer|min:1',
+            'dosis_obat'        => 'required|string',
+            'frekuensi'         => 'required|string',
+            'tanggal_penulisan' => 'required|date',
+        ], $this->pesanValidasi());
+
+        $data['kunjungan_id'] = $kunjungan->id;
+
+        Resep::create($data);
+
+        session()->flash('popup', [
+            'type'    => 'success',
+            'title'   => 'Resep Tersimpan!',
+            'message' => 'Resep obat berhasil disimpan dan sudah masuk ke antrian Farmasi.',
+        ]);
+
+        return redirect()->route('pemeriksaan.resep', [$poli, $no_rm]);
+    }
+
+    // ==========================================================
+    // CLINICAL PATHWAY (masih placeholder, menunggu desain)
+    // ==========================================================
+
+    public function clinicalPathway($poli, $no_rm)
+    {
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        return view('pemeriksaan.clinical-pathway', [
+            'poli'      => $poli,
+            'namaPoli'  => $this->daftarPoli[$poli],
+            'kunjungan' => $kunjungan,
+            'pasien'    => $kunjungan->pasien,
+        ]);
     }
 }

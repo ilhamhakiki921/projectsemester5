@@ -99,8 +99,8 @@
 
 
         {{-- Farmasi --}}
-        <a href="#"
-           class="menu-item">
+        <a href="{{ route('farmasi.index') }}"
+           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }}">
 
             <i class="bi bi-capsule"></i>
 

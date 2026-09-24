@@ -21,7 +21,7 @@ class RekamMedisController extends Controller
 
     public function show(Kunjungan $kunjungan)
     {
-        $kunjungan->load('pasien', 'rekamMedis');
+        $kunjungan->load('pasien', 'rekamMedis', 'resep.obat');
 
         return view('rekam-medis.show', [
             'kunjungan' => $kunjungan,
