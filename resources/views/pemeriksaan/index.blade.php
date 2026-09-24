@@ -31,26 +31,50 @@
     }
 
     /* =========================
-       PILIH POLI
+       CARI PASIEN
     ========================== */
 
-    .poli-select-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+    .search-card {
+        background: #ffffff;
 
-        margin-bottom: 20px;
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
+
+        padding: 18px 22px;
+
+        margin-bottom: 16px;
+
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    .poli-select-wrapper label {
+    .search-card h2 {
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
         color: #222;
+
+        margin-bottom: 14px;
     }
 
-    .poli-select {
+    .search-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .search-field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .search-field label {
+        font-size: 10px;
+        font-weight: 600;
+        color: #777;
+    }
+
+    .search-field input {
         height: 34px;
-        min-width: 180px;
 
         padding: 0 10px;
 
@@ -64,7 +88,71 @@
         color: #222;
 
         outline: none;
+    }
+
+    .search-field input:focus {
+        border-color: #ed1111;
+        box-shadow: 0 0 0 2px rgba(237, 17, 17, 0.12);
+    }
+
+    .search-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+
+        margin-top: 14px;
+    }
+
+    .btn-search,
+    .btn-reset {
+        height: 30px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0 16px;
+
+        border: none;
+        border-radius: 6px;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 10px;
+        font-weight: 500;
+
         cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-search {
+        background: #ed1111;
+        color: #ffffff;
+    }
+
+    .btn-search:hover {
+        background: #c40d0d;
+    }
+
+    .btn-reset {
+        background: #ffffff;
+        color: #777;
+        border: 1px solid #ccc;
+    }
+
+    .btn-reset:hover {
+        background: #f5f5f5;
+    }
+
+    @media (max-width: 900px) {
+        .search-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 560px) {
+        .search-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     /* =========================
@@ -227,27 +315,41 @@
 
             <x-popup-alert />
 
-            {{-- PILIH POLI --}}
-            <div class="poli-select-wrapper">
+            {{-- CARI PASIEN --}}
+            <form method="GET" action="{{ route('pemeriksaan.index', $poli) }}" class="search-card">
 
-                <label for="poli">Pilih Poli:</label>
+                <h2>Cari Pasien</h2>
 
-                <select
-                    id="poli"
-                    class="poli-select"
-                    onchange="window.location.href = this.value"
-                >
-                    @foreach ($daftarPoli as $slug => $nama)
-                        <option
-                            value="{{ route('pemeriksaan.index', $slug) }}"
-                            {{ $poli === $slug ? 'selected' : '' }}
-                        >
-                            {{ $nama }}
-                        </option>
-                    @endforeach
-                </select>
+                <div class="search-grid">
 
-            </div>
+                    <div class="search-field">
+                        <label for="nama">Nama Pasien</label>
+                        <input type="text" id="nama" name="nama" value="{{ request('nama') }}" placeholder="Cth: Budi Santoso">
+                    </div>
+
+                    <div class="search-field">
+                        <label for="no_rm">No. RM</label>
+                        <input type="text" id="no_rm" name="no_rm" value="{{ request('no_rm') }}" placeholder="Cth: 00123">
+                    </div>
+
+                    <div class="search-field">
+                        <label for="nik">NIK</label>
+                        <input type="text" id="nik" name="nik" value="{{ request('nik') }}" placeholder="16 digit NIK">
+                    </div>
+
+                    <div class="search-field">
+                        <label for="tanggal_kunjungan">Tanggal Kunjungan</label>
+                        <input type="date" id="tanggal_kunjungan" name="tanggal_kunjungan" value="{{ request('tanggal_kunjungan') }}">
+                    </div>
+
+                </div>
+
+                <div class="search-actions">
+                    <a href="{{ route('pemeriksaan.index', $poli) }}" class="btn-reset">Reset</a>
+                    <button type="submit" class="btn-search">Cari</button>
+                </div>
+
+            </form>
 
 
             {{-- CARD ANTRIAN --}}
@@ -273,6 +375,8 @@
                                 <th>No. RM</th>
                                 <th>Nama Pasien</th>
                                 <th>Alamat</th>
+                                <th>NIK</th>
+                                <th>Tgl Kunjungan</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -287,6 +391,8 @@
                                     <td>{{ $item->pasien->no_rm }}</td>
                                     <td>{{ $item->pasien->nama }}</td>
                                     <td>{{ $item->pasien->alamat }}</td>
+                                    <td>{{ $item->pasien->nik }}</td>
+                                    <td>{{ optional($item->tanggal_kunjungan)->format('d-m-Y') }}</td>
                                     <td>
                                         <span class="status-badge status-{{ str_replace(' ', '-', strtolower($item->status)) }}">
                                             {{ $item->status }}
@@ -303,8 +409,12 @@
                                 </tr>
                             @empty
                                 <tr class="empty-row">
-                                    <td colspan="7">
-                                        Belum ada pasien di antrian poli ini hari ini.
+                                    <td colspan="9">
+                                        @if (request()->hasAny(['nama', 'no_rm', 'nik', 'tanggal_kunjungan']))
+                                            Tidak ada pasien yang cocok dengan pencarian.
+                                        @else
+                                            Belum ada pasien di antrian poli ini hari ini.
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse

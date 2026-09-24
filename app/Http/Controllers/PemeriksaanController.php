@@ -58,7 +58,7 @@ class PemeriksaanController extends Controller
         return $kunjungan;
     }
 
-    public function index($poli = 'umum')
+    public function index(Request $request, $poli = 'umum')
     {
         if (! array_key_exists($poli, $this->daftarPoli)) {
             $poli = 'umum';
@@ -66,6 +66,24 @@ class PemeriksaanController extends Controller
 
         $antrian = Kunjungan::with('pasien')
             ->where('poli', $poli)
+            ->when($request->filled('nama'), function ($query) use ($request) {
+                $query->whereHas('pasien', function ($q) use ($request) {
+                    $q->where('nama', 'like', '%' . $request->nama . '%');
+                });
+            })
+            ->when($request->filled('no_rm'), function ($query) use ($request) {
+                $query->whereHas('pasien', function ($q) use ($request) {
+                    $q->where('no_rm', 'like', '%' . $request->no_rm . '%');
+                });
+            })
+            ->when($request->filled('nik'), function ($query) use ($request) {
+                $query->whereHas('pasien', function ($q) use ($request) {
+                    $q->where('nik', 'like', '%' . $request->nik . '%');
+                });
+            })
+            ->when($request->filled('tanggal_kunjungan'), function ($query) use ($request) {
+                $query->whereDate('tanggal_kunjungan', $request->tanggal_kunjungan);
+            })
             ->orderBy('no_antrian')
             ->get();
 
