@@ -3,22 +3,27 @@
     CSS & JS sudah di dalam file ini, jadi tidak perlu file lain selain diagnosa-row.blade.php.
 
     Variabel dari controller (semua opsional):
-      $pasien              objek/array pasien: nama, no_rm, nik, jenis_kelamin, tanggal_lahir, usia
-      $diagnosis           koleksi master diagnosis (kolom: id, nama)
-      $tindakan            koleksi master tindakan  (kolom: id, nama)
-      $diagnosisUtama      id terpilih
-      $diagnosisSekunder   array id terpilih
-      $tindakanTerpilih    array id terpilih
-      $action              URL simpan
+      $pasien   objek/array pasien: nama, no_rm, nik, jenis_kelamin, tanggal_lahir, usia
+      $rekam    rekam medis kunjungan ini (diagnosis_utama, kode_icd10,
+                diagnosis_sekunder, tindakan) -- dipakai untuk isi ulang form saat edit
+      $action   URL simpan
 --}}
 @php
-    $diagnosis = $diagnosis ?? collect();
-    $tindakan = $tindakan ?? collect();
-    $utama = old('diagnosis_utama', $diagnosisUtama ?? null);
-    $sekunder = old('diagnosis_sekunder', $diagnosisSekunder ?? []);
-    $tindakanIds = old('tindakan', $tindakanTerpilih ?? []);
+    $utama = old('diagnosis_utama', $rekam->diagnosis_utama ?? null);
+    $kodeIcd10 = old('kode_icd10', $rekam->kode_icd10 ?? null);
+
+    $sekunder = old(
+        'diagnosis_sekunder',
+        isset($rekam) && $rekam->diagnosis_sekunder ? explode(', ', $rekam->diagnosis_sekunder) : []
+    );
+
+    $tindakanList = old(
+        'tindakan',
+        isset($rekam) && $rekam->tindakan ? explode(', ', $rekam->tindakan) : []
+    );
+
     if (count($sekunder) === 0) { $sekunder = [null]; }
-    if (count($tindakanIds) === 0) { $tindakanIds = [null]; }
+    if (count($tindakanList) === 0) { $tindakanList = [null]; }
 
     $poli = request()->segment(2) ?? 'umum';
     $rm = request()->segment(3) ?? '';
@@ -163,12 +168,16 @@
 
                 <div class="dx-group dx-utama">
                     <label class="dx-label" for="diagnosis_utama">Diagnosis Utama</label>
-                    <select id="diagnosis_utama" name="diagnosis_utama" class="dx-select" required>
-                        <option value="">isi diagnosis utama</option>
-                        @foreach ($diagnosis as $d)
-                            <option value="{{ $d->id }}" {{ $utama == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" id="diagnosis_utama" name="diagnosis_utama"
+                           class="dx-select" placeholder="isi diagnosis utama, contoh: Infeksi saluran pernapasan akut"
+                           value="{{ $utama }}" required>
+                </div>
+
+                <div class="dx-group">
+                    <label class="dx-label" for="kode_icd10">Kode ICD-10 (opsional)</label>
+                    <input type="text" id="kode_icd10" name="kode_icd10"
+                           class="dx-select" placeholder="contoh: J06.9"
+                           value="{{ $kodeIcd10 }}">
                 </div>
 
                 <div class="dx-grid">
@@ -178,12 +187,12 @@
                             <button type="button" class="dx-btn-tambah" data-add>+ Tambah</button>
                         </div>
                         <div class="dx-list" data-list>
-                            @foreach ($sekunder as $id)
-                                @include('pemeriksaan.diagnosa-row', ['name' => 'diagnosis_sekunder', 'label' => 'Diagnosis Sekunder', 'placeholder' => 'isi diagnosis sekunder', 'options' => $diagnosis, 'selected' => $id, 'removable' => ! $loop->first])
+                            @foreach ($sekunder as $nilai)
+                                @include('pemeriksaan.diagnosa-row', ['name' => 'diagnosis_sekunder', 'label' => 'Diagnosis Sekunder', 'placeholder' => 'isi diagnosis sekunder', 'selected' => $nilai, 'removable' => ! $loop->first])
                             @endforeach
                         </div>
                         <template data-template>
-                            @include('pemeriksaan.diagnosa-row', ['name' => 'diagnosis_sekunder', 'label' => 'Diagnosis Sekunder', 'placeholder' => 'isi diagnosis sekunder', 'options' => $diagnosis, 'removable' => true])
+                            @include('pemeriksaan.diagnosa-row', ['name' => 'diagnosis_sekunder', 'label' => 'Diagnosis Sekunder', 'placeholder' => 'isi diagnosis sekunder', 'removable' => true])
                         </template>
                     </div>
 
@@ -193,12 +202,12 @@
                             <button type="button" class="dx-btn-tambah" data-add>+ Tambah</button>
                         </div>
                         <div class="dx-list" data-list>
-                            @foreach ($tindakanIds as $id)
-                                @include('pemeriksaan.diagnosa-row', ['name' => 'tindakan', 'label' => 'Tindakan', 'placeholder' => 'isi tindakan', 'options' => $tindakan, 'selected' => $id, 'removable' => ! $loop->first])
+                            @foreach ($tindakanList as $nilai)
+                                @include('pemeriksaan.diagnosa-row', ['name' => 'tindakan', 'label' => 'Tindakan', 'placeholder' => 'isi tindakan', 'selected' => $nilai, 'removable' => ! $loop->first])
                             @endforeach
                         </div>
                         <template data-template>
-                            @include('pemeriksaan.diagnosa-row', ['name' => 'tindakan', 'label' => 'Tindakan', 'placeholder' => 'isi tindakan', 'options' => $tindakan, 'removable' => true])
+                            @include('pemeriksaan.diagnosa-row', ['name' => 'tindakan', 'label' => 'Tindakan', 'placeholder' => 'isi tindakan', 'removable' => true])
                         </template>
                     </div>
                 </div>
@@ -216,7 +225,7 @@
                 if (e.target.closest('[data-add]')) {
                     var tpl = section.querySelector('[data-template]');
                     section.querySelector('[data-list]').appendChild(tpl.content.cloneNode(true));
-                    var selects = section.querySelectorAll('[data-list] select');
+                    var selects = section.querySelectorAll('[data-list] input');
                     selects[selects.length - 1].focus();
                 } else if (e.target.closest('[data-remove]')) {
                     e.target.closest('[data-row]').remove();

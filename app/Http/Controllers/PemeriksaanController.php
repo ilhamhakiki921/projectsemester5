@@ -237,10 +237,25 @@ class PemeriksaanController extends Controller
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
 
         $data = $request->validate([
-            'diagnosis_utama'    => 'required|string',
-            'diagnosis_sekunder' => 'required|string',
-            'tindakan'           => 'required|string',
+            'diagnosis_utama'      => 'required|string|max:255',
+            'kode_icd10'           => 'nullable|string|max:20',
+            'diagnosis_sekunder'   => 'required|array|min:1',
+            'diagnosis_sekunder.*' => 'nullable|string|max:255',
+            'tindakan'             => 'required|array|min:1',
+            'tindakan.*'           => 'nullable|string|max:255',
         ], $this->pesanValidasi());
+
+        // Beberapa kotak isian (Diagnosis Sekunder & Tindakan) dikirim sebagai
+        // array (boleh ditambah lebih dari satu lewat tombol "+ Tambah"),
+        // sedangkan kolom di tabel rekam_medis cuma satu string per pasien.
+        // Baris kosong dibuang, sisanya digabung dengan ", ".
+        $data['diagnosis_sekunder'] = implode(', ', array_filter(
+            array_map('trim', $data['diagnosis_sekunder'])
+        ));
+
+        $data['tindakan'] = implode(', ', array_filter(
+            array_map('trim', $data['tindakan'])
+        ));
 
         RekamMedis::updateOrCreate(
             ['kunjungan_id' => $kunjungan->id],

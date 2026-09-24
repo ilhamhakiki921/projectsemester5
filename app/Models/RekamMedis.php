@@ -38,6 +38,7 @@ class RekamMedis extends Model
 
         // Diagnosa
         'diagnosis_utama',
+        'kode_icd10',
         'diagnosis_sekunder',
         'tindakan',
     ];

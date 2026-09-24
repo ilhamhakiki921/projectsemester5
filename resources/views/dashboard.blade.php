@@ -139,9 +139,15 @@
 
 .stat-title {
     font-size: 12px;
+    line-height: 1.35;
     font-weight: 600;
     color: #777;
     margin-bottom: 5px;
+
+    /* sisakan ruang untuk ikon di pojok kanan, dan samakan tinggi
+       judul (2 baris) supaya angka di semua kartu sejajar */
+    padding-right: 44px;
+    min-height: 32px;
 }
 
 
@@ -562,6 +568,103 @@
     font-size: 20px;
 }
 
+/* =========================
+   STATISTIK PASIEN PER KECAMATAN
+========================== */
+
+.kec-area {
+    height: 250px;
+    padding: 8px 15px 10px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.kec-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.kec-row {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    align-items: center;
+    gap: 10px;
+
+    padding: 7px 0;
+
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.kec-row:last-child {
+    border-bottom: none;
+}
+
+.kec-rank {
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+}
+
+.kec-row:first-child .kec-rank {
+    color: #c90000;
+}
+
+.kec-name {
+    margin-bottom: 4px;
+
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+}
+
+.kec-bar {
+    height: 5px;
+
+    background: #f1f1f1;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.kec-bar span {
+    display: block;
+    height: 100%;
+
+    background: #c90000;
+    border-radius: 4px;
+}
+
+.kec-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: #222;
+    white-space: nowrap;
+}
+
+.kec-count small {
+    margin-left: 3px;
+
+    font-size: 10px;
+    font-weight: 400;
+    color: #888;
+}
+
+.kec-note {
+    padding-top: 6px;
+
+    font-size: 10px;
+    color: #888;
+}
+
+.kec-kosong {
+    margin: auto;
+
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+}
+
 </style>
 
 @endsection
@@ -830,6 +933,68 @@
     </div>
 
     {{-- =========================
+         STATISTIK PASIEN PER KECAMATAN
+    ========================== --}}
+
+    <div class="middle-grid">
+
+        {{-- GRAFIK PASIEN PER KECAMATAN --}}
+
+        <div class="dashboard-box">
+
+            <div class="box-header">
+
+                <div class="box-title">
+                    Statistik Pasien Per Kecamatan
+                </div>
+
+                <div class="box-filter" id="kecamatanTotal">
+                    -
+                </div>
+
+            </div>
+
+            <div class="chart-area">
+
+                <div class="chart-container">
+                    <canvas id="kecamatanChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- PERINGKAT KECAMATAN --}}
+
+        <div class="dashboard-box">
+
+            <div class="box-header">
+
+                <div class="box-title">
+                    Peringkat Kecamatan
+                </div>
+
+                <div class="box-filter" id="kecamatanTerbanyak">
+                    -
+                </div>
+
+            </div>
+
+            <div class="kec-area">
+
+                <div class="kec-list" id="kecamatanList"></div>
+
+                <div class="kec-note" id="kecamatanNote"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =========================
      10 BESAR PENYAKIT
 ========================== --}}
 
@@ -847,11 +1012,21 @@
                 Periode
             </label>
 
-            <select id="bulanPenyakit" onchange="ubahPeriodePenyakit(this.value)">
-            <option value="2026-09">September 2026</option>
-            <option value="2026-08">Agustus 2026</option>
-            <option value="2026-07">Juli 2026</option>
-        </select>
+            <select id="bulanPenyakit" onchange="ubahPeriodePenyakit()">
+                @foreach ($daftarBulan ?? [] as $angkaBulan => $namaBulan)
+                    <option value="{{ $angkaBulan }}" {{ (int) ($bulanTerpilih ?? 0) === $angkaBulan ? 'selected' : '' }}>
+                        {{ $namaBulan }}
+                    </option>
+                @endforeach
+            </select>
+
+            <select id="tahunPenyakit" onchange="ubahPeriodePenyakit()">
+                @foreach ($daftarTahun ?? [] as $angkaTahun)
+                    <option value="{{ $angkaTahun }}" {{ (int) ($tahunTerpilih ?? 0) === $angkaTahun ? 'selected' : '' }}>
+                        {{ $angkaTahun }}
+                    </option>
+                @endforeach
+            </select>
 
         </div>
 
@@ -874,85 +1049,21 @@
 
             <tbody>
 
-                <tr>
-                    <td class="disease-rank">1</td>
-                    <td class="disease-code">J06.9</td>
-                    <td>Infeksi saluran pernapasan akut</td>
-                    <td>Poli Umum</td>
-                    <td class="disease-count">32</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">2</td>
-                    <td class="disease-code">I10</td>
-                    <td>Hipertensi</td>
-                    <td>Poli Umum</td>
-                    <td class="disease-count">27</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">3</td>
-                    <td class="disease-code">K30</td>
-                    <td>Dispepsia</td>
-                    <td>Poli Penyakit Dalam</td>
-                    <td class="disease-count">24</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">4</td>
-                    <td class="disease-code">E11.9</td>
-                    <td>Diabetes melitus tipe 2</td>
-                    <td>Poli Penyakit Dalam</td>
-                    <td class="disease-count">21</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">5</td>
-                    <td class="disease-code">M54.5</td>
-                    <td>Nyeri punggung bawah</td>
-                    <td>Poli Umum</td>
-                    <td class="disease-count">18</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">6</td>
-                    <td class="disease-code">J00</td>
-                    <td>Nasofaringitis akut</td>
-                    <td>Poli Anak</td>
-                    <td class="disease-count">16</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">7</td>
-                    <td class="disease-code">L20.9</td>
-                    <td>Dermatitis atopik</td>
-                    <td>Poli Umum</td>
-                    <td class="disease-count">14</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">8</td>
-                    <td class="disease-code">K29.7</td>
-                    <td>Gastritis</td>
-                    <td>Poli Penyakit Dalam</td>
-                    <td class="disease-count">12</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">9</td>
-                    <td class="disease-code">H10.9</td>
-                    <td>Konjungtivitis</td>
-                    <td>Poli Mata</td>
-                    <td class="disease-count">10</td>
-                </tr>
-
-                <tr>
-                    <td class="disease-rank">10</td>
-                    <td class="disease-code">K04.7</td>
-                    <td>Abses periapikal</td>
-                    <td>Poli Gigi</td>
-                    <td class="disease-count">8</td>
-                </tr>
+                @forelse ($topPenyakit ?? [] as $penyakit)
+                    <tr>
+                        <td class="disease-rank">{{ $loop->iteration }}</td>
+                        <td class="disease-code">{{ $penyakit->kode_icd10 ?: '-' }}</td>
+                        <td>{{ $penyakit->diagnosa }}</td>
+                        <td>{{ $penyakit->nama_poli }}</td>
+                        <td class="disease-count">{{ $penyakit->jumlah }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" style="text-align:center; color:#999; padding:20px 15px;">
+                            Belum ada data diagnosis untuk periode ini.
+                        </td>
+                    </tr>
+                @endforelse
 
             </tbody>
 
@@ -972,10 +1083,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    function ubahPeriodePenyakit(value) {
+    function ubahPeriodePenyakit() {
+        const bulan = document.getElementById('bulanPenyakit').value;
+        const tahun = document.getElementById('tahunPenyakit').value;
+
         const url = new URL(window.location.href);
 
-        url.searchParams.set('periode', value);
+        url.searchParams.set('bulan', bulan);
+        url.searchParams.set('tahun', tahun);
 
         window.location.href = url.toString();
     }
@@ -997,6 +1112,8 @@
                 label: 'Jumlah Kunjungan',
 
                 data: kunjunganPoliAwal.data,
+
+                backgroundColor: '#c90000',
 
                 borderWidth: 0,
 
@@ -1055,16 +1172,148 @@
         }
     });
 
-    // Saat tanggal pada kalender filter diganti, ambil ulang data
-    // kunjungan per poli untuk tanggal tersebut lalu perbarui grafik.
-    document.getElementById('filterTanggalPoli').addEventListener('change', function () {
-        const tanggal = this.value;
+    // ------------------------------------------------------------------
+    // Sumber data grafik: tabel "Data Pasien" di halaman Pendaftaran
+    // (kolom "Tgl Kunjungan" dan "Poli Tujuan"). Jadi grafik selalu sama
+    // dengan data pasien yang tampil di web, tanpa perlu database.
+    // Kalau halaman itu gagal dibaca, dipakai data dari server (database).
+    // ------------------------------------------------------------------
+    const urlPendaftaran = "{{ route('pendaftaran') }}";
+    const labelPoliTetap = kunjunganPoliAwal.labels.slice();   // urutan batang
+    const inputTanggalPoli = document.getElementById('filterTanggalPoli');
 
-        if (!tanggal) {
-            return;
+    const bulanIndo = {
+        jan: 1, feb: 2, mar: 3, apr: 4, mei: 5, may: 5, jun: 6, jul: 7,
+        agu: 8, agt: 8, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, des: 12, dec: 12
+    };
+
+    // "18 Sep 2026" / "18 September 2026" / "2026-09-18" / "18/09/2026" -> "2026-09-18"
+    function tanggalKeISO(teks) {
+        teks = (teks || '').trim().toLowerCase();
+
+        let m = teks.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (m) return m[1] + '-' + m[2] + '-' + m[3];
+
+        m = teks.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+
+        m = teks.match(/^(\d{1,2})\s+([a-z]+)\.?\s+(\d{4})$/);
+        if (m) {
+            const bln = bulanIndo[m[2].substring(0, 3)];
+            if (bln) return m[3] + '-' + String(bln).padStart(2, '0') + '-' + m[1].padStart(2, '0');
         }
 
-        fetch(`${urlKunjunganPerPoli}?tanggal=${tanggal}`, {
+        return null;
+    }
+
+    // "Poli Umum" -> "umum", "Poli Penyakit Dalam" -> "dalam"
+    function kunciPoli(teks) {
+        let k = (teks || '').toLowerCase().replace(/\s+/g, ' ').trim().replace(/^poli\s+/, '');
+        if (k === 'penyakit dalam') k = 'dalam';
+        return k;
+    }
+
+    // Kecamatan diambil dari atribut data-kecamatan pada baris tabel.
+    // Kalau tidak ada, dicoba dari alamat lengkap (data-alamat) dengan format:
+    // "Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi".
+    function ambilKecamatan(tr) {
+        let k = (tr.getAttribute('data-kecamatan') || '').trim();
+
+        if (!k) {
+            const el = tr.querySelector('[data-alamat]');
+            if (el) {
+                const bagian = el.getAttribute('data-alamat')
+                    .split(',').map(x => x.trim()).filter(Boolean);
+                if (bagian.length >= 4) {
+                    k = bagian[bagian.length - 3];
+                }
+            }
+        }
+
+        return k.replace(/^kec(amatan)?\.?\s+/i, '').trim();
+    }
+
+    let janjiTabelPasien = null;   // di-cache: halaman pendaftaran cukup dibaca sekali
+
+    function bacaTabelPasien() {
+        if (janjiTabelPasien) {
+            return janjiTabelPasien;
+        }
+
+        janjiTabelPasien = fetch(urlPendaftaran, { headers: { 'Accept': 'text/html' } })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Halaman pendaftaran tidak bisa dibaca.');
+                }
+                return response.text();
+            })
+            .then(html => {
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const kepala = Array.from(doc.querySelectorAll('#tabelPasien thead th'));
+                const idxRm = kepala.findIndex(th => th.classList.contains('col-rm'));
+                const idxTanggal = kepala.findIndex(th => th.classList.contains('col-tanggal'));
+                const idxPoli = kepala.findIndex(th => th.classList.contains('col-poli'));
+
+                if (idxTanggal < 0 || idxPoli < 0) {
+                    throw new Error('Kolom tanggal / poli tidak ditemukan pada tabel pasien.');
+                }
+
+                const hasil = [];
+                doc.querySelectorAll('#tabelPasienBody > tr').forEach(tr => {
+                    const sel = tr.children;
+                    if (sel.length <= Math.max(idxTanggal, idxPoli)) return;
+
+                    hasil.push({
+                        rm: idxRm >= 0 ? sel[idxRm].textContent.trim() : '',
+                        tanggal: tanggalKeISO(sel[idxTanggal].textContent),
+                        poli: sel[idxPoli].textContent.replace(/\s+/g, ' ').trim(),
+                        kecamatan: ambilKecamatan(tr)
+                    });
+                });
+
+                return hasil;
+            });
+
+        // kalau gagal, izinkan dicoba lagi lain kali
+        janjiTabelPasien.catch(() => { janjiTabelPasien = null; });
+
+        return janjiTabelPasien;
+    }
+
+    function hitungPerPoliDariTabel(baris, tanggal) {
+        const jumlah = {};   // key poli -> jumlah
+        const namaAsli = {}; // key poli -> teks asli (untuk poli di luar daftar tetap)
+
+        baris.filter(b => b.tanggal === tanggal && b.poli).forEach(b => {
+            const k = kunciPoli(b.poli);
+            jumlah[k] = (jumlah[k] || 0) + 1;
+            namaAsli[k] = b.poli;
+        });
+
+        const labels = labelPoliTetap.slice();
+        const data = labelPoliTetap.map(label => jumlah[kunciPoli(label)] || 0);
+
+        // Poli lain yang ada di tabel tapi tidak ada di daftar tetap tetap ditampilkan
+        const kunciTetap = labelPoliTetap.map(kunciPoli);
+        Object.keys(jumlah).forEach(k => {
+            if (kunciTetap.indexOf(k) === -1) {
+                labels.push(namaAsli[k]);
+                data.push(jumlah[k]);
+            }
+        });
+
+        return { labels: labels, data: data };
+    }
+
+    function tampilkanGrafik(hasil) {
+        kunjunganPoliChart.data.labels = hasil.labels;
+        kunjunganPoliChart.data.datasets[0].data = hasil.data;
+        kunjunganPoliChart.update();
+    }
+
+    // Cadangan: ambil dari server (database) kalau tabel tidak bisa dibaca
+    function muatDariServer(tanggal) {
+        return fetch(`${urlKunjunganPerPoli}?tanggal=${tanggal}`, {
             headers: { 'Accept': 'application/json' }
         })
             .then(response => {
@@ -1073,15 +1322,192 @@
                 }
                 return response.json();
             })
-            .then(hasil => {
-                kunjunganPoliChart.data.labels = hasil.labels;
-                kunjunganPoliChart.data.datasets[0].data = hasil.data;
-                kunjunganPoliChart.update();
-            })
-            .catch(error => {
-                console.error(error);
+            .then(tampilkanGrafik);
+    }
+
+    function muatGrafikPoli(tanggal) {
+        if (!tanggal) {
+            return;
+        }
+
+        bacaTabelPasien()
+            .then(baris => tampilkanGrafik(hitungPerPoliDariTabel(baris, tanggal)))
+            .catch(errorTabel => {
+                console.warn(errorTabel);
+                muatDariServer(tanggal).catch(error => console.error(error));
             });
+    }
+
+    // Saat tanggal pada kalender filter diganti, hitung ulang grafik
+    inputTanggalPoli.addEventListener('change', function () {
+        muatGrafikPoli(this.value);
     });
+
+    // Tampilkan juga untuk tanggal yang sedang terpilih saat halaman dibuka
+    muatGrafikPoli(inputTanggalPoli.value);
+
+
+    // ==================================================================
+    // STATISTIK PASIEN PER KECAMATAN
+    // Dibaca dari tabel "Data Pasien" yang sama (atribut data-kecamatan).
+    // ==================================================================
+    const MAKS_BATANG_KECAMATAN = 8;   // sisanya digabung jadi "Lainnya"
+    const MAKS_PERINGKAT_KECAMATAN = 6;
+
+    const kecamatanChart = new Chart(document.getElementById('kecamatanChart'), {
+        type: 'bar',
+
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Jumlah Pasien',
+                data: [],
+                backgroundColor: '#c90000',
+                borderWidth: 0,
+                borderRadius: 5,
+                barThickness: 16
+            }]
+        },
+
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: { legend: { display: false } },
+
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { precision: 0, font: { family: 'Poppins', size: 10 } },
+                    grid: { color: '#eeeeee' }
+                },
+                y: {
+                    ticks: { font: { family: 'Poppins', size: 10 } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    function hitungPerKecamatan(baris) {
+        const sudahAda = new Set();
+        const jumlah = {};
+        const nama = {};
+        let total = 0;
+        let tanpaKecamatan = 0;
+
+        baris.forEach(b => {
+            // satu No. RM dihitung satu pasien
+            if (b.rm) {
+                if (sudahAda.has(b.rm)) return;
+                sudahAda.add(b.rm);
+            }
+
+            total++;
+
+            if (!b.kecamatan) {
+                tanpaKecamatan++;
+                return;
+            }
+
+            const k = b.kecamatan.toLowerCase();
+            jumlah[k] = (jumlah[k] || 0) + 1;
+            nama[k] = nama[k] || b.kecamatan;
+        });
+
+        const urut = Object.keys(jumlah)
+            .map(k => ({ nama: nama[k], jumlah: jumlah[k] }))
+            .sort((a, b) => b.jumlah - a.jumlah || a.nama.localeCompare(b.nama, 'id'));
+
+        return {
+            urut: urut,
+            total: total,
+            tanpaKecamatan: tanpaKecamatan,
+            denganKecamatan: total - tanpaKecamatan
+        };
+    }
+
+    function buatElemen(tag, kelas, teks) {
+        const el = document.createElement(tag);
+        if (kelas) el.className = kelas;
+        if (teks !== undefined) el.textContent = teks;
+        return el;
+    }
+
+    function tampilkanKecamatan(stat) {
+        const elList = document.getElementById('kecamatanList');
+        const elNote = document.getElementById('kecamatanNote');
+
+        document.getElementById('kecamatanTotal').textContent = stat.total + ' pasien';
+        elList.innerHTML = '';
+        elNote.textContent = '';
+
+        if (stat.urut.length === 0) {
+            document.getElementById('kecamatanTerbanyak').textContent = '-';
+            kecamatanChart.data.labels = [];
+            kecamatanChart.data.datasets[0].data = [];
+            kecamatanChart.update();
+            elList.appendChild(buatElemen('div', 'kec-kosong', 'Belum ada data kecamatan pasien.'));
+            return;
+        }
+
+        // ---- grafik batang (terbanyak di atas) ----
+        let batang = stat.urut.slice(0, MAKS_BATANG_KECAMATAN);
+        if (stat.urut.length > MAKS_BATANG_KECAMATAN) {
+            const sisa = stat.urut.slice(MAKS_BATANG_KECAMATAN)
+                .reduce((jml, k) => jml + k.jumlah, 0);
+            batang.push({ nama: 'Lainnya', jumlah: sisa });
+        }
+        kecamatanChart.data.labels = batang.map(k => k.nama);
+        kecamatanChart.data.datasets[0].data = batang.map(k => k.jumlah);
+        kecamatanChart.update();
+
+        // ---- peringkat ----
+        const teratas = stat.urut[0];
+        document.getElementById('kecamatanTerbanyak').textContent = 'Terbanyak: ' + teratas.nama;
+
+        stat.urut.slice(0, MAKS_PERINGKAT_KECAMATAN).forEach((k, i) => {
+            const persen = Math.round(k.jumlah / stat.denganKecamatan * 100);
+
+            const baris = buatElemen('div', 'kec-row');
+            baris.appendChild(buatElemen('span', 'kec-rank', i + 1));
+
+            const info = buatElemen('div', 'kec-info');
+            info.appendChild(buatElemen('div', 'kec-name', k.nama));
+            const bar = buatElemen('div', 'kec-bar');
+            const isi = document.createElement('span');
+            isi.style.width = (k.jumlah / teratas.jumlah * 100) + '%';
+            bar.appendChild(isi);
+            info.appendChild(bar);
+            baris.appendChild(info);
+
+            const hitung = buatElemen('div', 'kec-count', k.jumlah);
+            hitung.appendChild(buatElemen('small', '', '(' + persen + '%)'));
+            baris.appendChild(hitung);
+
+            elList.appendChild(baris);
+        });
+
+        // ---- catatan kecil ----
+        const catatan = [];
+        if (stat.urut.length > MAKS_PERINGKAT_KECAMATAN) {
+            catatan.push('+' + (stat.urut.length - MAKS_PERINGKAT_KECAMATAN) + ' kecamatan lainnya');
+        }
+        if (stat.tanpaKecamatan > 0) {
+            catatan.push(stat.tanpaKecamatan + ' pasien belum diisi kecamatannya');
+        }
+        elNote.textContent = catatan.join(' \u2022 ');
+    }
+
+    bacaTabelPasien()
+        .then(baris => tampilkanKecamatan(hitungPerKecamatan(baris)))
+        .catch(error => {
+            console.warn(error);
+            const elList = document.getElementById('kecamatanList');
+            elList.innerHTML = '';
+            elList.appendChild(buatElemen('div', 'kec-kosong', 'Data pasien tidak dapat dibaca.'));
+        });
 </script>
 
 @endsection

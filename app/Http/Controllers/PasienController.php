@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pasien;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
  
 class PasienController extends Controller
 {
@@ -46,25 +47,29 @@ class PasienController extends Controller
             'pembayaran'          => 'required',
         ]);
  
-        $pasien = Pasien::create([
-            'no_rm'         => $request->no_rm,
-            'nama'          => $request->nama,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'nik'           => $request->nik,
-            'no_telepon'    => $request->no_telepon,
-            'alamat'        => $request->alamat,
-        ]);
+        // Satu transaksi: kalau simpan kunjungan gagal, data pasien ikut dibatalkan
+        // (supaya tidak ada pasien "yatim" tanpa kunjungan).
+        DB::transaction(function () use ($request) {
+            $pasien = Pasien::create([
+                'no_rm'         => $request->no_rm,
+                'nama'          => $request->nama,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'nik'           => $request->nik,
+                'no_telepon'    => $request->no_telepon,
+                'alamat'        => $request->alamat,
+            ]);
  
-        Kunjungan::create([
-            'pasien_id'         => $pasien->id,
-            'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
-            'tanggal_kunjungan' => $request->tanggal_kunjungan,
-            'dokter'            => $request->dokter,
-            'poli'              => $request->poli,
-            'pembayaran'        => $request->pembayaran,
-            'status'            => 'Menunggu',
-        ]);
+            Kunjungan::create([
+                'pasien_id'         => $pasien->id,
+                'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
+                'tanggal_kunjungan' => $request->tanggal_kunjungan,
+                'dokter'            => $request->dokter,
+                'poli'              => $request->poli,
+                'pembayaran'        => $request->pembayaran,
+                'status'            => 'Menunggu',
+            ]);
+        });
  
         return redirect()
             ->route('pasien.lama')

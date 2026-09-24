@@ -727,5 +727,83 @@
 
 </div>
 
+{{-- Enter di keyboard = pindah otomatis ke kolom berikutnya, jadi tidak perlu klik/arahkan kursor manual --}}
+<script>
+(function () {
+
+    var form = document.querySelector('.content form');
+
+    if (!form) {
+        return;
+    }
+
+    function isVisible(el) {
+        return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+    }
+
+    // Semua kolom isian di form ini, sesuai urutan tampil di layar
+    function getFields() {
+
+        var selector = 'input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]), select, textarea';
+
+        return Array.prototype.filter.call(form.querySelectorAll(selector), function (el) {
+            return !el.disabled && isVisible(el);
+        });
+    }
+
+    form.addEventListener('keydown', function (event) {
+
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        var target = event.target;
+
+        // Kolom Alamat boleh multi-baris: Shift+Enter tetap bikin baris baru seperti biasa
+        if (target.tagName === 'TEXTAREA' && event.shiftKey) {
+            return;
+        }
+
+        // Biarkan tombol Batal & Daftar bekerja seperti biasa
+        if (target.tagName === 'BUTTON' || target.type === 'submit' || target.type === 'button') {
+            return;
+        }
+
+        event.preventDefault();
+
+        var fields = getFields();
+        var index = fields.indexOf(target);
+
+        if (index === -1) {
+            return;
+        }
+
+        var next = fields[index + 1];
+
+        if (next) {
+
+            next.focus();
+
+            // Kalau kolom berikutnya kolom teks, langsung blok isinya biar gampang ditimpa
+            if (typeof next.select === 'function' && next.tagName === 'INPUT') {
+                try {
+                    next.select();
+                } catch (e) {}
+            }
+
+        } else {
+
+            // Sudah di kolom terakhir -> arahkan fokus ke tombol Daftar (tidak langsung submit)
+            var tombolDaftar = form.querySelector('button[type="submit"]');
+
+            if (tombolDaftar) {
+                tombolDaftar.focus();
+            }
+        }
+    });
+
+})();
+</script>
+
 @endsection
 ```
