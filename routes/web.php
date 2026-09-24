@@ -79,3 +79,5 @@ Route::prefix('pemeriksaan/{poli}/{rm}')->group(function () {
     Route::get('clinical-pathway', [ClinicalPathwayController::class, 'index'])->name('clinical-pathway.index');
     Route::post('clinical-pathway', [ClinicalPathwayController::class, 'store'])->name('clinical-pathway.store');
 });
+
+require __DIR__.'/penunjang.php';
