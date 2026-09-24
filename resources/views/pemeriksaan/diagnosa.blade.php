@@ -1,402 +1,71 @@
-@extends('layouts.app')
-
-@section('title', 'Diagnosa — ' . $pasien->nama)
-
-@section('style')
-
-<style>
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: #ffffff;
-        color: #222;
-    }
-
-    .main {
-        width: calc(100% - 230px);
-        min-height: 100vh;
-        margin-left: 230px;
-        background: #f5f5f5;
-    }
-
-    .content {
-        width: 100%;
-        padding: 25px 22px;
-    }
-
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-
-        margin-bottom: 14px;
-
-        color: #444;
-        text-decoration: none;
-
-        font-size: 11px;
-        font-weight: 500;
-    }
-
-    .back-link:hover {
-        color: #ed1111;
-    }
-
-    .identity-bar {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-
-        gap: 22px;
-
-        padding: 16px 22px;
-        margin-bottom: 16px;
-
-        border-radius: 10px;
-
-        background: linear-gradient(180deg, #980000 0%, #570000 100%);
-        color: #ffffff;
-    }
-
-    .identity-name-block {
-        min-width: 170px;
-    }
-
-    .identity-label-top {
-        font-size: 9px;
-        opacity: 0.8;
-        margin-bottom: 3px;
-    }
-
-    .identity-name {
-        font-size: 16px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-    }
-
-    .identity-field {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .identity-field label {
-        font-size: 9px;
-        opacity: 0.85;
-    }
-
-    .identity-field .value-box {
-        min-width: 120px;
-        height: 28px;
-
-        display: flex;
-        align-items: center;
-
-        padding: 0 10px;
-
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        border-radius: 5px;
-
-        font-size: 10px;
-        font-weight: 500;
-    }
-
-    .tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-
-        margin-bottom: 16px;
-    }
-
-    .tab-item {
-        height: 32px;
-
-        display: inline-flex;
-        align-items: center;
-
-        padding: 0 16px;
-
-        border-radius: 20px;
-
-        font-size: 10px;
-        font-weight: 600;
-
-        text-decoration: none;
-
-        color: #1a1a1a;
-        background: transparent;
-    }
-
-    .tab-item.active {
-        background: #7a0000;
-        color: #ffffff;
-    }
-
-    .tab-item.disabled {
-        cursor: not-allowed;
-    }
-
-    /* =========================
-       FORM CARD
-    ========================== */
-
-    .form-card {
-        background: #ffffff;
-
-        border: 2px solid #3b82f6;
-        border-radius: 10px;
-
-        padding: 24px 26px;
-    }
-
-    .form-card-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        margin-bottom: 18px;
-
-        font-size: 15px;
-        font-weight: 700;
-        color: #ed1111;
-    }
-
-    .form-card-title .title-badge {
-        width: 90px;
-        height: 14px;
-
-        border-radius: 8px;
-
-        background: linear-gradient(180deg, #980000 0%, #570000 100%);
-    }
-
-    .field-group {
-        margin-bottom: 16px;
-    }
-
-    .field label {
-        display: block;
-        margin-bottom: 6px;
-
-        font-size: 10px;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .field textarea {
-        width: 100%;
-
-        padding: 8px 10px;
-
-        border: 1px solid #ccc;
-        border-radius: 6px;
-
-        font-family: 'Poppins', sans-serif;
-        font-size: 10px;
-        color: #222;
-
-        outline: none;
-        resize: vertical;
-    }
-
-    .field textarea:focus {
-        border-color: #3b82f6;
-    }
-
-    .field select {
-        width: 100%;
-        height: 36px;
-
-        padding: 0 10px;
-
-        border: 1px solid #ccc;
-        border-radius: 6px;
-
-        background: #ffffff;
-
-        font-family: 'Poppins', sans-serif;
-        font-size: 10px;
-        color: #222;
-
-        outline: none;
-        cursor: pointer;
-    }
-
-    .field select:focus {
-        border-color: #3b82f6;
-    }
-
-    .field select:invalid {
-        color: #888;
-    }
-
-    .form-footer {
-        display: flex;
-        justify-content: flex-end;
-
-        margin-top: 8px;
-    }
-
-    .btn-simpan {
-        height: 34px;
-
-        padding: 0 22px;
-
-        border: none;
-        border-radius: 6px;
-
-        background: #16a34a;
-        color: #ffffff;
-
-        font-family: 'Poppins', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-
-        cursor: pointer;
-    }
-
-    .btn-simpan:hover {
-        background: #128a3e;
-    }
-
-</style>
-
-@endsection
-
-
-@section('content')
-
-<div class="dashboard">
-
-    <x-sidebar />
-
-    <main class="main">
-        <x-topbar title="Pemeriksaan" icon="heart-pulse-fill" />
-
-        <section class="content">
-
-            <x-popup-alert />
-
-            <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="back-link">
-                <i class="bi bi-arrow-left"></i>
-                Kembali ke Diagnosa
-            </a>
-
-            <div class="identity-bar">
-
-                <div class="identity-name-block">
-                    <div class="identity-label-top">Identitas Pasien</div>
-                    <div class="identity-name">{{ strtoupper($pasien->nama) }}</div>
-                </div>
-
-                <div class="identity-field">
-                    <label>No.RM</label>
-                    <div class="value-box">{{ $pasien->no_rm }}</div>
-                </div>
-
-                <div class="identity-field">
-                    <label>NIK</label>
-                    <div class="value-box">{{ $pasien->nik }}</div>
-                </div>
-
-                <div class="identity-field">
-                    <label>Jenis Kelamin</label>
-                    <div class="value-box">{{ $pasien->jenis_kelamin }}</div>
-                </div>
-
-                <div class="identity-field">
-                    <label>Tanggal Lahir</label>
-                    <div class="value-box">{{ $pasien->tanggal_lahir->format('d-m-Y') }}</div>
-                </div>
-
-                <div class="identity-field">
-                    <label>Usia</label>
-                    <div class="value-box">{{ $pasien->tanggal_lahir->age }} Tahun</div>
-                </div>
-
-            </div>
-
-            <div class="tabs">
-                <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Asesment</a>
-                <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="tab-item">SOAP</a>
-                <span class="tab-item active">Diagnosa</span>
-                <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
-                <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
-                <span class="tab-item disabled">Penunjang</span>
-                <span class="tab-item disabled">Rujukan</span>
-                <span class="tab-item disabled">Autentikasi</span>
-            </div>
-
-            @if ($errors->any())
-                <div style="margin-bottom: 16px; padding: 10px 14px; background: #fdecea; color: #b3261e; border-radius: 6px; font-size: 11px; font-weight: 500;">
-                    Semua kolom Diagnosa wajib diisi. Silakan lengkapi dulu sebelum menyimpan.
-                </div>
-            @endif
-
-            {{-- FORM DIAGNOSIS --}}
-            <div class="form-card">
-
-                <h2 class="form-card-title">
-                    DIAGNOSIS
-                </h2>
-
-                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa">
-                    @csrf
-
-                    <div class="field-group">
-                        <div class="field">
-                            <label>Diagnosis Utama</label>
-                            <input type="text" name="diagnosis_utama" value="{{ old('diagnosis_utama', optional($rekam)->diagnosis_utama) }}" placeholder="isi diagnosis utama" required>
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <div class="field">
-                            <label>Diagnosis Sekunder</label>
-                            <input type="text" name="diagnosis_sekunder" value="{{ old('diagnosis_sekunder', optional($rekam)->diagnosis_sekunder) }}" placeholder="isi diagnosis sekunder" required>
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <div class="field">
-                            <label>Tindakan</label>
-                            <input type="text" name="tindakan" value="{{ old('tindakan', optional($rekam)->tindakan) }}" placeholder="isi tindakan" required>
-                        </div>
-                    </div>
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn-simpan">
-                            Simpan Diagnosa
-                        </button>
-                    </div>
-
-                </form>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
-
-<script>
-    document.querySelectorAll('#form-diagnosa [required]').forEach(function (field) {
-        field.addEventListener('invalid', function () {
-            field.setCustomValidity('Kolom ini wajib diisi.');
-        });
-        field.addEventListener('input', function () {
-            field.setCustomValidity('');
-        });
-    });
-</script>
-
-@endsection
+{{--
+    Tab "Diagnosa" (isi kartu saja; sidebar, header, banner pasien & tab memakai layout Asesmen Anda).
+    Variabel dari controller:
+      $action              URL simpan (opsional, default '#')
+      $diagnosis           koleksi master diagnosis  (kolom: id, nama)
+      $tindakan            koleksi master tindakan   (kolom: id, nama)
+      $diagnosisUtama      id terpilih (opsional)
+      $diagnosisSekunder   array id terpilih (opsional)
+      $tindakanTerpilih    array id terpilih (opsional)
+--}}
+@php
+    $diagnosis = $diagnosis ?? collect();
+    $tindakan = $tindakan ?? collect();
+    $utama = old('diagnosis_utama', $diagnosisUtama ?? null);
+    $sekunder = old('diagnosis_sekunder', $diagnosisSekunder ?? []);
+    $tindakanIds = old('tindakan', $tindakanTerpilih ?? []);
+@endphp
+
+<form action="{{ $action ?? '#' }}" method="POST" class="dx-card" id="form-diagnosa">
+    @csrf
+    <h2 class="dx-title">DIAGNOSIS</h2>
+
+    {{-- 1. Diagnosis Utama --}}
+    <div class="dx-group">
+        <label class="dx-label" for="diagnosis_utama">Diagnosis Utama</label>
+        <select id="diagnosis_utama" name="diagnosis_utama" class="dx-select" required>
+            <option value="">Pilih diagnosis utama</option>
+            @foreach ($diagnosis as $d)
+                <option value="{{ $d->id }}" {{ $utama == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- 2. Diagnosis Sekunder --}}
+    <div class="dx-group" data-dx-section>
+        <div class="dx-head">
+            <span class="dx-label">Diagnosis Sekunder</span>
+            <button type="button" class="dx-btn-tambah" data-add>+ Tambah</button>
+        </div>
+        <div class="dx-empty" data-empty {{ count($sekunder) ? 'hidden' : '' }}>Klik Tambah untuk mengisi diagnosis sekunder.</div>
+        <div class="dx-list" data-list>
+            @foreach ($sekunder as $id)
+                @include('pemeriksaan.diagnosa-row', ['name' => 'diagnosis_sekunder', 'label' => 'Diagnosis Sekunder', 'placeholder' => 'Pilih diagnosis sekunder', 'options' => $diagnosis, 'selected' => $id, 'no' => $loop->iteration])
+            @endforeach
+        </div>
+        <template data-template>
+            @include('pemeriksaan.diagnosa-row', ['name' => 'diagnosis_sekunder', 'label' => 'Diagnosis Sekunder', 'placeholder' => 'Pilih diagnosis sekunder', 'options' => $diagnosis])
+        </template>
+    </div>
+
+    {{-- 3. Tindakan --}}
+    <div class="dx-group" data-dx-section>
+        <div class="dx-head">
+            <span class="dx-label">Tindakan</span>
+            <button type="button" class="dx-btn-tambah" data-add>+ Tambah</button>
+        </div>
+        <div class="dx-empty" data-empty {{ count($tindakanIds) ? 'hidden' : '' }}>Klik Tambah untuk mengisi tindakan.</div>
+        <div class="dx-list" data-list>
+            @foreach ($tindakanIds as $id)
+                @include('pemeriksaan.diagnosa-row', ['name' => 'tindakan', 'label' => 'Tindakan', 'placeholder' => 'Pilih tindakan', 'options' => $tindakan, 'selected' => $id, 'no' => $loop->iteration])
+            @endforeach
+        </div>
+        <template data-template>
+            @include('pemeriksaan.diagnosa-row', ['name' => 'tindakan', 'label' => 'Tindakan', 'placeholder' => 'Pilih tindakan', 'options' => $tindakan])
+        </template>
+    </div>
+
+    <div class="dx-actions">
+        <button type="submit" class="dx-btn-simpan">Simpan</button>
+    </div>
+</form>
