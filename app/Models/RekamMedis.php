@@ -19,15 +19,12 @@ class RekamMedis extends Model
         'riwayat_pengobatan',
         'tb',
         'td',
-        'lp',
         'respiratory_rate',
         'berat_badan',
         'detak_jantung',
-        'lingkar_dada',
         'saturasi',
         'imt',
         'suhu_badan',
-        'lingkar_kepala',
         'gcs',
 
         // SOAP

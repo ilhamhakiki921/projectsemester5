@@ -124,15 +124,12 @@ class PemeriksaanController extends Controller
             'riwayat_pengobatan'         => 'required|string',
             'tb'                         => 'required|string',
             'td'                         => 'required|string',
-            'lp'                         => 'required|string',
             'respiratory_rate'           => 'required|string',
             'berat_badan'                => 'required|string',
             'detak_jantung'              => 'required|string',
-            'lingkar_dada'               => 'required|string',
             'saturasi'                   => 'required|string',
             'imt'                        => 'required|string',
             'suhu_badan'                 => 'required|string',
-            'lingkar_kepala'             => 'required|string',
             'gcs'                        => 'required|string',
         ], $this->pesanValidasi());
 

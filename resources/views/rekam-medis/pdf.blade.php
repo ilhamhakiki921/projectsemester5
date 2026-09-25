@@ -162,22 +162,17 @@
     <table class="vital">
         <tr>
             <td><div class="field-label">TB (Tinggi Badan)</div>{{ $antrian->rekamMedis->tb ?: '-' }}</td>
-            <td><div class="field-label">TD (Tekanan Darah)</div>{{ $antrian->rekamMedis->td ?: '-' }}</td>
-            <td><div class="field-label">LP (Lingkar Perut)</div>{{ $antrian->rekamMedis->lp ?: '-' }}</td>
-        </tr>
-        <tr>
-            <td><div class="field-label">Respiratory Rate</div>{{ $antrian->rekamMedis->respiratory_rate ?: '-' }}</td>
             <td><div class="field-label">Berat Badan</div>{{ $antrian->rekamMedis->berat_badan ?: '-' }}</td>
-            <td><div class="field-label">Detak Jantung</div>{{ $antrian->rekamMedis->detak_jantung ?: '-' }}</td>
-        </tr>
-        <tr>
-            <td><div class="field-label">Lingkar Dada</div>{{ $antrian->rekamMedis->lingkar_dada ?: '-' }}</td>
-            <td><div class="field-label">Saturasi</div>{{ $antrian->rekamMedis->saturasi ?: '-' }}</td>
             <td><div class="field-label">IMT</div>{{ $antrian->rekamMedis->imt ?: '-' }}</td>
         </tr>
         <tr>
             <td><div class="field-label">Suhu Badan</div>{{ $antrian->rekamMedis->suhu_badan ?: '-' }}</td>
-            <td><div class="field-label">Lingkar Kepala</div>{{ $antrian->rekamMedis->lingkar_kepala ?: '-' }}</td>
+            <td><div class="field-label">TD (Tekanan Darah)</div>{{ $antrian->rekamMedis->td ?: '-' }}</td>
+            <td><div class="field-label">Denyut Nadi</div>{{ $antrian->rekamMedis->detak_jantung ?: '-' }}</td>
+        </tr>
+        <tr>
+            <td><div class="field-label">Respiratory Rate</div>{{ $antrian->rekamMedis->respiratory_rate ?: '-' }}</td>
+            <td><div class="field-label">Saturasi</div>{{ $antrian->rekamMedis->saturasi ?: '-' }}</td>
             <td><div class="field-label">GCS</div>{{ $antrian->rekamMedis->gcs ?: '-' }}</td>
         </tr>
     </table>

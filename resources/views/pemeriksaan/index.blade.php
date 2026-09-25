@@ -95,6 +95,18 @@
         box-shadow: 0 0 0 2px rgba(237, 17, 17, 0.12);
     }
 
+    .search-field input[type="date"]::-webkit-calendar-picker-indicator {
+        width: 18px;
+        height: 18px;
+        padding: 2px;
+        cursor: pointer;
+        filter: opacity(0.75);
+    }
+
+    .search-field input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        filter: opacity(1);
+    }
+
     .search-actions {
         display: flex;
         justify-content: flex-end;
@@ -324,17 +336,17 @@
 
                     <div class="search-field">
                         <label for="nama">Nama Pasien</label>
-                        <input type="text" id="nama" name="nama" value="{{ request('nama') }}" placeholder="Cth: Budi Santoso">
+                        <input type="text" id="nama" name="nama" value="{{ request('nama') }}" placeholder="Masukkan nama pasien">
                     </div>
 
                     <div class="search-field">
                         <label for="no_rm">No. RM</label>
-                        <input type="text" id="no_rm" name="no_rm" value="{{ request('no_rm') }}" placeholder="Cth: 00123">
+                        <input type="text" id="no_rm" name="no_rm" value="{{ request('no_rm') }}" placeholder="Masukkan nomor rekam medis">
                     </div>
 
                     <div class="search-field">
                         <label for="nik">NIK</label>
-                        <input type="text" id="nik" name="nik" value="{{ request('nik') }}" placeholder="16 digit NIK">
+                        <input type="text" id="nik" name="nik" value="{{ request('nik') }}" placeholder="Masukkan NIK pasien (16 digit)">
                     </div>
 
                     <div class="search-field">

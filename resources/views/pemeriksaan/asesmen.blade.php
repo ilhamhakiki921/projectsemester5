@@ -202,6 +202,11 @@
         color: #333;
     }
 
+    .field label .required-mark {
+        color: #ed1111;
+        margin-left: 2px;
+    }
+
     .field input,
     .field textarea {
         width: 100%;
@@ -216,6 +221,12 @@
         color: #222;
 
         outline: none;
+    }
+
+    .field input[readonly] {
+        background: #f5f5f5;
+        color: #555;
+        cursor: not-allowed;
     }
 
     .field input:focus,
@@ -357,30 +368,30 @@
 
                     <div class="field-group">
                         <div class="field">
-                            <label>Keluhan Utama</label>
-                            <input type="text" name="keluhan_utama" value="{{ old('keluhan_utama', optional($rekam)->keluhan_utama) }}" placeholder="Tulis keluhan utama pasien" required>
+                            <label>Keluhan Utama<span class="required-mark">*</span></label>
+                            <input type="text" name="keluhan_utama" value="{{ old('keluhan_utama', optional($rekam)->keluhan_utama) }}" placeholder="Keluhan utama yang dirasakan pasien" required>
                         </div>
                     </div>
 
                     <div class="field-row">
                         <div class="field">
-                            <label>Riwayat Penyakit Sekarang</label>
-                            <input type="text" name="riwayat_penyakit_sekarang" value="{{ old('riwayat_penyakit_sekarang', optional($rekam)->riwayat_penyakit_sekarang) }}" required>
+                            <label>Riwayat Penyakit Sekarang<span class="required-mark">*</span></label>
+                            <input type="text" name="riwayat_penyakit_sekarang" value="{{ old('riwayat_penyakit_sekarang', optional($rekam)->riwayat_penyakit_sekarang) }}" placeholder="Uraian riwayat penyakit yang sedang dialami" required>
                         </div>
                         <div class="field">
-                            <label>Riwayat Penyakit Terdahulu</label>
-                            <input type="text" name="riwayat_penyakit_terdahulu" value="{{ old('riwayat_penyakit_terdahulu', optional($rekam)->riwayat_penyakit_terdahulu) }}" required>
+                            <label>Riwayat Penyakit Terdahulu<span class="required-mark">*</span></label>
+                            <input type="text" name="riwayat_penyakit_terdahulu" value="{{ old('riwayat_penyakit_terdahulu', optional($rekam)->riwayat_penyakit_terdahulu) }}" placeholder="Riwayat penyakit terdahulu, tulis 'Tidak ada' jika tidak ada" required>
                         </div>
                     </div>
 
                     <div class="field-row">
                         <div class="field">
-                            <label>Riwayat Alergi</label>
-                            <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi', optional($rekam)->riwayat_alergi) }}" required>
+                            <label>Riwayat Alergi<span class="required-mark">*</span></label>
+                            <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi', optional($rekam)->riwayat_alergi) }}" placeholder="Riwayat alergi pasien, tulis 'Tidak ada' jika tidak ada" required>
                         </div>
                         <div class="field">
-                            <label>Riwayat Pengobatan</label>
-                            <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan', optional($rekam)->riwayat_pengobatan) }}" required>
+                            <label>Riwayat Pengobatan<span class="required-mark">*</span></label>
+                            <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan', optional($rekam)->riwayat_pengobatan) }}" placeholder="Riwayat pengobatan pasien, tulis 'Tidak ada' jika tidak ada" required>
                         </div>
                     </div>
 
@@ -388,61 +399,46 @@
 
                     <div class="field-row cols-3">
                         <div class="field">
-                            <label>TB (Tinggi Badan)</label>
-                            <input type="text" name="tb" value="{{ old('tb', optional($rekam)->tb) }}" required>
+                            <label>TB (Tinggi Badan)<span class="required-mark">*</span></label>
+                            <input type="text" id="tb" name="tb" value="{{ old('tb', optional($rekam)->tb) }}" placeholder="Tinggi badan dalam cm" required>
                         </div>
                         <div class="field">
-                            <label>TD (Tekanan Darah)</label>
-                            <input type="text" name="td" value="{{ old('td', optional($rekam)->td) }}" required>
-                        </div>
-                        <div class="field">
-                            <label>LP (Lingkar Perut)</label>
-                            <input type="text" name="lp" value="{{ old('lp', optional($rekam)->lp) }}" required>
-                        </div>
-                    </div>
-
-                    <div class="field-row cols-3">
-                        <div class="field">
-                            <label>Respiratory Rate</label>
-                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', optional($rekam)->respiratory_rate) }}" required>
-                        </div>
-                        <div class="field">
-                            <label>Berat Badan</label>
-                            <input type="text" name="berat_badan" value="{{ old('berat_badan', optional($rekam)->berat_badan) }}" required>
-                        </div>
-                        <div class="field">
-                            <label>Detak Jantung</label>
-                            <input type="text" name="detak_jantung" value="{{ old('detak_jantung', optional($rekam)->detak_jantung) }}" required>
-                        </div>
-                    </div>
-
-                    <div class="field-row cols-3">
-                        <div class="field">
-                            <label>Lingkar Dada</label>
-                            <input type="text" name="lingkar_dada" value="{{ old('lingkar_dada', optional($rekam)->lingkar_dada) }}" required>
-                        </div>
-                        <div class="field">
-                            <label>Saturasi</label>
-                            <input type="text" name="saturasi" value="{{ old('saturasi', optional($rekam)->saturasi) }}" required>
+                            <label>BB (Berat Badan)<span class="required-mark">*</span></label>
+                            <input type="text" id="berat_badan" name="berat_badan" value="{{ old('berat_badan', optional($rekam)->berat_badan) }}" placeholder="Berat badan dalam kg" required>
                         </div>
                         <div class="field">
                             <label>IMT</label>
-                            <input type="text" name="imt" value="{{ old('imt', optional($rekam)->imt) }}" required>
+                            <input type="text" id="imt" name="imt" value="{{ old('imt', optional($rekam)->imt) }}" placeholder="Terisi otomatis" readonly>
                         </div>
                     </div>
 
                     <div class="field-row cols-3">
                         <div class="field">
-                            <label>Suhu Badan</label>
-                            <input type="text" name="suhu_badan" value="{{ old('suhu_badan', optional($rekam)->suhu_badan) }}" required>
+                            <label>Suhu Badan<span class="required-mark">*</span></label>
+                            <input type="text" name="suhu_badan" value="{{ old('suhu_badan', optional($rekam)->suhu_badan) }}" placeholder="Suhu tubuh dalam °C" required>
                         </div>
                         <div class="field">
-                            <label>Lingkar Kepala</label>
-                            <input type="text" name="lingkar_kepala" value="{{ old('lingkar_kepala', optional($rekam)->lingkar_kepala) }}" required>
+                            <label>TD (Tekanan Darah)<span class="required-mark">*</span></label>
+                            <input type="text" name="td" value="{{ old('td', optional($rekam)->td) }}" placeholder="Tekanan darah, format 120/80" required>
                         </div>
                         <div class="field">
-                            <label>GCS</label>
-                            <input type="text" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" required>
+                            <label>Denyut Nadi<span class="required-mark">*</span></label>
+                            <input type="text" name="detak_jantung" value="{{ old('detak_jantung', optional($rekam)->detak_jantung) }}" placeholder="Denyut nadi dalam x/menit" required>
+                        </div>
+                    </div>
+
+                    <div class="field-row cols-3">
+                        <div class="field">
+                            <label>Respiratory Rate<span class="required-mark">*</span></label>
+                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', optional($rekam)->respiratory_rate) }}" placeholder="Laju napas dalam x/menit" required>
+                        </div>
+                        <div class="field">
+                            <label>Saturasi<span class="required-mark">*</span></label>
+                            <input type="text" name="saturasi" value="{{ old('saturasi', optional($rekam)->saturasi) }}" placeholder="Saturasi oksigen dalam %" required>
+                        </div>
+                        <div class="field">
+                            <label>GCS<span class="required-mark">*</span></label>
+                            <input type="text" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" placeholder="Nilai GCS, format E4V5M6" required>
                         </div>
                     </div>
 
@@ -468,6 +464,58 @@
                     field.setCustomValidity('');
                 });
             });
+
+            // Hitung IMT otomatis: BB (kg) / (TB (m))^2, TB diinput dalam cm
+            (function () {
+                var tbInput = document.getElementById('tb');
+                var bbInput = document.getElementById('berat_badan');
+                var imtInput = document.getElementById('imt');
+
+                function hitungImt() {
+                    var tbCm = parseFloat(tbInput.value);
+                    var bbKg = parseFloat(bbInput.value);
+
+                    if (!tbCm || !bbKg || tbCm <= 0) {
+                        imtInput.value = '';
+                        return;
+                    }
+
+                    var tbM = tbCm / 100;
+                    var imt = bbKg / (tbM * tbM);
+
+                    imtInput.value = imt.toFixed(2);
+                }
+
+                tbInput.addEventListener('input', hitungImt);
+                bbInput.addEventListener('input', hitungImt);
+
+                // Hitung saat halaman dimuat jika sudah ada data sebelumnya
+                hitungImt();
+            })();
+
+            // Tekan Enter -> pindah otomatis ke kolom berikutnya, tidak perlu arahkan kursor manual
+            (function () {
+                var form = document.getElementById('form-asesmen');
+                var fields = Array.prototype.slice.call(
+                    form.querySelectorAll('input:not([type="hidden"]):not([readonly]), textarea')
+                );
+
+                fields.forEach(function (field, index) {
+                    field.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' && ! e.shiftKey) {
+                            e.preventDefault();
+
+                            var next = fields[index + 1];
+                            if (next) {
+                                next.focus();
+                            } else {
+                                var tombolSimpan = form.querySelector('button[type="submit"]');
+                                if (tombolSimpan) tombolSimpan.focus();
+                            }
+                        }
+                    });
+                });
+            })();
         </script>
 
     </main>

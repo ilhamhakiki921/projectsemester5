@@ -336,6 +336,11 @@
         color: #333;
     }
 
+    .modal-field label .required-mark {
+        color: #ed1111;
+        margin-left: 2px;
+    }
+
     .modal-field input {
         width: 100%;
 
@@ -557,20 +562,14 @@
 
             <div class="modal-field-group">
                 <div class="modal-field">
-                    <label>Nama Obat</label>
+                    <label>Nama Obat<span class="required-mark">*</span></label>
                     <input
                         type="text"
                         id="inputNamaObat"
-                        list="listObat"
-                        placeholder="Cari nama obat...."
+                        placeholder="Ketik nama obat"
                         autocomplete="off"
                         required
                     >
-                    <datalist id="listObat">
-                        @foreach ($daftarObat as $obat)
-                            <option value="{{ $obat->nama_obat }}"></option>
-                        @endforeach
-                    </datalist>
                     <input type="hidden" name="obat_id" id="inputObatId" required>
                 </div>
             </div>
@@ -595,22 +594,22 @@
 
             <div class="modal-field-row">
                 <div class="modal-field">
-                    <label>Jumlah Obat</label>
-                    <input type="number" name="jumlah_obat" min="1" value="0" required>
+                    <label>Jumlah Obat<span class="required-mark">*</span></label>
+                    <input type="number" name="jumlah_obat" min="1" placeholder="misal: 10" required>
                 </div>
                 <div class="modal-field">
-                    <label>Dosis Obat</label>
+                    <label>Dosis Obat<span class="required-mark">*</span></label>
                     <input type="text" name="dosis_obat" placeholder="misal: 500 mg" required>
                 </div>
             </div>
 
             <div class="modal-field-row">
                 <div class="modal-field">
-                    <label>Frekuensi</label>
+                    <label>Frekuensi<span class="required-mark">*</span></label>
                     <input type="text" name="frekuensi" placeholder="misal: 3x sehari" required>
                 </div>
                 <div class="modal-field">
-                    <label>Tanggal Penulisan Resep</label>
+                    <label>Tanggal Penulisan Resep<span class="required-mark">*</span></label>
                     <input type="date" name="tanggal_penulisan" value="{{ now()->format('Y-m-d') }}" required>
                 </div>
             </div>
@@ -633,8 +632,8 @@
     var daftarObat = @json($daftarObatJson);
 
     document.getElementById('inputNamaObat').addEventListener('input', function () {
-        var nilai = this.value;
-        var cocok = daftarObat.find(function (o) { return o.nama === nilai; });
+        var nilai = this.value.trim().toLowerCase();
+        var cocok = daftarObat.find(function (o) { return o.nama.toLowerCase() === nilai; });
 
         var idObatField   = document.getElementById('inputObatId');
         var displayId      = document.getElementById('displayIdObat');

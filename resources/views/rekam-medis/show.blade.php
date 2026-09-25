@@ -271,16 +271,13 @@
                             <div class="kv-item"><strong>Riwayat Alergi</strong>{{ $rekam->riwayat_alergi }}</div>
                             <div class="kv-item"><strong>Riwayat Pengobatan</strong>{{ $rekam->riwayat_pengobatan }}</div>
                             <div class="kv-item"><strong>TB</strong>{{ $rekam->tb }}</div>
-                            <div class="kv-item"><strong>TD</strong>{{ $rekam->td }}</div>
-                            <div class="kv-item"><strong>LP</strong>{{ $rekam->lp }}</div>
-                            <div class="kv-item"><strong>Respiratory Rate</strong>{{ $rekam->respiratory_rate }}</div>
                             <div class="kv-item"><strong>Berat Badan</strong>{{ $rekam->berat_badan }}</div>
-                            <div class="kv-item"><strong>Detak Jantung</strong>{{ $rekam->detak_jantung }}</div>
-                            <div class="kv-item"><strong>Lingkar Dada</strong>{{ $rekam->lingkar_dada }}</div>
-                            <div class="kv-item"><strong>Saturasi</strong>{{ $rekam->saturasi }}</div>
                             <div class="kv-item"><strong>IMT</strong>{{ $rekam->imt }}</div>
                             <div class="kv-item"><strong>Suhu Badan</strong>{{ $rekam->suhu_badan }}</div>
-                            <div class="kv-item"><strong>Lingkar Kepala</strong>{{ $rekam->lingkar_kepala }}</div>
+                            <div class="kv-item"><strong>TD</strong>{{ $rekam->td }}</div>
+                            <div class="kv-item"><strong>Denyut Nadi</strong>{{ $rekam->detak_jantung }}</div>
+                            <div class="kv-item"><strong>Respiratory Rate</strong>{{ $rekam->respiratory_rate }}</div>
+                            <div class="kv-item"><strong>Saturasi</strong>{{ $rekam->saturasi }}</div>
                             <div class="kv-item"><strong>GCS</strong>{{ $rekam->gcs }}</div>
                         </div>
                     @else

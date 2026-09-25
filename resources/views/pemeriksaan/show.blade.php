@@ -242,6 +242,17 @@ body {
     color: #333;
 }
 
+.form-group label .required-mark {
+    color: #b30000;
+    margin-left: 2px;
+}
+
+.form-group input[readonly] {
+    background: #eceded;
+    color: #555;
+    cursor: not-allowed;
+}
+
 .form-group textarea,
 .form-group input {
     width: 100%;
@@ -453,20 +464,20 @@ body {
                         <div class="section-title">Asesmen Pemeriksaan</div>
 
                         <div class="form-group">
-                            <label>Keluhan Utama</label>
-                            <textarea name="keluhan_utama">{{ old('keluhan_utama', $rekamMedis->keluhan_utama ?? '') }}</textarea>
+                            <label>Keluhan Utama<span class="required-mark">*</span></label>
+                            <textarea name="keluhan_utama" placeholder="Keluhan utama yang dirasakan pasien" required>{{ old('keluhan_utama', $rekamMedis->keluhan_utama ?? '') }}</textarea>
                         </div>
 
                         <div class="form-row">
 
                             <div class="form-group">
-                                <label>Riwayat Penyakit Sekarang</label>
-                                <textarea name="riwayat_penyakit_sekarang">{{ old('riwayat_penyakit_sekarang', $rekamMedis->riwayat_penyakit_sekarang ?? '') }}</textarea>
+                                <label>Riwayat Penyakit Sekarang<span class="required-mark">*</span></label>
+                                <textarea name="riwayat_penyakit_sekarang" placeholder="Uraian riwayat penyakit yang sedang dialami" required>{{ old('riwayat_penyakit_sekarang', $rekamMedis->riwayat_penyakit_sekarang ?? '') }}</textarea>
                             </div>
 
                             <div class="form-group">
-                                <label>Riwayat Penyakit Terdahulu</label>
-                                <textarea name="riwayat_penyakit_terdahulu">{{ old('riwayat_penyakit_terdahulu', $rekamMedis->riwayat_penyakit_terdahulu ?? '') }}</textarea>
+                                <label>Riwayat Penyakit Terdahulu<span class="required-mark">*</span></label>
+                                <textarea name="riwayat_penyakit_terdahulu" placeholder="Riwayat penyakit terdahulu, tulis 'Tidak ada' jika tidak ada" required>{{ old('riwayat_penyakit_terdahulu', $rekamMedis->riwayat_penyakit_terdahulu ?? '') }}</textarea>
                             </div>
 
                         </div>
@@ -474,13 +485,13 @@ body {
                         <div class="form-row">
 
                             <div class="form-group">
-                                <label>Riwayat Alergi</label>
-                                <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi', $rekamMedis->riwayat_alergi ?? '') }}">
+                                <label>Riwayat Alergi<span class="required-mark">*</span></label>
+                                <input type="text" name="riwayat_alergi" value="{{ old('riwayat_alergi', $rekamMedis->riwayat_alergi ?? '') }}" placeholder="Riwayat alergi pasien, tulis 'Tidak ada' jika tidak ada" required>
                             </div>
 
                             <div class="form-group">
-                                <label>Riwayat Pengobatan</label>
-                                <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan', $rekamMedis->riwayat_pengobatan ?? '') }}">
+                                <label>Riwayat Pengobatan<span class="required-mark">*</span></label>
+                                <input type="text" name="riwayat_pengobatan" value="{{ old('riwayat_pengobatan', $rekamMedis->riwayat_pengobatan ?? '') }}" placeholder="Riwayat pengobatan pasien, tulis 'Tidak ada' jika tidak ada" required>
                             </div>
 
                         </div>
@@ -490,56 +501,18 @@ body {
                         <div class="form-row-3">
 
                             <div class="form-group">
-                                <label>TB (Tinggi Badan)</label>
-                                <input type="text" name="tb" value="{{ old('tb', $rekamMedis->tb ?? '') }}">
+                                <label>TB (Tinggi Badan)<span class="required-mark">*</span></label>
+                                <input type="text" id="tb" name="tb" value="{{ old('tb', $rekamMedis->tb ?? '') }}" placeholder="Tinggi badan dalam cm" required>
                             </div>
 
                             <div class="form-group">
-                                <label>TD (Tekanan Darah)</label>
-                                <input type="text" name="td" value="{{ old('td', $rekamMedis->td ?? '') }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>LP (Lingkar Perut)</label>
-                                <input type="text" name="lp" value="{{ old('lp', $rekamMedis->lp ?? '') }}">
-                            </div>
-
-                        </div>
-
-                        <div class="form-row-3">
-
-                            <div class="form-group">
-                                <label>Respiratory Rate</label>
-                                <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', $rekamMedis->respiratory_rate ?? '') }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Berat Badan</label>
-                                <input type="text" name="berat_badan" value="{{ old('berat_badan', $rekamMedis->berat_badan ?? '') }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Detak Jantung</label>
-                                <input type="text" name="detak_jantung" value="{{ old('detak_jantung', $rekamMedis->detak_jantung ?? '') }}">
-                            </div>
-
-                        </div>
-
-                        <div class="form-row-3">
-
-                            <div class="form-group">
-                                <label>Lingkar Dada</label>
-                                <input type="text" name="lingkar_dada" value="{{ old('lingkar_dada', $rekamMedis->lingkar_dada ?? '') }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Saturasi</label>
-                                <input type="text" name="saturasi" value="{{ old('saturasi', $rekamMedis->saturasi ?? '') }}">
+                                <label>BB (Berat Badan)<span class="required-mark">*</span></label>
+                                <input type="text" id="berat_badan" name="berat_badan" value="{{ old('berat_badan', $rekamMedis->berat_badan ?? '') }}" placeholder="Berat badan dalam kg" required>
                             </div>
 
                             <div class="form-group">
                                 <label>IMT</label>
-                                <input type="text" name="imt" value="{{ old('imt', $rekamMedis->imt ?? '') }}">
+                                <input type="text" id="imt" name="imt" value="{{ old('imt', $rekamMedis->imt ?? '') }}" placeholder="Terisi otomatis" readonly>
                             </div>
 
                         </div>
@@ -547,18 +520,37 @@ body {
                         <div class="form-row-3">
 
                             <div class="form-group">
-                                <label>Suhu Badan</label>
-                                <input type="text" name="suhu_badan" value="{{ old('suhu_badan', $rekamMedis->suhu_badan ?? '') }}">
+                                <label>Suhu Badan<span class="required-mark">*</span></label>
+                                <input type="text" name="suhu_badan" value="{{ old('suhu_badan', $rekamMedis->suhu_badan ?? '') }}" placeholder="Suhu tubuh dalam °C" required>
                             </div>
 
                             <div class="form-group">
-                                <label>Lingkar Kepala</label>
-                                <input type="text" name="lingkar_kepala" value="{{ old('lingkar_kepala', $rekamMedis->lingkar_kepala ?? '') }}">
+                                <label>TD (Tekanan Darah)<span class="required-mark">*</span></label>
+                                <input type="text" name="td" value="{{ old('td', $rekamMedis->td ?? '') }}" placeholder="Tekanan darah, format 120/80" required>
                             </div>
 
                             <div class="form-group">
-                                <label>GCS</label>
-                                <input type="text" name="gcs" value="{{ old('gcs', $rekamMedis->gcs ?? '') }}">
+                                <label>Denyut Nadi<span class="required-mark">*</span></label>
+                                <input type="text" name="detak_jantung" value="{{ old('detak_jantung', $rekamMedis->detak_jantung ?? '') }}" placeholder="Denyut nadi dalam x/menit" required>
+                            </div>
+
+                        </div>
+
+                        <div class="form-row-3">
+
+                            <div class="form-group">
+                                <label>Respiratory Rate<span class="required-mark">*</span></label>
+                                <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', $rekamMedis->respiratory_rate ?? '') }}" placeholder="Laju napas dalam x/menit" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Saturasi<span class="required-mark">*</span></label>
+                                <input type="text" name="saturasi" value="{{ old('saturasi', $rekamMedis->saturasi ?? '') }}" placeholder="Saturasi oksigen dalam %" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>GCS<span class="required-mark">*</span></label>
+                                <input type="text" name="gcs" value="{{ old('gcs', $rekamMedis->gcs ?? '') }}" placeholder="Nilai GCS, format E4V5M6" required>
                             </div>
 
                         </div>
@@ -607,6 +599,35 @@ function bukaTab(nama, tombol) {
     tombol.classList.add('active');
 
 }
+
+// Hitung IMT otomatis: BB (kg) / (TB (m))^2, TB diinput dalam cm
+(function () {
+    var tbInput = document.getElementById('tb');
+    var bbInput = document.getElementById('berat_badan');
+    var imtInput = document.getElementById('imt');
+
+    if (!tbInput || !bbInput || !imtInput) {
+        return;
+    }
+
+    function hitungImt() {
+        var tbCm = parseFloat(tbInput.value);
+        var bbKg = parseFloat(bbInput.value);
+
+        if (!tbCm || !bbKg || tbCm <= 0) {
+            imtInput.value = '';
+            return;
+        }
+
+        var tbM = tbCm / 100;
+        var imt = bbKg / (tbM * tbM);
+
+        imtInput.value = imt.toFixed(2);
+    }
+
+    tbInput.addEventListener('input', hitungImt);
+    bbInput.addEventListener('input', hitungImt);
+})();
 
 </script>
 

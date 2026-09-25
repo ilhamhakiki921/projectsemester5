@@ -169,19 +169,6 @@
         color: #ed1111;
     }
 
-    .form-card-title .title-badge {
-        width: 90px;
-        height: 14px;
-
-        border-radius: 8px;
-
-        background: linear-gradient(180deg, #980000 0%, #570000 100%);
-    }
-
-    .field-group {
-        margin-bottom: 16px;
-    }
-
     .field label {
         display: block;
         margin-bottom: 6px;
@@ -189,6 +176,15 @@
         font-size: 10px;
         font-weight: 600;
         color: #333;
+    }
+
+    .field label .required-mark {
+        color: #ed1111;
+        margin-left: 2px;
+    }
+
+    .field-group {
+        margin-bottom: 16px;
     }
 
     .field textarea {
@@ -319,7 +315,6 @@
 
                 <h2 class="form-card-title">
                     SOAP
-                    <span class="title-badge"></span>
                 </h2>
 
                 <form method="POST" action="{{ route('pemeriksaan.soap.store', [$poli, $pasien->no_rm]) }}" id="form-soap">
@@ -327,29 +322,29 @@
 
                     <div class="field-group">
                         <div class="field">
-                            <label>S (subjek)</label>
-                            <textarea name="subjective" rows="3" required>{{ old('subjective', optional($rekam)->subjective) }}</textarea>
+                            <label>S (subjek)<span class="required-mark">*</span></label>
+                            <textarea name="subjective" rows="3" placeholder="Uraian keluhan yang disampaikan pasien" required>{{ old('subjective', optional($rekam)->subjective) }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>O (object)</label>
-                            <textarea name="objective" rows="3" required>{{ old('objective', optional($rekam)->objective) }}</textarea>
+                            <label>O (object)<span class="required-mark">*</span></label>
+                            <textarea name="objective" rows="3" placeholder="Hasil pemeriksaan fisik dan tanda vital" required>{{ old('objective', optional($rekam)->objective) }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>A (assesmen)</label>
-                            <textarea name="assessment" rows="3" required>{{ old('assessment', optional($rekam)->assessment) }}</textarea>
+                            <label>A (assesmen)<span class="required-mark">*</span></label>
+                            <textarea name="assessment" rows="3" placeholder="Diagnosis atau penilaian kondisi pasien" required>{{ old('assessment', optional($rekam)->assessment) }}</textarea>
                         </div>
                     </div>
 
                     <div class="field-group">
                         <div class="field">
-                            <label>P (plan)</label>
-                            <textarea name="plan" rows="3" required>{{ old('plan', optional($rekam)->plan) }}</textarea>
+                            <label>P (plan)<span class="required-mark">*</span></label>
+                            <textarea name="plan" rows="3" placeholder="Rencana terapi dan tindak lanjut" required>{{ old('plan', optional($rekam)->plan) }}</textarea>
                         </div>
                     </div>
 
@@ -379,16 +374,27 @@
         });
     });
 
-    // Tekan Enter di textarea SOAP -> loncat/validasi ke field wajib berikutnya,
-    // sama seperti perilaku default input text di halaman Asesmen (Shift+Enter tetap bisa ganti baris)
-    document.querySelectorAll('#form-soap textarea').forEach(function (textarea) {
-        textarea.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && ! e.shiftKey) {
-                e.preventDefault();
-                document.getElementById('form-soap').requestSubmit();
-            }
+    // Tekan Enter -> pindah ke kolom berikutnya (Shift+Enter tetap bisa bikin baris baru di textarea)
+    (function () {
+        var form = document.getElementById('form-soap');
+        var fields = Array.prototype.slice.call(form.querySelectorAll('textarea'));
+
+        fields.forEach(function (field, index) {
+            field.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && ! e.shiftKey) {
+                    e.preventDefault();
+
+                    var next = fields[index + 1];
+                    if (next) {
+                        next.focus();
+                    } else {
+                        var tombolSimpan = form.querySelector('button[type="submit"]');
+                        if (tombolSimpan) tombolSimpan.focus();
+                    }
+                }
+            });
         });
-    });
+    })();
 </script>
 
 @endsection
