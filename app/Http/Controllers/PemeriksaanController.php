@@ -108,7 +108,7 @@ class PemeriksaanController extends Controller
             'namaPoli'  => $this->daftarPoli[$poli],
             'kunjungan' => $kunjungan,
             'pasien'    => $kunjungan->pasien,
-            'rekam'     => $kunjungan->rekamMedis,
+            'rm'        => $no_rm,
         ]);
     }
 
