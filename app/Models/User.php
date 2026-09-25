@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,20 +12,23 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $table = 'users';
+
     /**
-     * The attributes that are mass assignable.
+     * Login sistem ini memakai kolom `username` (bukan email), lihat
+     * App\Http\Controllers\Auth\LoginController::username().
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'nama_lengkap',
+        'username',
         'password',
+        'role',
+        'status',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var list<string>
      */
     protected $hidden = [
@@ -35,14 +37,13 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            // Password otomatis di-hash setiap kali diisi (create/update),
+            // jadi di kode lain cukup isi 'password' => 'plain-text-nya'.
             'password' => 'hashed',
         ];
     }

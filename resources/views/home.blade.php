@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="home-box">
-        <h1 class="auth-title">Selamat datang, {{ Auth::user()->name }}</h1>
+        <h1 class="auth-title">Selamat datang, {{ Auth::user()->nama_lengkap }}</h1>
         <p class="auth-sub">Anda berhasil masuk ke SIP-REK.</p>
 
         <form method="POST" action="{{ route('logout') }}">

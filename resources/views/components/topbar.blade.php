@@ -13,7 +13,7 @@
     <div class="topbar-admin-wrapper">
     <div class="topbar-admin" onclick="document.getElementById('adminDropdown').classList.toggle('show')">
         <i class="bi bi-person-circle"></i>
-        <span>Admin</span>
+        <span>{{ Auth::check() ? Auth::user()->nama_lengkap : 'Admin' }}</span>
     </div>
 
     <div class="admin-dropdown" id="adminDropdown">
@@ -38,9 +38,12 @@
 
         <div class="dropdown-divider"></div>
 
-        <a href="#" class="dropdown-item text-danger">
-            <i class="bi bi-box-arrow-in-left"></i> Logout
-        </a>
+        <form action="{{ route('logout') }}" method="POST" class="dropdown-logout-form">
+            @csrf
+            <button type="submit" class="dropdown-item dropdown-logout-btn text-danger">
+                <i class="bi bi-box-arrow-in-left"></i> Logout
+            </button>
+        </form>
     </div>
 </div>
 </header>
@@ -174,6 +177,19 @@
 .dropdown-item.text-danger:hover {
     background: #fdecec;
     color: #d00000;
+}
+
+.dropdown-logout-form {
+    margin: 0;
+}
+
+.dropdown-logout-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
 }
 
 .dropdown-label {

@@ -203,6 +203,10 @@
         border-color: #a00000;
     }
 
+    .form-control.is-invalid {
+        border-color: #c40000;
+    }
+
     .toggle-eye {
         position: absolute;
 
@@ -226,6 +230,13 @@
 
     .toggle-eye:hover {
         color: #a00000;
+    }
+
+    .field-error {
+        margin-top: 6px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: #c40000;
     }
 
     .login-options {
@@ -336,10 +347,11 @@
                     <div class="input-wrapper">
 
                         <input
-                            type="password"
+                            type="text"
                             id="username"
                             name="username"
-                            class="form-control js-toggle-field"
+                            value="{{ old('username') }}"
+                            class="form-control js-toggle-field @error('username') is-invalid @enderror"
                             placeholder="Masukkan username"
                             autocomplete="off"
                         >
@@ -349,6 +361,10 @@
                         </button>
 
                     </div>
+
+                    @error('username')
+                        <div class="field-error">{{ $message }}</div>
+                    @enderror
 
                 </div>
 
@@ -364,7 +380,7 @@
                             type="password"
                             id="password"
                             name="password"
-                            class="form-control js-toggle-field"
+                            class="form-control js-toggle-field @error('password') is-invalid @enderror"
                             placeholder="Masukkan password"
                             autocomplete="off"
                         >
@@ -374,6 +390,10 @@
                         </button>
 
                     </div>
+
+                    @error('password')
+                        <div class="field-error">{{ $message }}</div>
+                    @enderror
 
                 </div>
 

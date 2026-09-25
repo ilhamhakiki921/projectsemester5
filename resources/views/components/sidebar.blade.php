@@ -1,4 +1,12 @@
-<aside class="sidebar">
+<!-- Tombol buka/tutup sidebar (selalu terlihat, pojok kiri atas) -->
+<button type="button" id="sidebarToggleBtn" class="sidebar-toggle-btn" aria-label="Buka/tutup menu">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- Lapisan gelap di belakang sidebar saat terbuka, klik = menutup sidebar -->
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<aside class="sidebar" id="sidebarUtama">
 
     {{-- =========================
          LOGO
@@ -6,12 +14,12 @@
     <div class="logo">
 
         <div class="logo-icon">
-            <span>SR</span>
+            <img src="{{ asset('images/logo-sistem.png') }}" alt="Logo SIP-REK">
         </div>
 
         <div class="logo-text">
-            <strong>Klinik</strong>
-            <span>Merah Putih</span>
+            <strong>SIP-REK</strong>
+            <span>Rekam Medis</span>
         </div>
 
     </div>
@@ -127,7 +135,8 @@
     ========================== --}}
     <div class="logout">
 
-        <a href="#">
+        <a href="{{ route('logout') }}"
+           onclick="event.preventDefault(); document.getElementById('formLogoutSidebar').submit();">
 
             <i class="bi bi-box-arrow-right"></i>
 
@@ -136,6 +145,11 @@
         </a>
 
     </div>
+
+    {{-- Form tersembunyi supaya klik "Keluar" mengirim POST (logout) yang benar --}}
+    <form id="formLogoutSidebar" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 
 </aside>
 
@@ -166,6 +180,87 @@
         );
 
         z-index: 1000;
+
+        /* Default: tersembunyi, digeser ke luar layar di sebelah kiri */
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    /* Cegah browser menangkap geser horizontal sebagai "swipe back"
+       (kembali ke halaman sebelumnya), supaya gesture geser kanan/kiri
+       bisa dipakai khusus untuk buka/tutup sidebar. */
+    html, body {
+        overscroll-behavior-x: none;
+        touch-action: pan-y;
+    }
+
+    /* Saat class "sidebar-open" ditambahkan (lewat tombol toggle),
+       sidebar digeser masuk ke kanan sampai terlihat penuh. */
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 18px rgba(0, 0, 0, 0.25);
+    }
+
+
+    /* =================================
+       TOMBOL TOGGLE (☰) & BACKDROP
+    ================================== */
+
+    .sidebar-toggle-btn {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 1200;
+
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #980000;
+        color: white;
+        border: none;
+        border-radius: 10px;
+
+        font-size: 20px;
+        cursor: pointer;
+
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        transition: background 0.2s ease, left 0.3s ease;
+    }
+
+    .sidebar-toggle-btn:hover {
+        background: #ed1111;
+    }
+
+    /* Tombol ikut geser ke kanan (ke tepi sidebar) saat sidebar terbuka */
+    body.sidebar-open .sidebar-toggle-btn {
+        left: 244px;
+    }
+
+    .sidebar-backdrop {
+        display: none;
+
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+
+        background: rgba(0, 0, 0, 0.45);
+    }
+
+    /* Konten utama (.main) tetap disisakan sedikit ruang di kiri untuk
+       tombol ☰ saat sidebar tertutup, supaya tombolnya tidak menimpa
+       judul halaman. "!important" dipakai supaya menang walau tiap
+       halaman punya aturan .main / margin-left sendiri-sendiri. */
+    body:not(.sidebar-open) .main {
+        margin-left: 62px !important;
+        width: calc(100% - 62px) !important;
+    }
+
+    body.sidebar-open .sidebar-backdrop {
+        display: block;
     }
 
 
@@ -186,12 +281,13 @@
 
 
     .logo-icon {
-        width: 39px;
-        height: 39px;
+        width: 52px;
+        height: 52px;
 
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
 
         margin-right: 10px;
 
@@ -201,6 +297,17 @@
         font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.5px;
+
+        overflow: hidden;
+    }
+
+    .logo-icon img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+        padding: 2px;
+        box-sizing: border-box;
     }
 
 
@@ -426,3 +533,161 @@
     }
 
 </style>
+
+<script>
+    // Toggle sidebar: buka/tutup lewat tombol ☰, atau tutup dengan klik
+    // area gelap (backdrop) di luar sidebar.
+    (function () {
+        var toggleBtn = document.getElementById('sidebarToggleBtn');
+        var sidebar   = document.getElementById('sidebarUtama');
+        var backdrop  = document.getElementById('sidebarBackdrop');
+
+        function bukaSidebar() {
+            sidebar.classList.add('sidebar-open');
+            document.body.classList.add('sidebar-open');
+        }
+
+        function tutupSidebar() {
+            sidebar.classList.remove('sidebar-open');
+            document.body.classList.remove('sidebar-open');
+        }
+
+        toggleBtn.addEventListener('click', function () {
+            if (sidebar.classList.contains('sidebar-open')) {
+                tutupSidebar();
+            } else {
+                bukaSidebar();
+            }
+        });
+
+        backdrop.addEventListener('click', tutupSidebar);
+
+        // ================================================================
+        // GESER JARI (SWIPE) UNTUK BUKA/TUTUP SIDEBAR DI LAYAR SENTUH
+        // - Geser ke KANAN mulai dari tepi kiri layar -> BUKA sidebar
+        // - Geser ke KIRI saat sidebar sedang terbuka -> TUTUP sidebar
+        //
+        // e.preventDefault() di touchmove sengaja dipanggil supaya
+        // gesture ini TIDAK "dibajak" oleh browser sebagai perintah
+        // "kembali ke halaman sebelumnya" (swipe-back bawaan browser),
+        // yang tadinya bikin geser kanan malah pindah ke halaman login.
+        // ================================================================
+        var TEPI_LAYAR    = 30; // area pemicu di tepi kiri layar (px)
+        var JARAK_MINIMAL = 50; // jarak geser minimal supaya dihitung swipe (px)
+
+        var touchStartX = null;
+        var touchStartY = null;
+        var sedangGeserSidebar = false;
+
+        document.addEventListener('touchstart', function (e) {
+            var t = e.touches[0];
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+
+            // Gesture ini "diklaim" untuk sidebar hanya kalau: sidebar
+            // sedang terbuka (supaya bisa ditutup dari mana saja), ATAU
+            // sentuhan dimulai persis di tepi kiri layar (untuk membuka).
+            sedangGeserSidebar = sidebar.classList.contains('sidebar-open')
+                || touchStartX <= TEPI_LAYAR;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function (e) {
+            if (!sedangGeserSidebar || touchStartX === null || !e.touches[0]) {
+                return;
+            }
+
+            var t = e.touches[0];
+            var deltaX = t.clientX - touchStartX;
+            var deltaY = t.clientY - touchStartY;
+
+            // Kalau gerakannya lebih vertikal daripada horizontal
+            // (misal lagi scroll halaman ke bawah), biarkan saja.
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                return;
+            }
+
+            // Blokir gesture "swipe back" bawaan browser selama jari
+            // bergerak horizontal di area yang diklaim untuk sidebar.
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchend', function (e) {
+            if (!sedangGeserSidebar || touchStartX === null || !e.changedTouches[0]) {
+                touchStartX = null;
+                sedangGeserSidebar = false;
+                return;
+            }
+
+            var t = e.changedTouches[0];
+            var deltaX = t.clientX - touchStartX;
+
+            if (!sidebar.classList.contains('sidebar-open') && deltaX > JARAK_MINIMAL) {
+                bukaSidebar();
+            } else if (sidebar.classList.contains('sidebar-open') && deltaX < -JARAK_MINIMAL) {
+                tutupSidebar();
+            }
+
+            touchStartX = null;
+            touchStartY = null;
+            sedangGeserSidebar = false;
+        });
+
+        // ================================================================
+        // GESER PAKAI MOUSE (untuk pengujian di desktop/laptop):
+        // klik-tahan di tepi kiri layar lalu tarik ke kanan = buka;
+        // klik-tahan di mana saja lalu tarik ke kiri saat sidebar
+        // terbuka = tutup. Logikanya sama persis seperti versi sentuhan
+        // di atas, cuma sumber event-nya mouse.
+        // ================================================================
+        var mouseStartX = null;
+        var mouseStartY = null;
+        var sedangKlikTahan = false;
+        var sedangGeserMouse = false;
+
+        document.addEventListener('mousedown', function (e) {
+            mouseStartX = e.clientX;
+            mouseStartY = e.clientY;
+            sedangKlikTahan = true;
+
+            sedangGeserMouse = sidebar.classList.contains('sidebar-open')
+                || mouseStartX <= TEPI_LAYAR;
+
+            // Cegah teks halaman ikut ter-select saat menarik mouse.
+            if (sedangGeserMouse) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!sedangKlikTahan || !sedangGeserMouse) {
+                return;
+            }
+
+            var deltaX = e.clientX - mouseStartX;
+            var deltaY = e.clientY - mouseStartY;
+
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                return;
+            }
+
+            e.preventDefault();
+        });
+
+        document.addEventListener('mouseup', function (e) {
+            if (sedangKlikTahan && sedangGeserMouse && mouseStartX !== null) {
+                var deltaX = e.clientX - mouseStartX;
+
+                if (!sidebar.classList.contains('sidebar-open') && deltaX > JARAK_MINIMAL) {
+                    bukaSidebar();
+                } else if (sidebar.classList.contains('sidebar-open') && deltaX < -JARAK_MINIMAL) {
+                    tutupSidebar();
+                }
+            }
+
+            mouseStartX = null;
+            mouseStartY = null;
+            sedangKlikTahan = false;
+            sedangGeserMouse = false;
+        });
+    })();
+</script>

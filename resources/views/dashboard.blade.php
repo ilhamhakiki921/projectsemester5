@@ -108,7 +108,8 @@
 
 .stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    /* 5 kartu sejajar rapi dalam satu baris di layar desktop */
+    grid-template-columns: repeat(5, 1fr);
     gap: 14px;
     width: 100%;
     margin-bottom: 24px;
@@ -197,10 +198,39 @@
 
 /* Responsive */
 
-@media (max-width: 600px) {
+/* Layar lebar tapi belum cukup untuk 5 kolom: 3 kolom (baris terakhir
+   berisi 2 kartu, tetap rapi tanpa ruang kosong yang aneh) */
+@media (max-width: 1300px) {
+
+    .stat-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+/* Tablet: 2 kolom. Kartu terakhir (ke-5) melebar penuh 1 baris supaya
+   tidak menyisakan kolom kosong di sampingnya */
+@media (max-width: 820px) {
+
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card:last-child {
+        grid-column: 1 / -1;
+    }
+
+}
+
+/* HP: 1 kolom, semua kartu bertumpuk rapi ke bawah */
+@media (max-width: 480px) {
 
     .stat-grid {
         grid-template-columns: 1fr;
+    }
+
+    .stat-card:last-child {
+        grid-column: auto;
     }
 
 }
@@ -713,9 +743,13 @@
             </div>
 
             <div class="stat-title">Pendaftaran Hari Ini</div>
-            <div class="stat-number">20</div>
+            <div class="stat-number">{{ $registrasiHariIni['total'] }}</div>
             <div class="stat-description">
-                10 pasien lama, 10 pasien baru
+                @if ($registrasiHariIni['total'] > 0)
+                    {{ $registrasiHariIni['lama'] }} pasien lama, {{ $registrasiHariIni['baru'] }} pasien baru
+                @else
+                    Belum ada pendaftaran hari ini
+                @endif
             </div>
         </div>
 
@@ -728,7 +762,7 @@
             <div class="stat-title">Total Pasien Terdaftar</div>
             <div class="stat-number">{{ $totalPasien }}</div>
             <div class="stat-description">
-                +62 bulan ini
+                +{{ $pasienBaruBulanIni }} pasien bulan ini
             </div>
         </div>
 
@@ -739,9 +773,13 @@
             </div>
 
             <div class="stat-title">Sedang Dalam Antrean</div>
-            <div class="stat-number">10</div>
+            <div class="stat-number">{{ $antrean['jumlah'] }}</div>
             <div class="stat-description">
-                Tunggu terlama 24 menit
+                @if ($antrean['jumlah'] > 0)
+                    Tunggu terlama {{ $antrean['tunggu_terlama'] }} menit
+                @else
+                    Tidak ada antrean saat ini
+                @endif
             </div>
         </div>
 
@@ -752,9 +790,13 @@
             </div>
 
             <div class="stat-title">Resep Menunggu</div>
-            <div class="stat-number">5</div>
+            <div class="stat-number">{{ $resepMenunggu['jumlah'] }}</div>
             <div class="stat-description">
-                1 menunggu stok
+                @if ($resepMenunggu['jumlah'] > 0)
+                    {{ $resepMenunggu['hari_ini'] }} dari kunjungan hari ini
+                @else
+                    Tidak ada resep menunggu
+                @endif
             </div>
         </div>
 

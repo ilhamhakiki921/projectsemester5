@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
 use App\Models\RekamMedis;
+use App\Models\Resep;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -70,6 +71,22 @@ class DashboardController extends Controller
             $pasienSelesaiHariIni = 0;
         }
 
+        // Kartu "Pendaftaran Hari Ini": total kunjungan hari ini, dipecah
+        // jadi pasien lama (sudah pernah kunjungan sebelumnya) & pasien
+        // baru (kunjungan pertama kalinya hari ini).
+        $registrasiHariIni = $this->hitungRegistrasiHariIni($hariIni);
+
+        // Kartu "Total Pasien Terdaftar": tambahan keterangan jumlah
+        // pasien baru yang mendaftar bulan berjalan.
+        $pasienBaruBulanIni = $this->hitungPasienBaruBulanIni($hariIni);
+
+        // Kartu "Sedang Dalam Antrean": kunjungan hari ini yang statusnya
+        // belum "Selesai", plus lama tunggu antrean paling lama (menit).
+        $antrean = $this->hitungAntrean($hariIni);
+
+        // Kartu "Resep Menunggu": resep yang belum diserahkan ke pasien.
+        $resepMenunggu = $this->hitungResepMenunggu($hariIni);
+
         $tanggalPoliDefault = $hariIni->toDateString();
         $kunjunganPoliChart = $this->hitungKunjunganPerPoli($tanggalPoliDefault);
 
@@ -93,6 +110,10 @@ class DashboardController extends Controller
             'totalPasien',
             'totalKunjunganHariIni',
             'pasienSelesaiHariIni',
+            'registrasiHariIni',
+            'pasienBaruBulanIni',
+            'antrean',
+            'resepMenunggu',
             'tanggalPoliDefault',
             'kunjunganPoliChart',
             'topPenyakit',
@@ -101,6 +122,117 @@ class DashboardController extends Controller
             'daftarBulan',
             'daftarTahun'
         ));
+    }
+
+    /**
+     * Hitung total kunjungan (pendaftaran) hari ini, dipecah menjadi
+     * pasien lama (pernah kunjungan sebelum hari ini) dan pasien baru
+     * (kunjungan pertamanya baru terjadi hari ini).
+     */
+    protected function hitungRegistrasiHariIni(Carbon $hariIni): array
+    {
+        $default = ['total' => 0, 'baru' => 0, 'lama' => 0];
+
+        try {
+            $pasienIdKunjunganHariIni = Kunjungan::whereDate('tanggal_kunjungan', $hariIni)
+                ->pluck('pasien_id');
+
+            $total = $pasienIdKunjunganHariIni->count();
+
+            if ($total === 0) {
+                return $default;
+            }
+
+            $pasienIdUnik = $pasienIdKunjunganHariIni->unique()->values();
+
+            $pasienLama = Kunjungan::whereIn('pasien_id', $pasienIdUnik)
+                ->where('tanggal_kunjungan', '<', $hariIni)
+                ->distinct()
+                ->count('pasien_id');
+
+            $pasienBaru = max(0, $pasienIdUnik->count() - $pasienLama);
+
+            return [
+                'total' => $total,
+                'baru'  => $pasienBaru,
+                'lama'  => max(0, $pasienLama),
+            ];
+        } catch (QueryException $e) {
+            Log::warning('Dashboard: gagal menghitung registrasi hari ini. ' . $e->getMessage());
+
+            return $default;
+        }
+    }
+
+    /**
+     * Jumlah pasien baru (pertama kali terdaftar) pada bulan & tahun berjalan.
+     */
+    protected function hitungPasienBaruBulanIni(Carbon $hariIni): int
+    {
+        try {
+            return Pasien::whereMonth('created_at', $hariIni->month)
+                ->whereYear('created_at', $hariIni->year)
+                ->count();
+        } catch (QueryException $e) {
+            Log::warning('Dashboard: gagal menghitung pasien baru bulan ini. ' . $e->getMessage());
+
+            return 0;
+        }
+    }
+
+    /**
+     * Kunjungan hari ini yang masih dalam antrean (belum "Selesai"),
+     * beserta lama tunggu (menit) dari antrean yang paling lama menunggu.
+     */
+    protected function hitungAntrean(Carbon $hariIni): array
+    {
+        $default = ['jumlah' => 0, 'tunggu_terlama' => 0];
+
+        try {
+            $antrean = Kunjungan::whereDate('tanggal_kunjungan', $hariIni)
+                ->whereIn('status', ['Menunggu', 'Sedang Diperiksa'])
+                ->orderBy('created_at')
+                ->get(['created_at']);
+
+            if ($antrean->isEmpty()) {
+                return $default;
+            }
+
+            return [
+                'jumlah'         => $antrean->count(),
+                'tunggu_terlama' => (int) $antrean->first()->created_at->diffInMinutes(now()),
+            ];
+        } catch (QueryException $e) {
+            Log::warning('Dashboard: gagal menghitung antrean. ' . $e->getMessage());
+
+            return $default;
+        }
+    }
+
+    /**
+     * Resep yang belum diserahkan ke pasien ("Menunggu Diambil"),
+     * beserta berapa di antaranya berasal dari kunjungan hari ini.
+     */
+    protected function hitungResepMenunggu(Carbon $hariIni): array
+    {
+        $default = ['jumlah' => 0, 'hari_ini' => 0];
+
+        try {
+            $jumlah = Resep::where('status_farmasi', 'Menunggu Diambil')->count();
+
+            $jumlahHariIni = Resep::where('status_farmasi', 'Menunggu Diambil')
+                ->whereDate('tanggal_penulisan', $hariIni)
+                ->count();
+
+            return [
+                'jumlah'   => $jumlah,
+                'hari_ini' => $jumlahHariIni,
+            ];
+        } catch (QueryException $e) {
+            Log::warning('Dashboard: gagal menghitung resep menunggu. ' . $e->getMessage());
+
+            return $default;
+        }
     }
 
     /**
