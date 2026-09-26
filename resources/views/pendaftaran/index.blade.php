@@ -2095,7 +2095,7 @@ body.sidebar-collapsed .main {
 
                         {{-- DATA CONTOH (atribut data-kecamatan dipakai dashboard untuk statistik pasien per kecamatan) --}}
 
-                        <tr data-kecamatan="Sukajadi">
+                        <tr data-kecamatan="Paron">
 
                             <td class="col-no">
                                 1
@@ -2161,7 +2161,7 @@ body.sidebar-collapsed .main {
     data-golongan="O"
     data-umur="61 th"
     data-telepon="081234567805"
-    data-alamat="Jl. Dahlia No. 3, RT/RW 03/01, Pasteur, Sukajadi, Bandung, Jawa Barat"
+    data-alamat="Jl. Dahlia No. 3, RT/RW 03/01, Dawu, Paron, Ngawi, Jawa Timur"
 ><i class="bi bi-eye-fill"></i></button>
 
                                     <button
@@ -2180,7 +2180,7 @@ body.sidebar-collapsed .main {
                         
 
 
-                        <tr data-kecamatan="Coblong">
+                        <tr data-kecamatan="Padas">
 
                             <td class="col-no">
                                 2
@@ -2251,7 +2251,7 @@ body.sidebar-collapsed .main {
                         </tr>
 
 
-                        <tr data-kecamatan="Cicendo">
+                        <tr data-kecamatan="Geneng">
 
                             <td class="col-no">
                                 3
@@ -2322,7 +2322,7 @@ body.sidebar-collapsed .main {
                         </tr>
 
 
-                        <tr data-kecamatan="Sukajadi">
+                        <tr data-kecamatan="Paron">
 
                             <td class="col-no">
                                 4
@@ -2393,7 +2393,7 @@ body.sidebar-collapsed .main {
                         </tr>
 
 
-                        <tr data-kecamatan="Sumur Bandung">
+                        <tr data-kecamatan="Kedunggalar">
 
                             <td class="col-no">
                                 5
@@ -2807,7 +2807,7 @@ body.sidebar-collapsed .main {
                     <label for="baruAlamat">Alamat Lengkap<span class="wajib">*</span></label>
                     <textarea
                         id="baruAlamat"
-                        placeholder="Contoh: Jl. Dahlia No. 3, RT 03/RW 01, Pasteur, Sukajadi, Bandung, Jawa Barat"
+                        placeholder="Contoh: Jl. Dahlia No. 3, RT 03/RW 01, Dawu, Paron, Ngawi, Jawa Timur"
                         required
                     ></textarea>
                     <small class="form-hint">

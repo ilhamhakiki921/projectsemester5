@@ -25,10 +25,10 @@ class PasienController extends Controller
 }
  
     // Form tambah pasien baru
-    public function create()
-    {
-        return view('pasien.baru');
-    }
+public function create()
+{
+    return view('pasien.baru');
+}
  
     // Simpan pasien baru sekaligus kunjungan pertamanya
     public function store(Request $request)
@@ -38,7 +38,7 @@ class PasienController extends Controller
             'nama'                => 'required',
             'jenis_kelamin'       => 'required',
             'tanggal_lahir'       => 'required|date',
-            'nik'                 => 'required|unique:pasien,nik',
+            'nik'                 => 'required|digits:16|unique:pasien,nik',
             'no_telepon'          => 'nullable',
             'alamat'              => 'required',
             'tanggal_kunjungan'   => 'required|date',
@@ -46,6 +46,7 @@ class PasienController extends Controller
             'poli'                => 'required',
             'pembayaran'          => 'required',
         ]);
+        
  
         // Satu transaksi: kalau simpan kunjungan gagal, data pasien ikut dibatalkan
         // (supaya tidak ada pasien "yatim" tanpa kunjungan).

@@ -358,12 +358,11 @@
                                 No. RM <span class="required">*</span>
                             </label>
 
-                            <input
-                                type="text"
-                                name="no_rm"
-                                value="{{ old('no_rm') }}"
-                                placeholder="No. RM"
-                                required
+                            <input type="text" 
+                            name="no_rm" 
+                            value="{{ old('no_rm') }}" 
+                            placeholder="No. RM" 
+                            required
                             >
 
                         </div>
