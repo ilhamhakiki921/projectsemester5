@@ -223,14 +223,15 @@
             border-bottom: 1px solid #e2e2e2;
         }
 
-    .antrian-table td {
-        padding: 12px 8px;
+        .antrian-table td {
+            padding: 12px 8px;
 
-        font-size: 10px;
-        color: #333;
+            font-size: 10px;
+            color: #222;
+            font-weight: 600;
 
-        border-bottom: 1px solid #f0f0f0;
-    }
+            border-bottom: 1px solid #f0f0f0;
+        }
 
     .antrian-table tbody tr:hover td {
         background: #fafafa;
@@ -444,5 +445,66 @@
     </main>
 
 </div>
+
+<script>
+
+    // Tampilkan juga pasien dummy dari halaman Pendaftaran yang poli
+    // tujuannya sama dengan poli di halaman ini (disimpan sementara
+    // di sessionStorage, bukan di database).
+    (function() {
+
+        const POLI_SAAT_INI = "{{ $poli }}";
+
+        const semua = JSON.parse(sessionStorage.getItem('antrianDummy') || '{}');
+        const daftarDummy = semua[POLI_SAAT_INI] || [];
+
+        if (daftarDummy.length === 0) {
+            return;
+        }
+
+        const tbody = document.querySelector('.antrian-table tbody');
+
+        const barisKosong = tbody.querySelector('.empty-row');
+        if (barisKosong) {
+            barisKosong.remove();
+        }
+
+        const jumlahAsli = tbody.querySelectorAll('tr').length;
+        let noAntrianTerakhir = {{ $antrian->max('no_antrian') ?? 0 }};
+
+        daftarDummy.forEach(function(p, i) {
+
+            noAntrianTerakhir++;
+            const noAntrianTeks = String(noAntrianTerakhir).padStart(3, '0');
+
+            const tr = document.createElement('tr');
+            tr.classList.add('baris-dummy');
+
+            tr.innerHTML =
+                '<td>' + (jumlahAsli + i + 1) + '</td>' +
+                '<td>' + noAntrianTeks + '</td>' +
+                '<td>' + p.noRm + '</td>' +
+                '<td></td>' +
+                '<td></td>' +
+                '<td>' + p.nik + '</td>' +
+                '<td>' + p.tglKunjungan + '</td>' +
+                '<td><span class="status-badge status-menunggu">Menunggu</span></td>' +
+                '<td><button type="button" class="btn-periksa" style="opacity:.55;cursor:not-allowed" onclick="alert(\'Ini data dummy dari Pendaftaran, belum tersimpan di database sehingga belum bisa diperiksa sungguhan.\')">Periksa</button></td>';
+
+            tr.children[3].textContent = p.nama;
+            tr.children[4].textContent = p.alamat;
+
+            tbody.appendChild(tr);
+        });
+
+        const subtitle = document.querySelector('.antrian-subtitle');
+        if (subtitle) {
+            const asli = {{ $antrian->count() }};
+            subtitle.textContent = (asli + daftarDummy.length) + ' pasien dalam antrian (' + daftarDummy.length + ' di antaranya data dummy)';
+        }
+
+    })();
+
+</script>
 
 @endsection

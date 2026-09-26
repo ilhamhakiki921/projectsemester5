@@ -246,13 +246,14 @@ body.sidebar-collapsed .main {
         }
 
 
-    .patient-table td {
-        min-height: 65px;
+        .patient-table td {
+            min-height: 65px;
 
-        background: #ffffff;
+            background: #ffffff;
 
-        color: #333;
-    }
+            color: #222;
+            font-weight: 600;
+        }
 
 
     .patient-table tbody tr:last-child td {
@@ -319,7 +320,7 @@ body.sidebar-collapsed .main {
 
     .rm-number {
         font-weight: 600;
-        color: #333;
+        color: #222;
     }
 
 
@@ -2012,14 +2013,15 @@ body.sidebar-collapsed .main {
 
                     <i class="bi bi-search"></i>
 
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="search-input"
-                        placeholder="Cari No. RM atau nama pasien..."
-                        maxlength="16"
-                        oninput="filterPasien()"
-                    >
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Cari No. RM atau nama pasien..."
+                    maxlength="16"
+                    oninput="filterPasien()"
+                    autocomplete="off"
+                >
 
                 </div>
 
@@ -3499,6 +3501,16 @@ body.sidebar-collapsed .main {
 <script>
 
 // =========================
+// RESET DATA DEMO ANTRIAN
+// =========================
+// Halaman ini cuma demo alur sistem (tidak tersimpan ke database).
+// Supaya konsisten, setiap kali halaman Pendaftaran dibuka/refresh,
+// data dummy yang sempat disinkronkan ke Pemeriksaan ikut dibersihkan,
+// jadi seluruh alur demo selalu mulai dari kondisi bersih lagi.
+sessionStorage.removeItem('antrianDummy');
+
+
+// =========================
 // PENCARIAN / FILTER TABEL PASIEN
 // =========================
 
@@ -4215,6 +4227,51 @@ function tambahBarisPasienBaru(d) {
     tombolDetail.innerHTML = '<i class="bi bi-eye-fill"></i>';
 
     tbody.appendChild(tr);
+
+    // Sinkronkan ke halaman Pemeriksaan poli terkait (dummy, lewat sessionStorage)
+    simpanAntrianDummy(d, alamatJalan, tglKunjunganTeks);
+}
+
+
+// =========================================================
+// SINKRON KE POLI PEMERIKSAAN (dummy, via sessionStorage)
+// =========================================================
+// Supaya pasien yang baru didaftarkan ikut muncul di halaman
+// Pemeriksaan pada poli yang sesuai. Ini masih data dummy
+// (tidak tersimpan ke database), makanya disimpan sementara
+// di sessionStorage: tetap ada selama tab browser masih
+// terbuka, dan otomatis lenyap begitu tab/browser ditutup.
+
+function poliKeSlug(poliText) {
+    const peta = {
+        'Poli Umum':    'umum',
+        'Poli Gigi':    'gigi',
+        'Poli Dalam':   'dalam',
+        'Mikrobiologi': 'mikrobiologi',
+        'Fisioterapi':  'fisioterapi'
+    };
+    return peta[poliText] || 'umum';
+}
+
+function simpanAntrianDummy(d, alamatJalan, tglKunjunganTeks) {
+
+    const slug = poliKeSlug(d.poli);
+
+    const semua = JSON.parse(sessionStorage.getItem('antrianDummy') || '{}');
+
+    if (!semua[slug]) {
+        semua[slug] = [];
+    }
+
+    semua[slug].push({
+        noRm: d.noRm,
+        nama: d.nama,
+        alamat: alamatJalan,
+        nik: d.nik,
+        tglKunjungan: tglKunjunganTeks
+    });
+
+    sessionStorage.setItem('antrianDummy', JSON.stringify(semua));
 }
 
 
@@ -5234,4 +5291,5 @@ document.addEventListener('keydown', function(event) {
 });
 
 </script>
+
 @endsection
