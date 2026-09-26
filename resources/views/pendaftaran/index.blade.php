@@ -236,19 +236,14 @@ body.sidebar-collapsed .main {
 
 
     .patient-table th {
-        height: 46px;
-
-        background: #f8faf9;
-
-        color: #555;
-
-        font-size: 11px;
-        font-weight: 600;
-
-        text-align: left;
-
-        text-transform: uppercase;
-    }
+            height: 46px;
+            background: #f8faf9;
+            color: #111827;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: left;
+            text-transform: uppercase;
+        }
 
 
     .patient-table td {
@@ -2511,7 +2506,15 @@ body.sidebar-collapsed .main {
 
                 <div class="form-group">
                     <label for="cariRm">No. RM</label>
-                    <input type="text" id="cariRm" autocomplete="off" onkeydown="cariEnter(event)">
+                    <input
+                        type="text"
+                        id="cariRm"
+                        autocomplete="off"
+                        inputmode="numeric"
+                        maxlength="6"
+                        onkeydown="cariEnter(event)"
+                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
+                    >
                 </div>
 
                 <div class="form-group">
@@ -2531,7 +2534,16 @@ body.sidebar-collapsed .main {
 
                 <div class="form-group">
                     <label for="cariNik">NIK</label>
-                    <input type="text" id="cariNik" placeholder="NIK lengkap" autocomplete="off" onkeydown="cariEnter(event)">
+                    <input
+                        type="text"
+                        id="cariNik"
+                        placeholder="NIK lengkap"
+                        autocomplete="off"
+                        inputmode="numeric"
+                        maxlength="16"
+                        onkeydown="cariEnter(event)"
+                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 16)"
+                    >
                 </div>
 
             </div>
@@ -2670,19 +2682,6 @@ body.sidebar-collapsed .main {
 
         </div>
 
-
-        {{-- FOOTER --}}
-        <div class="detail-footer">
-
-            <button
-                type="button"
-                class="btn-detail-tutup"
-                onclick="tutupDetailPasien()"
-            >
-                Tutup
-            </button>
-
-        </div>
 
     </div>
 
@@ -2982,25 +2981,17 @@ body.sidebar-collapsed .main {
 
 
         {{-- FOOTER --}}
-        <div class="modal-footer">
+<div class="modal-footer">
 
-            <button
-                type="button"
-                class="btn-batal"
-                onclick="tutupModalPasienBaru()"
-            >
-                Batal
-            </button>
+    <button
+        type="button"
+        class="btn-daftarkan"
+        onclick="simpanPasienBaru()"
+    >
+        Daftarkan Pasien
+    </button>
 
-            <button
-                type="button"
-                class="btn-daftarkan"
-                onclick="simpanPasienBaru()"
-            >
-                Daftarkan Pasien
-            </button>
-
-        </div>
+</div>
 
     </div>
 
@@ -3299,25 +3290,17 @@ body.sidebar-collapsed .main {
 
 
         {{-- FOOTER --}}
-        <div class="modal-footer">
+<div class="modal-footer">
 
-            <button
-                type="button"
-                class="btn-batal"
-                onclick="tutupModalKunjungan()"
-            >
-                Batal
-            </button>
+    <button
+        type="button"
+        class="btn-daftarkan"
+        onclick="daftarkanKunjungan()"
+    >
+        Daftarkan Pasien
+    </button>
 
-            <button
-                type="button"
-                class="btn-daftarkan"
-                onclick="daftarkanKunjungan()"
-            >
-                Daftarkan Pasien
-            </button>
-
-        </div>
+</div>
 
     </div>
 
@@ -3447,26 +3430,18 @@ body.sidebar-collapsed .main {
         </div>
 
 
-        {{-- FOOTER --}}
-        <div class="modal-footer">
+{{-- FOOTER --}}
+<div class="modal-footer">
 
-            <button
-                type="button"
-                class="btn-batal"
-                onclick="tutupModalEdit()"
-            >
-                Batal
-            </button>
+    <button
+        type="button"
+        class="btn-daftarkan"
+        onclick="simpanEdit()"
+    >
+        Simpan Perubahan
+    </button>
 
-            <button
-                type="button"
-                class="btn-daftarkan"
-                onclick="simpanEdit()"
-            >
-                Simpan Perubahan
-            </button>
-
-        </div>
+</div>
 
     </div>
 
@@ -3840,23 +3815,31 @@ function tutupDetailPasien() {
 
 function bukaModalKunjungan(button) {
 
-    document.getElementById('modalRm').textContent =
-        button.dataset.rm || '-';
+    let d;
 
-    document.getElementById('modalNama').textContent =
-        button.dataset.nama || '-';
+    if (button && typeof button.closest === 'function') {
 
-    document.getElementById('modalNik').textContent =
-        button.dataset.nik || '-';
+        // Diklik dari tombol action di baris tabel -> ambil data lengkap milik barisnya
+        const tr = button.closest('tr');
+        d = tr ? ambilDataPasien(tr) : {};
 
-    document.getElementById('modalAlamat').textContent =
-        button.dataset.alamat || '-';
+    } else {
 
-    document.getElementById('modalLahir').textContent =
-        button.dataset.lahir || '-';
+        // Dipanggil dari hasil "Pilih" pada modal Cari Pasien (bukan tombol asli di tabel)
+        d = button.dataset || {};
+    }
 
-    document.getElementById('modalJk').textContent =
-        button.dataset.jk || '-';
+    const teksLahir = d.tglLahir ? isoKeTeks(d.tglLahir) : '';
+    const lahir = (d.tempat && teksLahir)
+        ? d.tempat + ', ' + teksLahir
+        : (teksLahir || d.tempat || d.lahir || '');
+
+    document.getElementById('modalRm').textContent = d.rm || '-';
+    document.getElementById('modalNama').textContent = d.nama || '-';
+    document.getElementById('modalNik').textContent = d.nik || '-';
+    document.getElementById('modalAlamat').textContent = d.alamat || '-';
+    document.getElementById('modalLahir').textContent = lahir || '-';
+    document.getElementById('modalJk').textContent = d.jk || '-';
 
     // Kolom kunjungan selalu mulai bersih (hint tampil) tiap buka modal
     document.getElementById('tanggalKunjungan').value = hariIniIso();
@@ -4118,7 +4101,24 @@ function simpanPasienBaru() {
     }
 
     // ---------- BERHASIL ----------
-    alert('Pendaftaran pasien berhasil diproses.');
+    // ---------- BERHASIL ----------
+
+    const dataBaru = {
+        noRm:     generateNoRm(),
+        nama:     nilai('baruNama'),
+        nik:      nilai('baruNik'),
+        golongan: nilai('baruGolongan'),
+        jk:       nilai('baruJk'),
+        tempat:   nilai('baruTempat'),
+        tglLahir: nilai('baruTglLahir'),
+        alamat:   nilai('baruAlamat'),
+        kecamatan: nilai('baruKecamatan'),
+        telepon:  nilai('baruTelepon'),
+        tglKunjungan: nilai('baruTglKunjungan'),
+        poli:     nilai('baruPoli')
+    };
+
+    tambahBarisPasienBaru(dataBaru);
 
     // Kosongkan form supaya siap dipakai untuk pasien berikutnya
     Object.keys(FIELD_BARU).forEach(function(id) {
@@ -4140,6 +4140,81 @@ function simpanPasienBaru() {
     generalConsentDisetujui = false;
 
     tutupModalPasienBaru();
+
+    tampilkanPopupSimpan(
+        'Pasien berhasil didaftarkan',
+        'Pendaftaran pasien <strong></strong> berhasil diproses.',
+        dataBaru.nama,
+        false
+    );
+}
+
+
+// Nomor RM otomatis: ambil nomor terbesar yang sudah ada di tabel, lalu +1
+function generateNoRm() {
+
+    let terbesar = 0;
+
+    document.querySelectorAll('#tabelPasien .rm-number').forEach(function(el) {
+        const angka = parseInt(el.textContent.trim(), 10);
+        if (!isNaN(angka) && angka > terbesar) {
+            terbesar = angka;
+        }
+    });
+
+    return String(terbesar + 1);
+}
+
+
+// Tambahkan satu baris pasien baru ke tabel (tanpa server/database)
+function tambahBarisPasienBaru(d) {
+
+    const tbody = document.getElementById('tabelPasienBody');
+
+    // Baris "tidak ditemukan" (kalau lagi kefilter) tidak ikut dihitung
+    const barisSekarang = tbody.querySelectorAll('tr:not(.no-result-row)').length;
+    const noUrut = barisSekarang + 1;
+
+    const teksLahir = d.tglLahir ? isoKeTeks(d.tglLahir) : '';
+    const lahir = (d.tempat && teksLahir) ? d.tempat + ', ' + teksLahir : (teksLahir || d.tempat);
+    const alamatJalan = d.alamat.split(',')[0].trim();
+    const tglKunjunganTeks = d.tglKunjungan ? isoKeTeks(d.tglKunjungan) : '';
+
+    const tr = document.createElement('tr');
+    tr.dataset.kecamatan = d.kecamatan || '';
+
+    tr.innerHTML =
+        '<td class="col-no">' + noUrut + '</td>' +
+        '<td><span class="rm-number">' + d.noRm + '</span></td>' +
+        '<td><span class="patient-name"></span></td>' +
+        '<td class="col-alamat-cell"></td>' +
+        '<td>' + d.jk + '</td>' +
+        '<td>' + tglKunjunganTeks + '</td>' +
+        '<td>' + d.poli + '</td>' +
+        '<td><span class="status-badge status-terdaftar">Sudah Terdaftar</span></td>' +
+        '<td><div class="action">' +
+            '<button type="button" class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan" onclick="bukaModalKunjungan(this)"><i class="bi bi-person-plus-fill"></i></button>' +
+            '<button type="button" class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien" onclick="bukaDetailPasien(this)"></button>' +
+            '<button type="button" class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien" onclick="bukaModalEdit(this)"><i class="bi bi-pencil-square"></i></button>' +
+        '</div></td>';
+
+    // Teks nama & alamat dimasukkan lewat textContent (bukan innerHTML) supaya aman dari karakter spesial
+    tr.querySelector('.patient-name').textContent = d.nama;
+    tr.querySelector('.col-alamat-cell').textContent = alamatJalan;
+
+    const tombolDetail = tr.querySelector('.btn-detail');
+    tombolDetail.dataset.rm = d.noRm;
+    tombolDetail.dataset.nama = d.nama;
+    tombolDetail.dataset.nik = d.nik;
+    tombolDetail.dataset.jk = d.jk;
+    tombolDetail.dataset.lahir = lahir;
+    tombolDetail.dataset.golongan = d.golongan;
+    tombolDetail.dataset.umur = hitungUmur(d.tglLahir);
+    tombolDetail.dataset.telepon = d.telepon;
+    tombolDetail.dataset.alamat = d.alamat;
+    tombolDetail.innerHTML = '<i class="bi bi-eye-fill"></i>';
+
+    tbody.appendChild(tr);
 }
 
 
@@ -5121,26 +5196,6 @@ document.getElementById('popupPeringatan')
 // =========================
 // KLIK DI LUAR MODAL
 // =========================
-
-document.getElementById('modalKunjungan')
-    .addEventListener('click', function(event) {
-
-        if (event.target === this) {
-            tutupModalKunjungan();
-        }
-
-    });
-
-
-document.getElementById('modalPasienBaru')
-    .addEventListener('click', function(event) {
-
-        if (event.target === this) {
-            tutupModalPasienBaru();
-        }
-
-    });
-
 
 document.getElementById('modalGeneralConsent')
     .addEventListener('click', function(event) {

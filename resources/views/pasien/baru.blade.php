@@ -499,11 +499,11 @@
 
                             <input
                                 type="text"
+                                id="nik"
                                 name="nik"
                                 value="{{ old('nik') }}"
                                 placeholder="16 digit NIK"
                                 inputmode="numeric"
-                                pattern="[0-9]{16}"
                                 maxlength="16"
                                 required
                             >
@@ -799,6 +799,24 @@
                 tombolDaftar.focus();
             }
         }
+
+            // Validasi NIK: hanya angka, wajib 16 digit
+    var nikInput = document.getElementById('nik');
+
+    if (nikInput) {
+
+        nikInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 16);
+        });
+
+        form.addEventListener('submit', function (event) {
+            if (nikInput.value.length > 0 && nikInput.value.length !== 16) {
+                event.preventDefault();
+                alert('Periksa ulang Nomor Induk Kependudukan');
+                nikInput.focus();
+            }
+        });
+    }
     });
 
 })();

@@ -67,11 +67,11 @@
         gap: 5px;
     }
 
-    .search-field label {
-        font-size: 10px;
-        font-weight: 600;
-        color: #777;
-    }
+        .search-field label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #111827;
+        }
 
     .search-field input {
         height: 34px;
@@ -210,18 +210,18 @@
         border-collapse: collapse;
     }
 
-    .antrian-table th {
-        padding: 10px 8px;
+        .antrian-table th {
+            padding: 10px 8px;
 
-        font-size: 9px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        color: #888;
-        text-align: left;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #111827;
+            text-align: left;
 
-        border-bottom: 1px solid #e2e2e2;
-    }
+            border-bottom: 1px solid #e2e2e2;
+        }
 
     .antrian-table td {
         padding: 12px 8px;
@@ -341,12 +341,12 @@
 
                     <div class="search-field">
                         <label for="no_rm">No. RM</label>
-                        <input type="text" id="no_rm" name="no_rm" value="{{ request('no_rm') }}" placeholder="Masukkan nomor rekam medis">
+                        <input type="text" id="no_rm" name="no_rm" value="{{ request('no_rm') }}" placeholder="Masukkan nomor rekam medis" inputmode="numeric" maxlength="6" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)">
                     </div>
 
                     <div class="search-field">
                         <label for="nik">NIK</label>
-                        <input type="text" id="nik" name="nik" value="{{ request('nik') }}" placeholder="Masukkan NIK pasien (16 digit)">
+                        <input type="text" id="nik" name="nik" value="{{ request('nik') }}" placeholder="Masukkan NIK pasien (16 digit)" inputmode="numeric" maxlength="16" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 16)">
                     </div>
 
                     <div class="search-field">
