@@ -94,6 +94,7 @@ public function create()
             'nik'                 => 'required|digits:16|unique:pasien,nik',
             'no_telepon'          => 'nullable',
             'alamat'              => 'required',
+            'kecamatan'           => 'required',
             'tanggal_kunjungan'   => 'required|date',
             'dokter'              => 'nullable',
             'poli'                => 'required',
@@ -115,6 +116,7 @@ public function create()
                 'nik'           => $request->nik,
                 'no_telepon'    => $request->no_telepon,
                 'alamat'        => $request->alamat,
+                'kecamatan'     => $request->kecamatan,
             ]);
  
             $kunjungan = Kunjungan::create([
@@ -157,6 +159,7 @@ public function create()
             'nik'           => 'required|digits:16|unique:pasien,nik,' . $pasien->id,
             'no_telepon'    => 'nullable',
             'alamat'        => 'required',
+            'kecamatan'     => 'nullable',
         ]);
 
         $pasien->update([
@@ -166,6 +169,7 @@ public function create()
             'nik'           => $request->nik,
             'no_telepon'    => $request->no_telepon,
             'alamat'        => $request->alamat,
+            'kecamatan'     => $request->filled('kecamatan') ? $request->kecamatan : $pasien->kecamatan,
         ]);
 
         if ($request->wantsJson()) {

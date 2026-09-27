@@ -16,6 +16,7 @@ class Pasien extends Model
         'nik',
         'no_telepon',
         'alamat',
+        'kecamatan',
     ];
 
     protected $casts = [

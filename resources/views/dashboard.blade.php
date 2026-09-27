@@ -867,106 +867,45 @@
 
             </div>
 
-            <div class="activity-area">
+                        <div class="activity-area">
 
-                <div class="activity-item">
+                @forelse ($aktivitasTerbaru as $item)
 
-                    <div class="activity-icon">
-                        <i class="bi bi-person-plus"></i>
-                    </div>
+                    <div class="activity-item">
 
-                    <div class="activity-content">
-
-                        <div class="activity-text">
-                            Pasien baru terdaftar
+                        <div class="activity-icon">
+                            <i class="bi {{ $item['ikon'] }}"></i>
                         </div>
 
-                        <div class="activity-name">
-                            Ahmad Fauzi
+                        <div class="activity-content">
+
+                            <div class="activity-text">
+                                {{ $item['teks'] }}
+                            </div>
+
+                            <div class="activity-name">
+                                {{ $item['nama'] }}
+                            </div>
+
                         </div>
 
-                    </div>
-
-                    <div class="activity-time">
-                        10:32
-                    </div>
-
-                </div>
-
-
-                <div class="activity-item">
-
-                    <div class="activity-icon">
-                        <i class="bi bi-clipboard-check"></i>
-                    </div>
-
-                    <div class="activity-content">
-
-                        <div class="activity-text">
-                            Pendaftaran selesai
-                        </div>
-
-                        <div class="activity-name">
-                            Siti Aminah
+                        <div class="activity-time">
+                            {{ $item['waktu']->isToday() ? $item['waktu']->format('H:i') : $item['waktu']->format('d M, H:i') }}
                         </div>
 
                     </div>
 
-                    <div class="activity-time">
-                        10:15
-                    </div>
+                @empty
 
-                </div>
-
-
-                <div class="activity-item">
-
-                    <div class="activity-icon">
-                        <i class="bi bi-heart-pulse"></i>
-                    </div>
-
-                    <div class="activity-content">
-
-                        <div class="activity-text">
-                            Pemeriksaan selesai
+                    <div class="activity-item">
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                Belum ada aktivitas terbaru.
+                            </div>
                         </div>
-
-                        <div class="activity-name">
-                            Budi Santoso
-                        </div>
-
                     </div>
 
-                    <div class="activity-time">
-                        09:48
-                    </div>
-
-                </div>
-
-
-                <div class="activity-item">
-
-                    <div class="activity-icon">
-                        <i class="bi bi-capsule"></i>
-                    </div>
-
-                    <div class="activity-content">
-
-                        <div class="activity-text">
-                            Resep diproses
-                        </div>
-
-                        <div class="activity-name">
-                            Rina Wulandari
-                        </div>
-
-                    </div>
-
-                    <div class="activity-time">
-                        09:30
-                    </div>
-
-                </div>
+                @endforelse
 
             </div>
 
@@ -1255,26 +1194,6 @@
         return k;
     }
 
-    // Kecamatan diambil dari atribut data-kecamatan pada baris tabel.
-    // Kalau tidak ada, dicoba dari alamat lengkap (data-alamat) dengan format:
-    // "Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi".
-    function ambilKecamatan(tr) {
-        let k = (tr.getAttribute('data-kecamatan') || '').trim();
-
-        if (!k) {
-            const el = tr.querySelector('[data-alamat]');
-            if (el) {
-                const bagian = el.getAttribute('data-alamat')
-                    .split(',').map(x => x.trim()).filter(Boolean);
-                if (bagian.length >= 4) {
-                    k = bagian[bagian.length - 3];
-                }
-            }
-        }
-
-        return k.replace(/^kec(amatan)?\.?\s+/i, '').trim();
-    }
-
     let janjiTabelPasien = null;   // di-cache: halaman pendaftaran cukup dibaca sekali
 
     function bacaTabelPasien() {
@@ -1305,11 +1224,10 @@
                     const sel = tr.children;
                     if (sel.length <= Math.max(idxTanggal, idxPoli)) return;
 
-                    hasil.push({
+                                        hasil.push({
                         rm: idxRm >= 0 ? sel[idxRm].textContent.trim() : '',
                         tanggal: tanggalKeISO(sel[idxTanggal].textContent),
-                        poli: sel[idxPoli].textContent.replace(/\s+/g, ' ').trim(),
-                        kecamatan: ambilKecamatan(tr)
+                        poli: sel[idxPoli].textContent.replace(/\s+/g, ' ').trim()
                     });
                 });
 
@@ -1432,43 +1350,6 @@
         }
     });
 
-    function hitungPerKecamatan(baris) {
-        const sudahAda = new Set();
-        const jumlah = {};
-        const nama = {};
-        let total = 0;
-        let tanpaKecamatan = 0;
-
-        baris.forEach(b => {
-            // satu No. RM dihitung satu pasien
-            if (b.rm) {
-                if (sudahAda.has(b.rm)) return;
-                sudahAda.add(b.rm);
-            }
-
-            total++;
-
-            if (!b.kecamatan) {
-                tanpaKecamatan++;
-                return;
-            }
-
-            const k = b.kecamatan.toLowerCase();
-            jumlah[k] = (jumlah[k] || 0) + 1;
-            nama[k] = nama[k] || b.kecamatan;
-        });
-
-        const urut = Object.keys(jumlah)
-            .map(k => ({ nama: nama[k], jumlah: jumlah[k] }))
-            .sort((a, b) => b.jumlah - a.jumlah || a.nama.localeCompare(b.nama, 'id'));
-
-        return {
-            urut: urut,
-            total: total,
-            tanpaKecamatan: tanpaKecamatan,
-            denganKecamatan: total - tanpaKecamatan
-        };
-    }
 
     function buatElemen(tag, kelas, teks) {
         const el = document.createElement(tag);
@@ -1542,14 +1423,25 @@
         elNote.textContent = catatan.join(' \u2022 ');
     }
 
-    bacaTabelPasien()
-        .then(baris => tampilkanKecamatan(hitungPerKecamatan(baris)))
-        .catch(error => {
-            console.warn(error);
-            const elList = document.getElementById('kecamatanList');
-            elList.innerHTML = '';
-            elList.appendChild(buatElemen('div', 'kec-kosong', 'Data pasien tidak dapat dibaca.'));
-        });
+    // Data kecamatan sekarang dihitung langsung di server (kolom
+    // pasien.kecamatan), bukan lagi hasil scraping tabel HTML halaman
+    // Pendaftaran. Lihat DashboardController@hitungStatistikKecamatan.
+    const statistikKecamatanServer = @json($statistikKecamatan);
+
+    function siapkanStatKecamatan(data) {
+        const urut = (data.urutan || [])
+            .map(k => ({ nama: k.nama, jumlah: k.jumlah }))
+            .sort((a, b) => b.jumlah - a.jumlah || a.nama.localeCompare(b.nama, 'id'));
+
+        return {
+            urut: urut,
+            total: data.total || 0,
+            tanpaKecamatan: data.tanpa_kecamatan || 0,
+            denganKecamatan: urut.reduce((jml, k) => jml + k.jumlah, 0)
+        };
+    }
+
+    tampilkanKecamatan(siapkanStatKecamatan(statistikKecamatanServer));
 </script>
 
 @endsection

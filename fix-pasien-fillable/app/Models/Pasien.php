@@ -1,3 +1,4 @@
+@"
 <?php
 
 namespace App\Models;
@@ -6,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pasien extends Model
 {
-    protected $table = 'pasien';
+    protected `$table = 'pasien';
 
-    protected $fillable = [
+    protected `$fillable = [
         'no_rm',
         'nama',
         'jenis_kelamin',
@@ -16,10 +17,16 @@ class Pasien extends Model
         'nik',
         'no_telepon',
         'alamat',
+        'kecamatan',
     ];
 
-    public function kunjungans()
+    protected `$casts = [
+        'tanggal_lahir' => 'date',
+    ];
+
+    public function kunjungan()
     {
-        return $this->hasMany(Kunjungan::class);
+        return `$this->hasMany(Kunjungan::class);
     }
 }
+"@ | Set-Content -Encoding utf8 C:\xampp\htdocs\projectsemester5\app\Models\Pasien.php

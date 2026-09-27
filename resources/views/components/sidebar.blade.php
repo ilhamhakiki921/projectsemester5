@@ -1,5 +1,8 @@
 <aside class="sidebar" id="sidebarUtama">
 
+    <!-- Watermark logo transparan di background, murni dekoratif -->
+    <div class="sidebar-watermark" aria-hidden="true"></div>
+
     <!-- Tombol buka/tutup sidebar, menempel di garis tepi sidebar -->
     <button type="button" id="sidebarToggleBtn" class="sidebar-toggle-btn" aria-label="Buka/tutup menu">
         <i class="bi bi-chevron-left"></i>
@@ -31,9 +34,9 @@
         <a href="{{ route('dashboard') }}"
            class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
 
-            <i class="bi bi-grid-fill"></i>
+            <span class="menu-icon"><i class="bi bi-grid-fill"></i></span>
 
-            <span>Dashboard</span>
+            <span class="menu-label">Dashboard</span>
 
         </a>
 
@@ -42,9 +45,9 @@
         <a href="{{ route('pendaftaran') }}"
            class="menu-item {{ request()->routeIs('pendaftaran') || request()->routeIs('pasien.*') ? 'active' : '' }}">
 
-            <i class="bi bi-clipboard-plus"></i>
+            <span class="menu-icon"><i class="bi bi-clipboard-plus"></i></span>
 
-            <span>Pendaftaran</span>
+            <span class="menu-label">Pendaftaran</span>
 
         </a>
 
@@ -54,9 +57,9 @@
    class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
    onclick="event.preventDefault(); toggleSubmenuPemeriksaan(this);">
 
-    <i class="bi bi-heart-pulse-fill"></i>
+    <span class="menu-icon"><i class="bi bi-heart-pulse-fill"></i></span>
 
-    <span>Pemeriksaan</span>
+    <span class="menu-label">Pemeriksaan</span>
 
     <i class="bi bi-chevron-down submenu-arrow"></i>
 
@@ -96,9 +99,9 @@
         <a href="#"
            class="menu-item">
 
-            <i class="bi bi-clipboard2-pulse-fill"></i>
+            <span class="menu-icon"><i class="bi bi-clipboard2-pulse-fill"></i></span>
 
-            <span>Penunjang</span>
+            <span class="menu-label">Penunjang</span>
 
         </a>
 
@@ -107,9 +110,9 @@
         <a href="{{ route('farmasi.index') }}"
            class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }}">
 
-            <i class="bi bi-capsule"></i>
+            <span class="menu-icon"><i class="bi bi-capsule"></i></span>
 
-            <span>Farmasi</span>
+            <span class="menu-label">Farmasi</span>
 
         </a>
 
@@ -118,9 +121,9 @@
         <a href="{{ route('rekam-medis.index') }}"
            class="menu-item {{ request()->routeIs('rekam-medis.*') ? 'active' : '' }}">
 
-            <i class="bi bi-folder-fill"></i>
+            <span class="menu-icon"><i class="bi bi-folder-fill"></i></span>
 
-            <span>Rekam Medis</span>
+            <span class="menu-label">Rekam Medis</span>
 
         </a>
 
@@ -135,9 +138,9 @@
         <a href="{{ route('logout') }}"
            onclick="event.preventDefault(); document.getElementById('formLogoutSidebar').submit();">
 
-            <i class="bi bi-box-arrow-right"></i>
+            <span class="menu-icon"><i class="bi bi-box-arrow-right"></i></span>
 
-            <span>Keluar</span>
+            <span class="menu-label">Keluar</span>
 
         </a>
 
@@ -167,10 +170,42 @@
     display: flex;
     flex-direction: column;
     color: white;
-    background: linear-gradient(180deg, #980000 0%, #570000 100%);
+    background: linear-gradient(160deg, #a30000 0%, #6e0000 55%, #4a0000 100%);
     z-index: 1000;
     overflow: visible;
+    /* Sudut kanan atas & kanan bawah SENGAJA dibiarkan lancip/siku (0),
+       jangan ditambah border-radius/clip-path diagonal di sini. */
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
     transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+/* Watermark logo transparan, murni dekoratif, tidak boleh menutupi klik */
+.sidebar-watermark {
+    position: absolute;
+    left: -30px;
+    bottom: -20px;
+    width: 220px;
+    height: 220px;
+    background-image: url('{{ asset('images/logo-putih.png') }}');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.sidebar.collapsed .sidebar-watermark {
+    display: none;
+}
+
+/* Konten sidebar tampil di atas watermark */
+.sidebar > .logo,
+.sidebar > .menu,
+.sidebar > .logout {
+    position: relative;
+    z-index: 1;
 }
 
 /* Mode ciut/minimize (icon-only), kayak referensi gambar 1 */
@@ -181,10 +216,9 @@
 
 /* Sembunyikan teks & submenu saat ciut, sisakan icon saja */
 .sidebar.collapsed .logo-text,
-.sidebar.collapsed .menu-item span,
+.sidebar.collapsed .menu-label,
 .sidebar.collapsed .submenu-arrow,
-.sidebar.collapsed .menu-group,
-.sidebar.collapsed .logout span {
+.sidebar.collapsed .menu-group {
     display: none;
 }
 
@@ -194,9 +228,9 @@
     padding: 0;
 }
 
-.sidebar.collapsed .menu-item i,
-.sidebar.collapsed .logout i {
-    width: auto;
+.sidebar.collapsed .menu-item .menu-icon,
+.sidebar.collapsed .logout .menu-icon {
+    margin-right: 0;
 }
 
 .sidebar.collapsed .logo {
@@ -290,8 +324,9 @@ body.sidebar-collapsed .main {
 
         margin-right: 10px;
 
-        border: 2px solid white;
-        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
 
         font-size: 13px;
         font-weight: 700;
@@ -373,14 +408,24 @@ body.sidebar-collapsed .main {
        ICON
     ================================== */
 
-    .menu-item i {
-        width: 29px;
-
-        font-size: 16px;
+    .menu-icon {
+        width: 30px;
+        height: 30px;
 
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
+        flex-shrink: 0;
+
+        margin-right: 11px;
+
+        border-radius: 8px;
+
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .menu-item i {
+        font-size: 16px;
     }
 
 
@@ -391,13 +436,14 @@ body.sidebar-collapsed .main {
     .menu-item:hover {
         color: white;
 
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.1);
 
         text-decoration: none;
     }
 
 
-    .menu-item:hover i {
+    .menu-item:hover .menu-icon {
+        background: rgba(255, 255, 255, 0.12);
         transform: translateX(1px);
     }
 
@@ -470,14 +516,23 @@ body.sidebar-collapsed .main {
     .menu-item.active {
         color: white;
 
-        background: #ed1111;
+        background: linear-gradient(135deg, #ff4d4d 0%, #c00000 100%);
 
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+    }
+
+    .menu-item.active .menu-icon {
+        background: rgba(255, 255, 255, 0.22);
     }
 
 
     .menu-item.active:hover {
-        background: #ed1111;
+        background: linear-gradient(135deg, #ff4d4d 0%, #c00000 100%);
+    }
+
+    .menu-item.active:hover .menu-icon {
+        background: rgba(255, 255, 255, 0.22);
+        transform: none;
     }
 
 
@@ -525,9 +580,12 @@ body.sidebar-collapsed .main {
     }
 
 
-    .logout i {
-        width: 29px;
+    .logout .menu-icon {
+        width: 30px;
+        height: 30px;
+    }
 
+    .logout i {
         font-size: 17px;
     }
 
@@ -577,39 +635,6 @@ body.sidebar-collapsed .main {
                 ? 'bi bi-chevron-right'
                 : 'bi bi-chevron-left';
         }
-
-        terapkanStatus();
-
-        toggleBtn.addEventListener('click', function () {
-            isCollapsed = !isCollapsed;
-            localStorage.setItem(STORAGE_KEY, isCollapsed ? 'true' : 'false');
-            terapkanStatus();
-        });
-    })();
-</script>
-
-<script>
-    (function () {
-        var toggleBtn = document.getElementById('sidebarToggleBtn');
-        var sidebar   = document.getElementById('sidebarUtama');
-        var STORAGE_KEY = 'sidebarCollapsed';
-
-        // Default: sidebar TERBUKA (mis. baru login & belum pernah toggle).
-        // Kalau sudah pernah di-toggle sebelumnya, status itu yang dipakai lagi.
-        var isCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
-
-var iconToggle = toggleBtn.querySelector('i');
-
-function terapkanStatus() {
-    sidebar.classList.toggle('collapsed', isCollapsed);
-    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
-
-    // Panah menunjuk ke arah "buka": kalau ciut → panah kanan (buka),
-    // kalau terbuka → panah kiri (tutup)
-    iconToggle.className = isCollapsed
-        ? 'bi bi-chevron-right'
-        : 'bi bi-chevron-left';
-}
 
         terapkanStatus();
 

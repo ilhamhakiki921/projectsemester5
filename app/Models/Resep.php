@@ -31,4 +31,14 @@ class Resep extends Model
     {
         return $this->belongsTo(Obat::class);
     }
+
+    /**
+     * Resep tidak punya pasien_id langsung, jadi diambil lewat kunjungan.
+     * Pakai accessor biasa (bukan relasi) karena kunjungan_id ada di
+     * tabel resep, bukan di tabel kunjungan.
+     */
+    public function getPasienAttribute()
+    {
+        return $this->kunjungan?->pasien;
+    }
 }

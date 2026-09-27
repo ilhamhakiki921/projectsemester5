@@ -4596,6 +4596,7 @@ async function simpanPasienBaru() {
                 nik:                dataBaru.nik,
                 no_telepon:         dataBaru.telepon,
                 alamat:             dataBaru.alamat,
+                kecamatan:          dataBaru.kecamatan,
                 tanggal_kunjungan:  dataBaru.tglKunjungan,
                 poli:               poliKeSlug(dataBaru.poli),
                 pembayaran:         nilai('baruPembayaran')

@@ -542,9 +542,28 @@
 
                             <textarea
                                 name="alamat"
-                                placeholder="Nama jalan, nomor rumah, RT/RW, desa/kelurahan, kecamatan"
+                                placeholder="Nama jalan, nomor rumah, RT/RW, desa/kelurahan"
                                 required
                             >{{ old('alamat') }}</textarea>
+
+                        </div>
+
+                        {{-- Kecamatan --}}
+
+                        <div class="form-group">
+
+                            <label>
+                                Kecamatan
+                                <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="kecamatan"
+                                value="{{ old('kecamatan') }}"
+                                placeholder="Contoh: Ngawi"
+                                required
+                            >
 
                         </div>
 

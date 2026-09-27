@@ -106,6 +106,12 @@ class DashboardController extends Controller
         $daftarTahun = $this->daftarTahunPenyakit($tahunTerpilih);
         $topPenyakit = $this->hitungTopPenyakit($bulanTerpilih, $tahunTerpilih);
 
+        // Kartu "Aktivitas Terbaru": gabungan aktivitas kunjungan & resep.
+        $aktivitasTerbaru = $this->hitungAktivitasTerbaru();
+
+        // "Statistik Pasien Per Kecamatan"
+        $statistikKecamatan = $this->hitungStatistikKecamatan();
+
         return view('dashboard', compact(
             'totalPasien',
             'totalKunjunganHariIni',
@@ -120,8 +126,87 @@ class DashboardController extends Controller
             'bulanTerpilih',
             'tahunTerpilih',
             'daftarBulan',
-            'daftarTahun'
+            'daftarTahun',
+            'aktivitasTerbaru',
+            'statistikKecamatan'
         ));
+    }
+
+    /**
+     * Aktivitas terbaru: gabungan kunjungan & resep terbaru, diurutkan
+     * berdasarkan waktu paling baru, dipotong 10 teratas.
+     */
+    protected function hitungAktivitasTerbaru()
+    {
+        try {
+            $aktivitasKunjungan = Kunjungan::with('pasien')
+                ->latest('created_at')
+                ->take(10)
+                ->get()
+                ->map(function ($k) {
+                    return [
+                        'ikon'  => 'bi-calendar-check',
+                        'teks'  => 'Kunjungan poli ' . ($this->daftarPoli[strtolower(trim((string) $k->poli))] ?? $k->poli),
+                        'nama'  => $k->pasien->nama ?? '-',
+                        'waktu' => $k->created_at,
+                    ];
+                });
+
+            $aktivitasResep = Resep::with('kunjungan.pasien')
+                ->latest('created_at')
+                ->take(10)
+                ->get()
+                ->map(function ($r) {
+                    return [
+                        'ikon'  => 'bi-capsule',
+                        'teks'  => 'Resep: ' . $r->status_farmasi,
+                        'nama'  => $r->kunjungan->pasien->nama ?? '-',
+                        'waktu' => $r->created_at,
+                    ];
+                });
+
+            return $aktivitasKunjungan
+                ->concat($aktivitasResep)
+                ->sortByDesc('waktu')
+                ->take(10)
+                ->values();
+        } catch (QueryException $e) {
+            Log::warning('Dashboard: gagal menghitung aktivitas terbaru. ' . $e->getMessage());
+
+            return collect();
+        }
+    }
+
+    /**
+     * Statistik pasien per kecamatan (kolom pasien.kecamatan).
+     */
+    protected function hitungStatistikKecamatan(): array
+    {
+        try {
+            $total = Pasien::count();
+
+            $tanpaKecamatan = Pasien::whereNull('kecamatan')
+                ->orWhere('kecamatan', '')
+                ->count();
+
+            $urutan = Pasien::whereNotNull('kecamatan')
+                ->where('kecamatan', '!=', '')
+                ->select('kecamatan as nama', DB::raw('count(*) as jumlah'))
+                ->groupBy('kecamatan')
+                ->orderByDesc('jumlah')
+                ->get()
+                ->toArray();
+
+            return [
+                'total'            => $total,
+                'tanpa_kecamatan'  => $tanpaKecamatan,
+                'urutan'           => $urutan,
+            ];
+        } catch (QueryException $e) {
+            Log::warning('Dashboard: gagal menghitung statistik kecamatan. ' . $e->getMessage());
+
+            return ['total' => 0, 'tanpa_kecamatan' => 0, 'urutan' => []];
+        }
     }
 
     /**
