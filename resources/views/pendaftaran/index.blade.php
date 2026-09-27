@@ -1492,11 +1492,103 @@ body.sidebar-collapsed .main {
     padding: 12px 24px;
 }
 
+#modalPasienBaru .modal-footer[hidden] {
+    display: none;
+}
+
 #modalPasienBaru .btn-batal,
-#modalPasienBaru .btn-daftarkan {
+#modalPasienBaru .btn-daftarkan,
+#modalPasienBaru .btn-data-lain {
     height: 36px;
     padding: 0 16px;
     font-size: 12px;
+}
+
+#modalPasienBaru .btn-data-lain {
+    margin-right: auto;
+    background: #eef0f3;
+    color: #5a6472;
+    border: 1px solid #d8dce2;
+    border-radius: 7px;
+    cursor: not-allowed;
+}
+
+#modalPasienBaru .identitas-columns {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+#modalPasienBaru .identitas-kolom {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#modalPasienBaru .identitas-kolom .form-grid {
+    gap: 14px 16px;
+}
+
+#modalPasienBaru .kombo-wrapper {
+    position: relative;
+}
+
+#modalPasienBaru .kombo-saran {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 190px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #d8dce2;
+    border-radius: 7px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    z-index: 60;
+    display: none;
+}
+
+#modalPasienBaru .kombo-saran.show {
+    display: block;
+}
+
+#modalPasienBaru .kombo-saran div {
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#modalPasienBaru .kombo-saran div:hover,
+#modalPasienBaru .kombo-saran div.kombo-aktif {
+    background: #fdecec;
+}
+
+#modalPasienBaru .kombo-saran .kombo-kosong {
+    color: #9aa1ab;
+    cursor: default;
+}
+
+#modalPasienBaru .pasien-baru-body input:disabled {
+    background: #f2f3f5;
+    color: #9aa1ab;
+    cursor: not-allowed;
+}
+
+#modalPasienBaru .pasien-baru-body input[readonly] {
+    background: #f7f8f9;
+}
+
+#modalPasienBaru .lain-lain-box {
+    margin-top: 8px;
+}
+
+@media (max-width: 700px) {
+
+    #modalPasienBaru .identitas-columns {
+        flex-direction: column;
+    }
 }
 
 /* =========================
@@ -2090,375 +2182,72 @@ body.sidebar-collapsed .main {
 
                     <tbody id="tabelPasienBody">
 
-                        {{-- DATA CONTOH (atribut data-kecamatan dipakai dashboard untuk statistik pasien per kecamatan) --}}
+                        @forelse ($pasiens as $p)
+                            <tr>
+                                <td class="col-no">{{ $loop->iteration }}</td>
+
+                                <td><span class="rm-number">{{ $p->no_rm }}</span></td>
+
+                                <td><span class="patient-name">{{ $p->nama }}</span></td>
+
+                                <td>{{ $p->alamat_jalan }}</td>
+
+                                <td>{{ $p->jenis_kelamin }}</td>
+
+                                <td>{{ $p->tgl_kunjungan_text }}</td>
+
+                                <td>{{ $p->poli_label }}</td>
+
+                                <td>
+                                    <span class="status-badge status-terdaftar">
+                                        Sudah Terdaftar
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="action">
+                                        <button
+                                            type="button"
+                                            class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
+                                            onclick="bukaModalKunjungan(this)"
+                                        >
+                                            <i class="bi bi-person-plus-fill"></i>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
+                                            onclick="bukaDetailPasien(this)"
+                                            data-rm="{{ $p->no_rm }}"
+                                            data-nama="{{ $p->nama }}"
+                                            data-nik="{{ $p->nik }}"
+                                            data-jk="{{ $p->jenis_kelamin }}"
+                                            data-lahir="{{ $p->lahir_text }}"
+                                            data-golongan=""
+                                            data-umur="{{ $p->tanggal_lahir->age }} th"
+                                            data-telepon="{{ $p->no_telepon }}"
+                                            data-alamat="{{ $p->alamat }}"
+                                        ><i class="bi bi-eye-fill"></i></button>
+
+                                        <button
+                                            type="button"
+                                            class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
+                                            onclick="bukaModalEdit(this)"
+                                        ><i class="bi bi-pencil-square"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9">
+                                    <div class="no-result-box">
+                                        <i class="bi bi-search"></i>
+                                        <p>Belum ada data pasien.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
 
-                        <tr data-kecamatan="Paron">
-
-                            <td class="col-no">
-                                1
-                            </td>
-
-                            <td>
-                                <span class="rm-number">
-                                    123456
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="patient-name">
-                                    Hendra Gunawan
-                                </span>
-                            </td>
-
-                            <td>
-                                Jl. Dahlia No. 3
-                            </td>
-
-                            <td>
-                                Laki-laki
-                            </td>
-
-                            <td>
-                                18 Sep 2026
-                            </td>
-
-                            <td>
-                                Poli Umum
-                            </td>
-
-                            <td>
-
-                            <span class="status-badge status-terdaftar">
-                                Sudah Terdaftar
-                            </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <button
-                                        type="button"
-                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                        onclick="bukaModalKunjungan(this)"
-                                    >
-                                        <i class="bi bi-person-plus-fill"></i>
-                                    </button>
-
-                                    <button
-    type="button"
-    class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
-    onclick="bukaDetailPasien(this)"
-    data-rm="123456"
-    data-nama="Hendra Gunawan"
-    data-nik="3204012208650005"
-    data-jk="Laki-laki"
-    data-lahir="Sumedang, 22 Agu 1965"
-    data-golongan="O"
-    data-umur="61 th"
-    data-telepon="081234567805"
-    data-alamat="Jl. Dahlia No. 3, RT/RW 03/01, Dawu, Paron, Ngawi, Jawa Timur"
-><i class="bi bi-eye-fill"></i></button>
-
-                                    <button
-                                        type="button"
-                                        class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-                                        onclick="bukaModalEdit(this)"
-                                    ><i class="bi bi-pencil-square"></i></button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        
-
-
-                        <tr data-kecamatan="Padas">
-
-                            <td class="col-no">
-                                2
-                            </td>
-
-                            <td>
-                                <span class="rm-number">
-                                    123457
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="patient-name">
-                                    Dewi Puspita
-                                </span>
-                            </td>
-
-                            <td>
-                                Jl. Melati No. 21
-                            </td>
-
-                            <td>
-                                Perempuan
-                            </td>
-
-                            <td>
-                                18 Sep 2026
-                            </td>
-
-                            <td>
-                                Poli Umum
-                            </td>
-
-                            <td>
-
-                                <span class="status-badge status-terdaftar">
-                                    Sudah Terdaftar
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                    >
-                                        <i class="bi bi-person-plus-fill"></i>
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
-                                    ><i class="bi bi-eye-fill"></i></a>
-
-                                    <button
-                                        type="button"
-                                        class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-                                        onclick="bukaModalEdit(this)"
-                                    ><i class="bi bi-pencil-square"></i></button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <tr data-kecamatan="Geneng">
-
-                            <td class="col-no">
-                                3
-                            </td>
-
-                            <td>
-                                <span class="rm-number">
-                                    123458
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="patient-name">
-                                    Agus Hidayat
-                                </span>
-                            </td>
-
-                            <td>
-                                Jl. Anggrek No. 8
-                            </td>
-
-                            <td>
-                                Laki-laki
-                            </td>
-
-                            <td>
-                                18 Sep 2026
-                            </td>
-
-                            <td>
-                                Poli Gigi
-                            </td>
-
-                            <td>
-
-                                <span class="status-badge status-terdaftar">
-                                    Sudah Terdaftar
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                    >
-                                        <i class="bi bi-person-plus-fill"></i>
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
-                                    ><i class="bi bi-eye-fill"></i></a>
-
-                                    <button
-                                        type="button"
-                                        class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-                                        onclick="bukaModalEdit(this)"
-                                    ><i class="bi bi-pencil-square"></i></button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <tr data-kecamatan="Paron">
-
-                            <td class="col-no">
-                                4
-                            </td>
-
-                            <td>
-                                <span class="rm-number">
-                                    123459
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="patient-name">
-                                    Siti Aminah
-                                </span>
-                            </td>
-
-                            <td>
-                                Jl. Kenanga No. 5
-                            </td>
-
-                            <td>
-                                Perempuan
-                            </td>
-
-                            <td>
-                                18 Sep 2026
-                            </td>
-
-                            <td>
-                                Poli Dalam
-                            </td>
-
-                            <td>
-
-                                <span class="status-badge status-terdaftar">
-                                    Sudah Terdaftar
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                    >
-                                        <i class="bi bi-person-plus-fill"></i>
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
-                                    ><i class="bi bi-eye-fill"></i></a>
-
-                                    <button
-                                        type="button"
-                                        class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-                                        onclick="bukaModalEdit(this)"
-                                    ><i class="bi bi-pencil-square"></i></button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <tr data-kecamatan="Kedunggalar">
-
-                            <td class="col-no">
-                                5
-                            </td>
-
-                            <td>
-                                <span class="rm-number">
-                                    123460
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="patient-name">
-                                    Budi Santoso
-                                </span>
-                            </td>
-
-                            <td>
-                                Jl. Merdeka No. 12
-                            </td>
-
-                            <td>
-                                Laki-laki
-                            </td>
-
-                            <td>
-                                18 Sep 2026
-                            </td>
-
-                            <td>
-                                Poli Umum
-                            </td>
-
-                            <td>
-
-                                <span class="status-badge status-terdaftar">
-                                    Sudah Terdaftar
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="#"
-                                        class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                    >
-                                        <i class="bi bi-person-plus-fill"></i>
-                                    </a>
-
-                                    <a
-                                        href="#"
-                                        class="btn-detail" title="Detail Pasien" aria-label="Detail Pasien"
-                                    ><i class="bi bi-eye-fill"></i></a>
-
-                                    <button
-                                        type="button"
-                                        class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-                                        onclick="bukaModalEdit(this)"
-                                    ><i class="bi bi-pencil-square"></i></button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
 
                     </tbody>
 
@@ -2719,174 +2508,349 @@ body.sidebar-collapsed .main {
         {{-- BODY --}}
         <div class="pasien-baru-body">
 
+<div id="pasienBaruStep1">
+
             {{-- IDENTITAS PASIEN --}}
             <div class="form-section-title">
                 IDENTITAS PASIEN
             </div>
 
+            <div class="identitas-columns">
+
+                <div class="identitas-kolom">
+
+                    <div class="form-group">
+                        <label for="baruNik">NIK<span class="wajib">*</span></label>
+                        <input
+                            type="text"
+                            id="baruNik"
+                            placeholder="16 digit angka sesuai KTP"
+                            maxlength="16"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            required
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);"
+                        >
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="baruTitle">Title</label>
+                            <input
+                                type="text"
+                                id="baruTitle"
+                                placeholder="Contoh: Tn./Ny./Sdr."
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruNama">Nama Lengkap<span class="wajib">*</span></label>
+                            <input
+                                type="text"
+                                id="baruNama"
+                                placeholder="Ketik nama sesuai KTP"
+                                autocomplete="off"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruTempat">Tempat Lahir<span class="wajib">*</span></label>
+                        <input
+                            type="text"
+                            id="baruTempat"
+                            placeholder="Kota/kabupaten tempat lahir"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="baruTglLahir">Tanggal Lahir<span class="wajib">*</span></label>
+                            <input
+                                type="date"
+                                id="baruTglLahir"
+                                required
+                                onchange="aturUsiaOtomatis()"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruUsia">Usia</label>
+                            <input
+                                type="text"
+                                id="baruUsia"
+                                placeholder="Otomatis"
+                                readonly
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruJk">Jenis Kelamin<span class="wajib">*</span></label>
+                        <select id="baruJk" required>
+                            <option value="" selected disabled>Pilih jenis kelamin</option>
+                            <option value="Tidak diketahui">Tidak Diketahui</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                            <option value="Tidak dapat ditentukan">Tidak Dapat Ditentukan</option>
+                            <option value="Tidak mengisi">Tidak Mengisi</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruAgama">Agama<span class="wajib">*</span></label>
+                        <select id="baruAgama" required onchange="aturAgamaLain()">
+                            <option value="" selected disabled>Pilih agama</option>
+                            <option>Islam</option>
+                            <option>Kristen (Protestan)</option>
+                            <option>Katolik</option>
+                            <option>Hindu</option>
+                            <option>Budha</option>
+                            <option>Konghucu</option>
+                            <option>Penghayat</option>
+                            <option>Lain-lain</option>
+                        </select>
+
+                        <div class="lain-lain-box" id="grupAgamaLain" hidden>
+                            <input
+                                type="text"
+                                id="baruAgamaLain"
+                                placeholder="Sebutkan agama/kepercayaan"
+                                autocomplete="off"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruStatusNikah">Status Pernikahan<span class="wajib">*</span></label>
+                        <select id="baruStatusNikah" required>
+                            <option value="" selected disabled>Pilih status pernikahan</option>
+                            <option>Belum Kawin</option>
+                            <option>Kawin</option>
+                            <option>Cerai Hidup</option>
+                            <option>Cerai Mati</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruTelepon">No. Telp Pasien<span class="wajib">*</span></label>
+                        <input
+                            type="text"
+                            id="baruTelepon"
+                            placeholder="Contoh: 081234567890"
+                            maxlength="15"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            required
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 15);"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruBahasa">Bahasa</label>
+                        <input
+                            type="text"
+                            id="baruBahasa"
+                            placeholder="Contoh: Indonesia, Jawa"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                </div>
+
+                <div class="identitas-kolom">
+
+                    <div class="form-group">
+                        <label for="baruAlamat">Alamat<span class="wajib">*</span></label>
+                        <textarea
+                            id="baruAlamat"
+                            placeholder="Jl., RT/RW, dsb"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruProvinsi">Provinsi<span class="wajib">*</span></label>
+                        <div class="kombo-wrapper">
+                            <input
+                                type="text"
+                                id="baruProvinsi"
+                                placeholder="Ketik nama provinsi"
+                                autocomplete="off"
+                                required
+                                oninput="komboCari('provinsi')"
+                                onfocus="komboBukaSaran('provinsi')"
+                            >
+                            <input type="hidden" id="baruProvinsiId">
+                            <div class="kombo-saran" id="saranProvinsi"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruKabupaten">Kabupaten<span class="wajib">*</span></label>
+                        <div class="kombo-wrapper">
+                            <input
+                                type="text"
+                                id="baruKabupaten"
+                                placeholder="Pilih provinsi dahulu"
+                                autocomplete="off"
+                                required
+                                disabled
+                                oninput="komboCari('kabupaten')"
+                                onfocus="komboBukaSaran('kabupaten')"
+                            >
+                            <input type="hidden" id="baruKabupatenId">
+                            <div class="kombo-saran" id="saranKabupaten"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruKecamatan">Kecamatan<span class="wajib">*</span></label>
+                        <div class="kombo-wrapper">
+                            <input
+                                type="text"
+                                id="baruKecamatan"
+                                placeholder="Pilih kabupaten dahulu"
+                                autocomplete="off"
+                                required
+                                disabled
+                                oninput="komboCari('kecamatan')"
+                                onfocus="komboBukaSaran('kecamatan')"
+                            >
+                            <input type="hidden" id="baruKecamatanId">
+                            <div class="kombo-saran" id="saranKecamatan"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruKelurahan">Kelurahan<span class="wajib">*</span></label>
+                        <div class="kombo-wrapper">
+                            <input
+                                type="text"
+                                id="baruKelurahan"
+                                placeholder="Pilih kecamatan dahulu"
+                                autocomplete="off"
+                                required
+                                disabled
+                                oninput="komboCari('kelurahan')"
+                                onfocus="komboBukaSaran('kelurahan')"
+                            >
+                            <input type="hidden" id="baruKelurahanId">
+                            <div class="kombo-saran" id="saranKelurahan"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruNegara">Negara<span class="wajib">*</span></label>
+                        <input
+                            type="text"
+                            id="baruNegara"
+                            value="Indonesia"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruPendidikan">Pendidikan<span class="wajib">*</span></label>
+                        <select id="baruPendidikan" required>
+                            <option value="" selected disabled>Pilih pendidikan</option>
+                            <option>Tidak Sekolah</option>
+                            <option>SD</option>
+                            <option>SLTP sederajat</option>
+                            <option>SLTA sederajat</option>
+                            <option>D1-D3 sederajat</option>
+                            <option>D4</option>
+                            <option>S1</option>
+                            <option>S2</option>
+                            <option>S3</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baruPekerjaan">Pekerjaan<span class="wajib">*</span></label>
+                        <select id="baruPekerjaan" required onchange="aturPekerjaanLain()">
+                            <option value="" selected disabled>Pilih pekerjaan</option>
+                            <option>Tidak Bekerja</option>
+                            <option>PNS</option>
+                            <option>TNI/POLRI</option>
+                            <option>BUMN</option>
+                            <option>Pegawai Swasta/Wirausaha</option>
+                            <option>Lain-lain</option>
+                        </select>
+
+                        <div class="lain-lain-box" id="grupPekerjaanLain" hidden>
+                            <input
+                                type="text"
+                                id="baruPekerjaanLain"
+                                placeholder="Sebutkan pekerjaan"
+                                autocomplete="off"
+                            >
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {{-- DATA KELUARGA / KERABAT --}}
+            <div class="form-section-title">
+                DATA KELUARGA/KERABAT YANG BISA DIHUBUNGI
+            </div>
+
             <div class="form-grid">
 
                 <div class="form-group">
-                    <label for="baruNama">Nama lengkap<span class="wajib">*</span></label>
+                    <label for="keluargaNama">Nama Lengkap<span class="wajib">*</span></label>
                     <input
                         type="text"
-                        id="baruNama"
-                        placeholder="Ketik nama sesuai KTP"
+                        id="keluargaNama"
+                        placeholder="Nama keluarga/kerabat"
                         autocomplete="off"
                         required
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="baruNik">NIK<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruNik"
-                        placeholder="16 digit angka sesuai KTP"
-                        maxlength="16"
-                        inputmode="numeric"
-                        autocomplete="off"
-                        required
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="baruGolongan">Golongan Darah<span class="wajib">*</span></label>
-                    <select id="baruGolongan" required>
-                        <option value="" selected disabled>Pilih golongan darah</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="AB">AB</option>
-                        <option value="O">O</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="baruJk">Jenis Kelamin<span class="wajib">*</span></label>
-                    <select id="baruJk" required>
+                    <label for="keluargaJk">Jenis Kelamin<span class="wajib">*</span></label>
+                    <select id="keluargaJk" required>
                         <option value="" selected disabled>Pilih jenis kelamin</option>
-                        <option value="Tidak diketahui">Tidak diketahui</option>
+                        <option value="Tidak diketahui">Tidak Diketahui</option>
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
-                        <option value="Tidak dapat ditentukan">Tidak dapat ditentukan</option>
-                        <option value="Tidak mengisi">Tidak mengisi</option>
+                        <option value="Tidak dapat ditentukan">Tidak Dapat Ditentukan</option>
+                        <option value="Tidak mengisi">Tidak Mengisi</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="baruTempat">Tempat Lahir<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruTempat"
-                        placeholder="Kota/kabupaten tempat lahir"
-                        autocomplete="off"
-                        required
-                    >
+                    <label for="keluargaHubungan">Hubungan<span class="wajib">*</span></label>
+                    <select id="keluargaHubungan" required>
+                        <option value="" selected disabled>Pilih hubungan</option>
+                        <option>Suami</option>
+                        <option>Istri</option>
+                        <option>Orang Tua</option>
+                        <option>Anak</option>
+                        <option>Saudara Kandung</option>
+                        <option>Wali</option>
+                        <option>Lain-lain</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="baruTglLahir">Tanggal Lahir<span class="wajib">*</span></label>
-                    <input
-                        type="date"
-                        id="baruTglLahir"
-                        required
-                    >
-                </div>
-
-            </div>
-
-
-            {{-- ALAMAT --}}
-            <div class="form-section-title">
-                ALAMAT
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group full-width">
-                    <label for="baruAlamat">Alamat Lengkap<span class="wajib">*</span></label>
-                    <textarea
-                        id="baruAlamat"
-                        placeholder="Contoh: Jl. Dahlia No. 3, RT 03/RW 01, Dawu, Paron, Ngawi, Jawa Timur"
-                        required
-                    ></textarea>
-                    <small class="form-hint">
-                        Tulis berurutan dipisah koma: Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi.
-                        Kolom RT/RW sampai Provinsi di bawah akan terisi otomatis.
-                    </small>
-                </div>
-
-                <div class="form-group">
-                    <label for="baruRtRw">RT/RW<span class="wajib">*</span></label>
+                    <label for="keluargaTelepon">No. Telp<span class="wajib">*</span></label>
                     <input
                         type="text"
-                        id="baruRtRw"
-                        placeholder="Contoh: 001/002"
-                        autocomplete="off"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="baruDesa">Desa/Kelurahan<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruDesa"
-                        placeholder="Nama desa/kelurahan"
-                        autocomplete="off"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="baruKecamatan">Kecamatan<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruKecamatan"
-                        placeholder="Nama kecamatan"
-                        autocomplete="off"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="baruKabupaten">Kabupaten/Kota<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruKabupaten"
-                        placeholder="Nama kabupaten/kota"
-                        autocomplete="off"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="baruProvinsi">Provinsi<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruProvinsi"
-                        placeholder="Nama provinsi"
-                        autocomplete="off"
-                        required
-                    >
-                </div>
-
-            </div>
-
-
-            {{-- INFORMASI KONTAK --}}
-            <div class="form-section-title">
-                INFORMASI KONTAK
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="baruTelepon">Nomor Telepon<span class="wajib">*</span></label>
-                    <input
-                        type="text"
-                        id="baruTelepon"
+                        id="keluargaTelepon"
                         placeholder="Contoh: 081234567890"
                         maxlength="15"
                         inputmode="numeric"
@@ -2896,18 +2860,13 @@ body.sidebar-collapsed .main {
                     >
                 </div>
 
-                <div class="form-group">
-                    <label for="baruEmail">Email (opsional)</label>
-                    <input
-                        type="email"
-                        id="baruEmail"
-                        placeholder="Contoh: nama@email.com"
-                        autocomplete="off"
-                    >
-                </div>
-
             </div>
 
+        </div>
+        {{-- /pasienBaruStep1 --}}
+
+
+        <div id="pasienBaruStep2" hidden>
 
             {{-- INFORMASI KUNJUNGAN --}}
             <div class="form-section-title">
@@ -2980,10 +2939,43 @@ body.sidebar-collapsed .main {
             </div>
 
         </div>
+        {{-- /pasienBaruStep2 --}}
+
+        </div>
 
 
         {{-- FOOTER --}}
-<div class="modal-footer">
+<div class="modal-footer" id="footerPasienBaruStep1">
+
+    <button
+        type="button"
+        class="btn-data-lain"
+        onclick="void(0)"
+        disabled
+        title="Segera hadir"
+    >
+        Data lain
+    </button>
+
+    <button
+        type="button"
+        class="btn-daftarkan"
+        onclick="lanjutKeInformasiKunjungan()"
+    >
+        Simpan
+    </button>
+
+</div>
+
+<div class="modal-footer" id="footerPasienBaruStep2" hidden>
+
+    <button
+        type="button"
+        class="btn-batal"
+        onclick="kembaliKeIdentitasPasien()"
+    >
+        Kembali
+    </button>
 
     <button
         type="button"
@@ -3501,16 +3493,6 @@ body.sidebar-collapsed .main {
 <script>
 
 // =========================
-// RESET DATA DEMO ANTRIAN
-// =========================
-// Halaman ini cuma demo alur sistem (tidak tersimpan ke database).
-// Supaya konsisten, setiap kali halaman Pendaftaran dibuka/refresh,
-// data dummy yang sempat disinkronkan ke Pemeriksaan ikut dibersihkan,
-// jadi seluruh alur demo selalu mulai dari kondisi bersih lagi.
-sessionStorage.removeItem('antrianDummy');
-
-
-// =========================
 // PENCARIAN / FILTER TABEL PASIEN
 // =========================
 
@@ -3944,27 +3926,38 @@ document.getElementById('caraPembayaran')
 // MODAL PASIEN BARU
 // =========================
 
-const FIELD_BARU = {
-    baruNama:           'Nama lengkap',
-    baruNik:            'NIK',
-    baruGolongan:       'Golongan darah',
-    baruJk:             'Jenis kelamin',
-    baruTempat:         'Tempat lahir',
-    baruTglLahir:       'Tanggal lahir',
-    baruAlamat:         'Alamat lengkap',
-    baruRtRw:           'RT/RW',
-    baruDesa:           'Desa/Kelurahan',
-    baruKecamatan:      'Kecamatan',
-    baruKabupaten:      'Kabupaten/Kota',
-    baruProvinsi:       'Provinsi',
-    baruTelepon:        'Nomor telepon',
-    baruEmail:          'Email',
+const FIELD_BARU_STEP1 = {
+    baruNik:           'NIK',
+    baruNama:          'Nama lengkap',
+    baruTempat:        'Tempat lahir',
+    baruTglLahir:      'Tanggal lahir',
+    baruJk:            'Jenis kelamin',
+    baruAgama:         'Agama',
+    baruStatusNikah:   'Status pernikahan',
+    baruTelepon:       'No. telp pasien',
+    baruAlamat:        'Alamat',
+    baruProvinsi:      'Provinsi',
+    baruKabupaten:     'Kabupaten',
+    baruKecamatan:     'Kecamatan',
+    baruKelurahan:     'Kelurahan',
+    baruNegara:        'Negara',
+    baruPendidikan:    'Pendidikan',
+    baruPekerjaan:     'Pekerjaan',
+    keluargaNama:      'Nama keluarga/kerabat',
+    keluargaJk:        'Jenis kelamin keluarga/kerabat',
+    keluargaHubungan:  'Hubungan',
+    keluargaTelepon:   'Nomor telepon keluarga/kerabat'
+};
+
+const FIELD_BARU_STEP2 = {
     baruTglKunjungan:   'Tanggal kunjungan',
     baruPoli:           'Poli tujuan',
     baruJenisKunjungan: 'Jenis kunjungan',
     baruPembayaran:     'Cara pembayaran',
     baruNoBpjs:         'Nomor BPJS'
 };
+
+const FIELD_BARU = Object.assign({}, FIELD_BARU_STEP1, FIELD_BARU_STEP2);
 
 function hariIniIso() {
 
@@ -3981,9 +3974,7 @@ function bukaModalPasienBaru() {
 
     generalConsentDisetujui = false;
 
-    Object.keys(FIELD_BARU).forEach(function(id) {
-        tampilkanError(id, '');
-    });
+    resetFormPasienBaru();
 
     // Tanggal lahir tidak boleh melewati hari ini
     document.getElementById('baruTglLahir').max = hariIniIso();
@@ -3993,7 +3984,7 @@ function bukaModalPasienBaru() {
 
     document.body.style.overflow = 'hidden';
 
-    document.getElementById('baruNama').focus();
+    document.getElementById('baruNik').focus();
 }
 
 
@@ -4004,6 +3995,367 @@ function tutupModalPasienBaru() {
 
     document.body.style.overflow = '';
 }
+
+
+// Kembalikan seluruh isian modal Pasien Baru ke kondisi kosong/awal
+// (dipanggil saat modal dibuka dan setelah data berhasil disimpan)
+function resetFormPasienBaru() {
+
+    Object.keys(FIELD_BARU).forEach(function(id) {
+
+        const el = document.getElementById(id);
+
+        if (el.tagName === 'SELECT') {
+            el.selectedIndex = 0;
+        } else {
+            el.value = el.defaultValue;
+        }
+
+        el.classList.remove('terisi-otomatis');
+        delete el.dataset.manual;
+
+        tampilkanError(id, '');
+    });
+
+    // Field tambahan yang bukan bagian dari validasi wajib
+    ['baruTitle', 'baruUsia', 'baruBahasa', 'baruAgamaLain', 'baruPekerjaanLain'].forEach(function(id) {
+        document.getElementById(id).value = '';
+        tampilkanError(id, '');
+    });
+
+    document.getElementById('baruNegara').value = 'Indonesia';
+
+    document.getElementById('grupAgamaLain').hidden = true;
+    document.getElementById('grupPekerjaanLain').hidden = true;
+
+    // Reset kombo wilayah (provinsi/kabupaten/kecamatan/kelurahan)
+    document.getElementById('baruProvinsiId').value = '';
+    document.getElementById('baruKabupatenId').value = '';
+    document.getElementById('baruKecamatanId').value = '';
+    document.getElementById('baruKelurahanId').value = '';
+
+    const kab = document.getElementById('baruKabupaten');
+    kab.disabled = true;
+    kab.placeholder = 'Pilih provinsi dahulu';
+
+    const kec = document.getElementById('baruKecamatan');
+    kec.disabled = true;
+    kec.placeholder = 'Pilih kabupaten dahulu';
+
+    const kel = document.getElementById('baruKelurahan');
+    kel.disabled = true;
+    kel.placeholder = 'Pilih kecamatan dahulu';
+
+    document.querySelectorAll('#modalPasienBaru .kombo-saran').forEach(function(el) {
+        el.classList.remove('show');
+        el.innerHTML = '';
+    });
+
+    aturKolomBpjs();
+
+    // Selalu mulai lagi dari langkah 1
+    document.getElementById('pasienBaruStep1').hidden = false;
+    document.getElementById('pasienBaruStep2').hidden = true;
+    document.getElementById('footerPasienBaruStep1').hidden = false;
+    document.getElementById('footerPasienBaruStep2').hidden = true;
+}
+
+
+// =========================
+// AGAMA / PEKERJAAN "LAIN-LAIN" -> MUNCULKAN FREE TEXT
+// =========================
+
+function aturAgamaLain() {
+
+    const pilih = document.getElementById('baruAgama').value;
+    const grup = document.getElementById('grupAgamaLain');
+    const input = document.getElementById('baruAgamaLain');
+
+    grup.hidden = pilih !== 'Lain-lain';
+
+    if (!grup.hidden) {
+        input.focus();
+    } else {
+        input.value = '';
+        tampilkanError('baruAgamaLain', '');
+    }
+}
+
+
+function aturPekerjaanLain() {
+
+    const pilih = document.getElementById('baruPekerjaan').value;
+    const grup = document.getElementById('grupPekerjaanLain');
+    const input = document.getElementById('baruPekerjaanLain');
+
+    grup.hidden = pilih !== 'Lain-lain';
+
+    if (!grup.hidden) {
+        input.focus();
+    } else {
+        input.value = '';
+        tampilkanError('baruPekerjaanLain', '');
+    }
+}
+
+
+// Usia terisi otomatis dari Tanggal Lahir (read-only)
+function aturUsiaOtomatis() {
+    document.getElementById('baruUsia').value = hitungUmur(document.getElementById('baruTglLahir').value);
+}
+
+
+// =========================
+// WILAYAH: PROVINSI / KABUPATEN / KECAMATAN
+// Data diambil lewat backend sendiri (route wilayah.*), yang di baliknya
+// mengambil dari emsifa/api-wilayah-indonesia secara server-to-server.
+// Ini SENGAJA tidak fetch() langsung ke emsifa dari browser karena server
+// itu tidak mengirim header CORS (selalu gagal kalau dipanggil dari JS).
+// Kombo bisa diketik (autocomplete) maupun dipilih dari daftar.
+// =========================
+
+const WILAYAH_URL = {
+    provinsi:  @json(route('wilayah.provinsi')),
+    kabupaten: @json(route('wilayah.kabupaten', ['provinsiId' => '__ID__'])),
+    kecamatan: @json(route('wilayah.kecamatan', ['kabupatenId' => '__ID__'])),
+    kelurahan: @json(route('wilayah.kelurahan', ['kecamatanId' => '__ID__']))
+};
+
+const wilayahCache = {
+    provinsi: null,
+    kabupaten: {},
+    kecamatan: {},
+    kelurahan: {}
+};
+
+const KOMBO_KONFIG = {
+    provinsi:  { input: 'baruProvinsi',  hidden: 'baruProvinsiId',  saran: 'saranProvinsi' },
+    kabupaten: { input: 'baruKabupaten', hidden: 'baruKabupatenId', saran: 'saranKabupaten' },
+    kecamatan: { input: 'baruKecamatan', hidden: 'baruKecamatanId', saran: 'saranKecamatan' },
+    kelurahan: { input: 'baruKelurahan', hidden: 'baruKelurahanId', saran: 'saranKelurahan' }
+};
+
+async function komboAmbilData(jenis) {
+
+    if (jenis === 'provinsi') {
+
+        if (!wilayahCache.provinsi) {
+            const res = await fetch(WILAYAH_URL.provinsi);
+            wilayahCache.provinsi = await res.json();
+        }
+
+        return wilayahCache.provinsi;
+    }
+
+    if (jenis === 'kabupaten') {
+
+        const provinsiId = document.getElementById('baruProvinsiId').value;
+
+        if (!provinsiId) {
+            return [];
+        }
+
+        if (!wilayahCache.kabupaten[provinsiId]) {
+            const res = await fetch(WILAYAH_URL.kabupaten.replace('__ID__', provinsiId));
+            wilayahCache.kabupaten[provinsiId] = await res.json();
+        }
+
+        return wilayahCache.kabupaten[provinsiId];
+    }
+
+    if (jenis === 'kecamatan') {
+
+        const kabupatenId = document.getElementById('baruKabupatenId').value;
+
+        if (!kabupatenId) {
+            return [];
+        }
+
+        if (!wilayahCache.kecamatan[kabupatenId]) {
+            const res = await fetch(WILAYAH_URL.kecamatan.replace('__ID__', kabupatenId));
+            wilayahCache.kecamatan[kabupatenId] = await res.json();
+        }
+
+        return wilayahCache.kecamatan[kabupatenId];
+    }
+
+    if (jenis === 'kelurahan') {
+
+        const kecamatanId = document.getElementById('baruKecamatanId').value;
+
+        if (!kecamatanId) {
+            return [];
+        }
+
+        if (!wilayahCache.kelurahan[kecamatanId]) {
+            const res = await fetch(WILAYAH_URL.kelurahan.replace('__ID__', kecamatanId));
+            wilayahCache.kelurahan[kecamatanId] = await res.json();
+        }
+
+        return wilayahCache.kelurahan[kecamatanId];
+    }
+
+    return [];
+}
+
+
+async function komboBukaSaran(jenis) {
+
+    const input = document.getElementById(KOMBO_KONFIG[jenis].input);
+
+    if (input.disabled) {
+        return;
+    }
+
+    await komboRender(jenis, input.value);
+}
+
+
+async function komboCari(jenis) {
+
+    const cfg = KOMBO_KONFIG[jenis];
+
+    // Teks diubah manual -> anggap pilihan lama batal sampai dipilih lagi dari daftar
+    document.getElementById(cfg.hidden).value = '';
+
+    if (jenis === 'provinsi' || jenis === 'kabupaten' || jenis === 'kecamatan') {
+        komboKosongkanTurunan(jenis);
+    }
+
+    await komboRender(jenis, document.getElementById(cfg.input).value);
+}
+
+
+async function komboRender(jenis, kataKunci) {
+
+    const kotak = document.getElementById(KOMBO_KONFIG[jenis].saran);
+
+    let data;
+
+    try {
+        data = await komboAmbilData(jenis);
+    } catch (e) {
+        kotak.innerHTML = '<div class="kombo-kosong">Gagal memuat data wilayah. Periksa koneksi internet.</div>';
+        kotak.classList.add('show');
+        return;
+    }
+
+    const kata = (kataKunci || '').trim().toLowerCase();
+
+    const hasil = kata
+        ? data.filter(function(item) {
+            return item.name.toLowerCase().indexOf(kata) !== -1;
+        })
+        : data;
+
+    if (hasil.length === 0) {
+        kotak.innerHTML = '<div class="kombo-kosong">Tidak ada data yang cocok</div>';
+    } else {
+        kotak.innerHTML = hasil.slice(0, 50).map(function(item) {
+            return '<div onclick="komboPilih(\'' + jenis + '\', \'' + item.id + '\', '
+                + JSON.stringify(item.name).replace(/\"/g, '&quot;') + ')">' + item.name + '</div>';
+        }).join('');
+    }
+
+    kotak.classList.add('show');
+}
+
+
+// Kosongkan kolom turunan saat provinsi/kabupaten diubah lagi
+function komboKosongkanTurunan(jenis) {
+
+    if (jenis === 'provinsi') {
+
+        const kab = document.getElementById('baruKabupaten');
+        kab.value = '';
+        kab.disabled = true;
+        kab.placeholder = 'Pilih provinsi dahulu';
+        document.getElementById('baruKabupatenId').value = '';
+    }
+
+    if (jenis === 'provinsi' || jenis === 'kabupaten') {
+
+        const kec = document.getElementById('baruKecamatan');
+        kec.value = '';
+        kec.disabled = true;
+        kec.placeholder = 'Pilih kabupaten dahulu';
+        document.getElementById('baruKecamatanId').value = '';
+    }
+
+    const kel = document.getElementById('baruKelurahan');
+    kel.value = '';
+    kel.disabled = true;
+    kel.placeholder = 'Pilih kecamatan dahulu';
+    document.getElementById('baruKelurahanId').value = '';
+}
+
+
+function komboPilih(jenis, id, nama) {
+
+    const cfg = KOMBO_KONFIG[jenis];
+
+    document.getElementById(cfg.input).value = nama;
+    document.getElementById(cfg.hidden).value = id;
+    document.getElementById(cfg.saran).classList.remove('show');
+    tampilkanError(cfg.input, '');
+
+    if (jenis === 'provinsi') {
+
+        const kab = document.getElementById('baruKabupaten');
+        kab.disabled = false;
+        kab.placeholder = 'Ketik nama kabupaten/kota';
+        kab.value = '';
+        document.getElementById('baruKabupatenId').value = '';
+
+        const kec = document.getElementById('baruKecamatan');
+        kec.disabled = true;
+        kec.value = '';
+        kec.placeholder = 'Pilih kabupaten dahulu';
+        document.getElementById('baruKecamatanId').value = '';
+
+        const kel = document.getElementById('baruKelurahan');
+        kel.disabled = true;
+        kel.value = '';
+        kel.placeholder = 'Pilih kecamatan dahulu';
+        document.getElementById('baruKelurahanId').value = '';
+    }
+
+    if (jenis === 'kabupaten') {
+
+        const kec = document.getElementById('baruKecamatan');
+        kec.disabled = false;
+        kec.placeholder = 'Ketik nama kecamatan';
+        kec.value = '';
+        document.getElementById('baruKecamatanId').value = '';
+
+        const kel = document.getElementById('baruKelurahan');
+        kel.disabled = true;
+        kel.value = '';
+        kel.placeholder = 'Pilih kecamatan dahulu';
+        document.getElementById('baruKelurahanId').value = '';
+    }
+
+    if (jenis === 'kecamatan') {
+
+        const kel = document.getElementById('baruKelurahan');
+        kel.disabled = false;
+        kel.placeholder = 'Ketik nama kelurahan/desa';
+        kel.value = '';
+        document.getElementById('baruKelurahanId').value = '';
+    }
+}
+
+
+// Tutup daftar saran kombo kalau klik di luar kotaknya
+document.addEventListener('click', function(e) {
+
+    if (!e.target.closest('.kombo-wrapper')) {
+        document.querySelectorAll('#modalPasienBaru .kombo-saran.show')
+            .forEach(function(el) {
+                el.classList.remove('show');
+            });
+    }
+});
 
 
 // =========================
@@ -4039,32 +4391,23 @@ function setujuiGeneralConsent() {
 }
 
 
-function simpanPasienBaru() {
+// =========================
+// NAVIGASI ANTAR LANGKAH (STEP 1 IDENTITAS -> STEP 2 INFORMASI KUNJUNGAN)
+// =========================
+
+function lanjutKeInformasiKunjungan() {
 
     const nilai = function(id) {
         return document.getElementById(id).value.trim();
     };
 
-    // ---------- VALIDASI KOLOM WAJIB ----------
     const error = {};
 
-    Object.keys(FIELD_BARU).forEach(function(id) {
-
-        // Email boleh kosong
-        if (id === 'baruEmail') {
-            return;
-        }
-
-        // Nomor BPJS hanya wajib kalau Cara Pembayaran = BPJS
-        if (id === 'baruNoBpjs' && nilai('baruPembayaran') !== 'BPJS') {
-            return;
-        }
+    Object.keys(FIELD_BARU_STEP1).forEach(function(id) {
 
         if (!nilai(id)) {
-
             const el = document.getElementById(id);
-
-            error[id] = FIELD_BARU[id] +
+            error[id] = FIELD_BARU_STEP1[id] +
                 (el.tagName === 'SELECT' ? ' wajib dipilih.' : ' wajib diisi.');
         }
     });
@@ -4077,21 +4420,113 @@ function simpanPasienBaru() {
         error.baruTelepon = 'Nomor telepon harus 8-15 digit angka.';
     }
 
-    if (!error.baruNoBpjs && nilai('baruPembayaran') === 'BPJS' && !/^\d{13}$/.test(nilai('baruNoBpjs'))) {
-        error.baruNoBpjs = 'Nomor BPJS harus 13 digit angka.';
+    if (!error.keluargaTelepon && !/^\d{8,15}$/.test(nilai('keluargaTelepon'))) {
+        error.keluargaTelepon = 'Nomor telepon harus 8-15 digit angka.';
     }
 
     if (!error.baruTglLahir && nilai('baruTglLahir') > hariIniIso()) {
         error.baruTglLahir = 'Tanggal lahir tidak boleh melebihi hari ini.';
     }
 
-    if (nilai('baruEmail') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nilai('baruEmail'))) {
-        error.baruEmail = 'Format email belum benar.';
+    if (document.getElementById('baruAgama').value === 'Lain-lain' && !nilai('baruAgamaLain')) {
+        error.baruAgamaLain = 'Agama/kepercayaan wajib disebutkan.';
+    }
+
+    if (document.getElementById('baruPekerjaan').value === 'Lain-lain' && !nilai('baruPekerjaanLain')) {
+        error.baruPekerjaanLain = 'Pekerjaan wajib disebutkan.';
+    }
+
+    if (!error.baruProvinsi && !document.getElementById('baruProvinsiId').value) {
+        error.baruProvinsi = 'Provinsi wajib dipilih dari daftar.';
+    }
+
+    if (!error.baruKabupaten && !document.getElementById('baruKabupatenId').value) {
+        error.baruKabupaten = 'Kabupaten wajib dipilih dari daftar.';
+    }
+
+    if (!error.baruKecamatan && !document.getElementById('baruKecamatanId').value) {
+        error.baruKecamatan = 'Kecamatan wajib dipilih dari daftar.';
+    }
+
+    if (!error.baruKelurahan && !document.getElementById('baruKelurahanId').value) {
+        error.baruKelurahan = 'Kelurahan wajib dipilih dari daftar.';
     }
 
     let pertama = null;
 
-    Object.keys(FIELD_BARU).forEach(function(id) {
+    Object.keys(FIELD_BARU_STEP1).forEach(function(id) {
+
+        tampilkanError(id, error[id] || '');
+
+        if (error[id] && !pertama) {
+            pertama = id;
+        }
+    });
+
+    ['baruAgamaLain', 'baruPekerjaanLain'].forEach(function(id) {
+
+        tampilkanError(id, error[id] || '');
+
+        if (error[id] && !pertama) {
+            pertama = id;
+        }
+    });
+
+    if (pertama) {
+        document.getElementById(pertama).focus();
+        return;
+    }
+
+    document.getElementById('pasienBaruStep1').hidden = true;
+    document.getElementById('pasienBaruStep2').hidden = false;
+    document.getElementById('footerPasienBaruStep1').hidden = true;
+    document.getElementById('footerPasienBaruStep2').hidden = false;
+
+    document.getElementById('baruTglKunjungan').focus();
+}
+
+
+function kembaliKeIdentitasPasien() {
+
+    document.getElementById('pasienBaruStep2').hidden = true;
+    document.getElementById('pasienBaruStep1').hidden = false;
+    document.getElementById('footerPasienBaruStep2').hidden = true;
+    document.getElementById('footerPasienBaruStep1').hidden = false;
+}
+
+
+async function simpanPasienBaru() {
+
+    const nilai = function(id) {
+        return document.getElementById(id).value.trim();
+    };
+
+    // ---------- VALIDASI INFORMASI KUNJUNGAN (STEP 2) ----------
+    const error = {};
+
+    Object.keys(FIELD_BARU_STEP2).forEach(function(id) {
+
+        // Nomor BPJS hanya wajib kalau Cara Pembayaran = BPJS
+        if (id === 'baruNoBpjs' && nilai('baruPembayaran') !== 'BPJS') {
+            return;
+        }
+
+        if (!nilai(id)) {
+
+            const el = document.getElementById(id);
+
+            error[id] = FIELD_BARU_STEP2[id] +
+                (el.tagName === 'SELECT' ? ' wajib dipilih.' : ' wajib diisi.');
+        }
+    });
+
+    if (!error.baruNoBpjs && nilai('baruPembayaran') === 'BPJS' && !/^\d{13}$/.test(nilai('baruNoBpjs'))) {
+        error.baruNoBpjs = 'Nomor BPJS harus 13 digit angka.';
+    }
+
+    let pertama = null;
+
+    Object.keys(FIELD_BARU_STEP2).forEach(function(id) {
 
         tampilkanError(id, error[id] || '');
 
@@ -4112,15 +4547,21 @@ function simpanPasienBaru() {
         return;
     }
 
-    // ---------- BERHASIL ----------
-    // ---------- BERHASIL ----------
+    // ---------- BERHASIL (VALIDASI FORM) ----------
+    // ---------- BERHASIL (VALIDASI FORM) ----------
+
+    // Jenis kelamin di database hanya mengenal 'Laki-laki' / 'Perempuan'.
+    // Kalau operator memilih opsi lain (Tidak Diketahui, dst), tetap
+    // dikirim ke server sebagai 'Laki-laki' supaya penyimpanan tidak gagal;
+    // tampilan di tabel Pendaftaran tetap memakai pilihan aslinya.
+    const jkAsli = nilai('baruJk');
+    const jkUntukServer = (jkAsli === 'Laki-laki' || jkAsli === 'Perempuan') ? jkAsli : 'Laki-laki';
 
     const dataBaru = {
-        noRm:     generateNoRm(),
         nama:     nilai('baruNama'),
         nik:      nilai('baruNik'),
-        golongan: nilai('baruGolongan'),
-        jk:       nilai('baruJk'),
+        golongan: '',
+        jk:       jkAsli,
         tempat:   nilai('baruTempat'),
         tglLahir: nilai('baruTglLahir'),
         alamat:   nilai('baruAlamat'),
@@ -4130,24 +4571,57 @@ function simpanPasienBaru() {
         poli:     nilai('baruPoli')
     };
 
+    // Benar-benar disimpan ke database (bukan cuma data dummy di JS) supaya
+    // pasien ini langsung muncul di antrian Pemeriksaan poli tujuannya dan
+    // tombol "Periksa"-nya bisa dipakai sungguhan.
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute('content');
+
+    let hasil;
+
+    try {
+
+        const response = await fetch("{{ route('pasien.baru.store') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                nama:               dataBaru.nama,
+                jenis_kelamin:      jkUntukServer,
+                tanggal_lahir:      dataBaru.tglLahir,
+                nik:                dataBaru.nik,
+                no_telepon:         dataBaru.telepon,
+                alamat:             dataBaru.alamat,
+                tanggal_kunjungan:  dataBaru.tglKunjungan,
+                poli:               poliKeSlug(dataBaru.poli),
+                pembayaran:         nilai('baruPembayaran')
+            })
+        });
+
+        hasil = await response.json();
+
+        if (!response.ok || !hasil.success) {
+            throw new Error(hasil.message || 'Gagal menyimpan data pasien.');
+        }
+
+    } catch (err) {
+
+        generalConsentDisetujui = false;
+
+        alert('Gagal menyimpan data pasien ke database. Silakan coba lagi.\n(' + err.message + ')');
+        return;
+    }
+
+    dataBaru.noRm = hasil.no_rm;
+
     tambahBarisPasienBaru(dataBaru);
 
     // Kosongkan form supaya siap dipakai untuk pasien berikutnya
-    Object.keys(FIELD_BARU).forEach(function(id) {
-
-        const el = document.getElementById(id);
-
-        if (el.tagName === 'SELECT') {
-            el.selectedIndex = 0;
-        } else {
-            el.value = el.defaultValue;   // tanggal kunjungan kembali ke hari ini
-        }
-
-        el.classList.remove('terisi-otomatis');
-        delete el.dataset.manual;
-    });
-
-    aturKolomBpjs();
+    resetFormPasienBaru();
 
     generalConsentDisetujui = false;
 
@@ -4160,8 +4634,6 @@ function simpanPasienBaru() {
         false
     );
 }
-
-
 // Nomor RM otomatis: ambil nomor terbesar yang sudah ada di tabel, lalu +1
 function generateNoRm() {
 
@@ -4322,321 +4794,6 @@ document.getElementById('baruPembayaran')
 
 
 // =========================
-// ISI OTOMATIS DARI ALAMAT LENGKAP (PASIEN BARU)
-// Format: Jalan, RT/RW, Kelurahan, Kecamatan, Kota/Kabupaten, Provinsi
-// =========================
-
-const DAFTAR_PROVINSI = [
-    'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi', 'Sumatera Selatan',
-    'Bengkulu', 'Lampung', 'Kepulauan Bangka Belitung', 'Kepulauan Riau', 'DKI Jakarta',
-    'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur', 'Banten', 'Bali',
-    'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Kalimantan Barat', 'Kalimantan Tengah',
-    'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 'Sulawesi Utara',
-    'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat',
-    'Maluku', 'Maluku Utara', 'Papua', 'Papua Barat', 'Papua Selatan', 'Papua Tengah',
-    'Papua Pegunungan', 'Papua Barat Daya'
-];
-
-// Nama singkatan / penulisan lain -> nama resmi
-const ALIAS_PROVINSI = {
-    'yogyakarta': 'DI Yogyakarta',
-    'diy': 'DI Yogyakarta',
-    'daerah istimewa yogyakarta': 'DI Yogyakarta',
-    'jakarta': 'DKI Jakarta',
-    'bangka belitung': 'Kepulauan Bangka Belitung',
-    'ntb': 'Nusa Tenggara Barat',
-    'ntt': 'Nusa Tenggara Timur'
-};
-
-function normKey(teks) {
-    return teks.toLowerCase().replace(/\./g, '').replace(/\s+/g, ' ').trim();
-}
-
-const PETA_PROVINSI = {};
-
-DAFTAR_PROVINSI.forEach(function(nama) {
-    PETA_PROVINSI[normKey(nama)] = nama;
-});
-
-Object.keys(ALIAS_PROVINSI).forEach(function(k) {
-    PETA_PROVINSI[k] = ALIAS_PROVINSI[k];
-});
-
-// Nama terpanjang dicek dulu ("Papua Barat Daya" sebelum "Papua Barat")
-const URUT_PROVINSI = DAFTAR_PROVINSI.slice().sort(function(a, b) {
-    return b.length - a.length;
-});
-
-function kanonProvinsi(teks) {
-    return PETA_PROVINSI[normKey(teks)] || teks;
-}
-
-function bersihkanTeks(teks) {
-    return teks.replace(/^[\s.,;:\-]+|[\s.,;:\-]+$/g, '').replace(/\s+/g, ' ');
-}
-
-
-// Memecah alamat lengkap. Mengembalikan null kalau bagian wilayahnya
-// belum cukup jelas (kurang dari 3 bagian yang berhasil dikenali).
-function uraikanAlamat(teks) {
-
-    let t = teks.replace(/[\r\n]+/g, ', ').replace(/\s+/g, ' ').trim();
-
-    const hasil = { rtrw: '', desa: '', kecamatan: '', kabupaten: '', provinsi: '' };
-
-    // Ditulis seperti kalimat (hampir tanpa koma)?
-    const modaKalimat = (t.match(/,/g) || []).length < 2;
-
-    // ---------- RT / RW ----------
-    const pad = function(angka) {
-        return angka.length < 3 ? angka.padStart(3, '0') : angka;
-    };
-
-    const POLA_RTRW = [
-        /\bRT\s*\/\s*RW\.?\s*[:.]?\s*(\d{1,3})\s*[\/\-]\s*(\d{1,3})\b/i,       // RT/RW 03/01
-        /\bRT\.?\s*[:.]?\s*(\d{1,3})\s*[,\/\-]?\s*RW\.?\s*[:.]?\s*(\d{1,3})\b/i, // RT 03/RW 01, RT 03 RW 01
-        /\bRT\.?\s*[:.]?\s*(\d{1,3})\s*[\/\-]\s*(\d{1,3})\b/i                   // RT 03/01
-    ];
-
-    POLA_RTRW.forEach(function(pola) {
-
-        const m = pola.exec(t);
-
-        if (!hasil.rtrw && m) {
-            hasil.rtrw = pad(m[1]) + '/' + pad(m[2]);
-            t = t.replace(m[0], ', ');
-        }
-    });
-
-    if (!hasil.rtrw) {
-
-        const rt = /\bRT\.?\s*[:.]?\s*(\d{1,3})\b/i.exec(t);
-        const rw = /\bRW\.?\s*[:.]?\s*(\d{1,3})\b/i.exec(t);
-
-        if (rt && rw) {
-            hasil.rtrw = pad(rt[1]) + '/' + pad(rw[1]);
-            t = t.replace(rt[0], ', ').replace(rw[0], ', ');
-        }
-    }
-
-    // ---------- Alamat bergaya kalimat: sisipkan koma sebelum kata kunci wilayah ----------
-    if (modaKalimat) {
-
-        t = t.replace(
-            /\s+(?=(?:desa|ds|kelurahan|kel|kecamatan|kec|kabupaten|kab|provinsi|prov)\.?\s+\S)/gi,
-            ', '
-        );
-
-        // "Kota" hanya dianggap wilayah kalau sudah ada desa/kelurahan/kecamatan sebelumnya
-        t = t.replace(/\s+(?=(?:kota|kodya)\s+\S)/gi, function(spasi, posisi, semua) {
-            return /(?:^|[\s,])(?:desa|ds|kelurahan|kel|kecamatan|kec)\.?\s/i.test(semua.slice(0, posisi))
-                ? ', '
-                : spasi;
-        });
-    }
-
-    const bagian = t.split(',').map(bersihkanTeks).filter(Boolean);
-
-    if (!bagian.length) {
-        return null;
-    }
-
-    // ---------- Provinsi yang menempel di ujung tanpa koma ("... Bandung Jawa Barat") ----------
-    const terakhir = bagian[bagian.length - 1];
-
-    for (let i = 0; i < URUT_PROVINSI.length; i++) {
-
-        const nama = URUT_PROVINSI[i];
-        const pola = new RegExp('\\s' + nama.replace(/\s+/g, '\\s+') + '$', 'i');
-
-        if (pola.test(terakhir)) {
-
-            const depan = bersihkanTeks(terakhir.replace(pola, ''));
-
-            // "Provinsi Jawa Barat" / "Kota Jambi" jangan dipecah
-            if (depan && !/^(?:kota|kodya|kabupaten|kab|provinsi|prov)\.?$/i.test(depan)) {
-                bagian[bagian.length - 1] = depan;
-                bagian.push(nama);
-            }
-
-            break;
-        }
-    }
-
-    // ---------- Bagian pertama = jalan (kecuali langsung diawali kata kunci wilayah) ----------
-    const KATA_WILAYAH = /^(?:desa|ds|kelurahan|kel|kecamatan|kec|kabupaten|kab|kota|kodya|provinsi|prov)\.?\s+\S/i;
-
-    if (!KATA_WILAYAH.test(bagian[0])) {
-        bagian.shift();
-    }
-
-    // ---------- Bagian yang punya label ----------
-    const sisa = [];
-
-    bagian.forEach(function(b) {
-
-        let x;
-
-        if ((x = /^(?:kelurahan|kel|desa|ds)\.?\s+(.+)$/i.exec(b))) {
-            hasil.desa = hasil.desa || bersihkanTeks(x[1]);
-        } else if ((x = /^(?:kecamatan|kec)\.?\s+(.+)$/i.exec(b))) {
-            hasil.kecamatan = hasil.kecamatan || bersihkanTeks(x[1]);
-        } else if ((x = /^(?:kabupaten|kab)\.?\s+(.+)$/i.exec(b))) {
-            hasil.kabupaten = hasil.kabupaten || 'Kabupaten ' + bersihkanTeks(x[1]);
-        } else if ((x = /^(?:kota|kodya)\.?\s+(.+)$/i.exec(b))) {
-            hasil.kabupaten = hasil.kabupaten || 'Kota ' + bersihkanTeks(x[1]);
-        } else if ((x = /^(?:provinsi|prov)\.?\s+(.+)$/i.exec(b))) {
-            hasil.provinsi = hasil.provinsi || kanonProvinsi(bersihkanTeks(x[1]));
-        } else {
-            sisa.push(b);
-        }
-    });
-
-    // ---------- Provinsi tanpa label: dikenali dari daftar provinsi ----------
-    if (!hasil.provinsi && sisa.length) {
-
-        const prov = PETA_PROVINSI[normKey(sisa[sisa.length - 1])];
-
-        if (prov) {
-            hasil.provinsi = prov;
-            sisa.pop();
-        }
-    }
-
-    // ---------- Sisanya tanpa label: diisi dari belakang (kabupaten/kota, kecamatan, desa) ----------
-    const slot = ['desa', 'kecamatan', 'kabupaten'].filter(function(k) {
-        return !hasil[k];
-    });
-
-    // Lebih banyak bagian daripada slot -> bagian paling belakang pasti provinsi
-    if (!hasil.provinsi && sisa.length > slot.length) {
-        slot.push('provinsi');
-    }
-
-    for (let i = 1; i <= Math.min(slot.length, sisa.length); i++) {
-        hasil[slot[slot.length - i]] = sisa[sisa.length - i];
-    }
-
-    // Huruf awal tiap kata dikapitalkan ("pasteur" -> "Pasteur")
-    ['desa', 'kecamatan', 'kabupaten'].forEach(function(k) {
-
-        if (hasil[k]) {
-            hasil[k] = hasil[k].replace(/(^|\s)(\S)/g, function(m, awal, huruf) {
-                return awal + huruf.toUpperCase();
-            });
-        }
-    });
-
-    const jumlah = Object.keys(hasil).filter(function(k) {
-        return hasil[k];
-    }).length;
-
-    return jumlah >= 3 ? hasil : null;
-}
-
-
-const KOLOM_ALAMAT_OTOMATIS = {
-    rtrw:      'baruRtRw',
-    desa:      'baruDesa',
-    kecamatan: 'baruKecamatan',
-    kabupaten: 'baruKabupaten',
-    provinsi:  'baruProvinsi'
-};
-
-let timerAlamat = null;
-
-// selesai = true  -> dipanggil saat pindah dari kolom alamat (selalu diproses)
-// selesai = false -> dipanggil saat jeda mengetik (hanya kalau alamat sudah lengkap sampai provinsi)
-function isiAlamatOtomatis(selesai) {
-
-    const teks = document.getElementById('baruAlamat').value.trim();
-
-    const semuaKolom = Object.keys(KOLOM_ALAMAT_OTOMATIS).map(function(k) {
-        return document.getElementById(KOLOM_ALAMAT_OTOMATIS[k]);
-    });
-
-    // Alamat dikosongkan -> hapus isian otomatis (isian yang diketik sendiri tidak disentuh)
-    if (!teks) {
-
-        semuaKolom.forEach(function(el) {
-
-            if (el.classList.contains('terisi-otomatis')) {
-                el.value = '';
-                el.classList.remove('terisi-otomatis');
-            }
-        });
-
-        return;
-    }
-
-    const hasil = uraikanAlamat(teks);
-
-    if (!hasil || (!selesai && !hasil.provinsi)) {
-        return;
-    }
-
-    Object.keys(KOLOM_ALAMAT_OTOMATIS).forEach(function(k) {
-
-        const id = KOLOM_ALAMAT_OTOMATIS[k];
-        const el = document.getElementById(id);
-
-        // Kolom yang sudah diketik/diubah sendiri oleh petugas tidak ditimpa
-        if (el.dataset.manual === '1') {
-            return;
-        }
-
-        if (hasil[k]) {
-
-            el.value = hasil[k];
-            el.classList.add('terisi-otomatis');
-            tampilkanError(id, '');
-
-        } else if (el.classList.contains('terisi-otomatis')) {
-
-            el.value = '';
-            el.classList.remove('terisi-otomatis');
-        }
-    });
-}
-
-
-(function() {
-
-    const alamat = document.getElementById('baruAlamat');
-
-    alamat.addEventListener('input', function() {
-        clearTimeout(timerAlamat);
-        timerAlamat = setTimeout(function() {
-            isiAlamatOtomatis(false);
-        }, 700);
-    });
-
-    alamat.addEventListener('blur', function() {
-        clearTimeout(timerAlamat);
-        isiAlamatOtomatis(true);
-    });
-
-    // Kalau petugas mengetik sendiri di kolom wilayah, jangan ditimpa lagi
-    Object.keys(KOLOM_ALAMAT_OTOMATIS).forEach(function(k) {
-
-        const el = document.getElementById(KOLOM_ALAMAT_OTOMATIS[k]);
-
-        el.addEventListener('input', function() {
-
-            el.classList.remove('terisi-otomatis');
-
-            if (el.value.trim() === '') {
-                delete el.dataset.manual;   // dikosongkan -> boleh diisi otomatis lagi
-            } else {
-                el.dataset.manual = '1';
-            }
-        });
-    });
-
-})();
-
-
-// =========================
 // ENTER = PINDAH OTOMATIS KE KOLOM BERIKUTNYA (MODAL PASIEN BARU)
 // Supaya petugas tidak perlu mengarahkan kursor manual ke tiap kolom.
 // =========================
@@ -4702,8 +4859,8 @@ function isiAlamatOtomatis(selesai) {
 
         } else {
 
-            // Sudah di kolom terakhir -> arahkan fokus ke tombol Daftarkan Pasien (tidak langsung submit)
-            const tombolDaftar = modalBaru.querySelector('.btn-daftarkan');
+            // Sudah di kolom terakhir -> arahkan fokus ke tombol utama langkah yang sedang tampil
+            const tombolDaftar = modalBaru.querySelector('.modal-footer:not([hidden]) .btn-daftarkan');
 
             if (tombolDaftar) {
                 tombolDaftar.focus();
@@ -5008,7 +5165,7 @@ function tutupModalEdit() {
 }
 
 
-function simpanEdit() {
+async function simpanEdit() {
 
     if (!barisEdit) {
         return;
@@ -5074,9 +5231,8 @@ function simpanEdit() {
         return d[k] !== dataAwalEdit[k];
     });
 
-    tutupModalEdit();
-
     if (!berubah) {
+        tutupModalEdit();
         tampilkanPopupSimpan(
             'Tidak ada perubahan',
             'Data pasien <strong></strong> tidak diubah.',
@@ -5085,6 +5241,43 @@ function simpanEdit() {
         );
         return;
     }
+
+    // ---------- KIRIM PERUBAHAN KE SERVER ----------
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute('content');
+
+    try {
+
+        const response = await fetch("{{ url('/pendaftaran/pasien') }}/" + encodeURIComponent(d.rm), {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                nama:           d.nama,
+                jenis_kelamin:  d.jk,
+                tanggal_lahir:  d.tglLahir,
+                nik:            d.nik,
+                no_telepon:     d.telepon,
+                alamat:         d.alamat
+            })
+        });
+
+        const hasil = await response.json();
+
+        if (!response.ok || !hasil.success) {
+            throw new Error(hasil.message || 'Gagal menyimpan perubahan data pasien.');
+        }
+
+    } catch (err) {
+        alert('Gagal menyimpan perubahan ke database. Silakan coba lagi.\n(' + err.message + ')');
+        return; // modal tetap terbuka supaya data tidak hilang & bisa dicoba lagi
+    }
+
+    tutupModalEdit();
 
     // ---------- TERAPKAN KE TABEL ----------
     const tr = barisEdit;

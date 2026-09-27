@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\DB;
  
 class PasienController extends Controller
 {
+    // Label tampilan untuk slug poli yang disimpan di kolom kunjungan.poli
+    protected $labelPoli = [
+        'umum'         => 'Poli Umum',
+        'gigi'         => 'Poli Gigi',
+        'dalam'        => 'Poli Dalam',
+        'mikrobiologi' => 'Mikrobiologi',
+        'fisioterapi'  => 'Fisioterapi',
+    ];
+
+    protected $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
     // Halaman Data Pasien (tabel list pasien lama)
     public function indexLama()
     {
@@ -17,12 +28,46 @@ class PasienController extends Controller
         return view('pasien.lama', compact('pasiens'));
     }
 
+    // Halaman Pendaftaran: daftar pasien beneran dari database (bukan dummy),
+    // lengkap dengan info kunjungan terakhirnya (tanggal & poli tujuan).
     public function pendaftaran()
-{
-    $pasiens = Pasien::orderByDesc('No_RM')->get();
+    {
+        $pasiens = Pasien::with(['kunjungan' => function ($query) {
+                $query->latest('id');
+            }])
+            ->orderByDesc('no_rm')
+            ->get()
+            ->map(function ($p) {
+                $kunjungan = $p->kunjungan->first();
 
-    return view('pendaftaran.index', compact('pasiens'));
-}
+                $p->alamat_jalan = trim(explode(',', $p->alamat)[0]);
+                $p->lahir_text   = $this->tanggalKeTeks($p->tanggal_lahir);
+
+                $p->tgl_kunjungan_text = $kunjungan
+                    ? $this->tanggalKeTeks($kunjungan->tanggal_kunjungan)
+                    : '-';
+
+                $p->poli_label = $kunjungan
+                    ? ($this->labelPoli[$kunjungan->poli] ?? ucfirst($kunjungan->poli))
+                    : '-';
+
+                return $p;
+            });
+
+        return view('pendaftaran.index', compact('pasiens'));
+    }
+
+    // "2026-09-27" (atau objek Carbon) -> "27 Sep 2026"
+    protected function tanggalKeTeks($tanggal): string
+    {
+        if (! $tanggal) {
+            return '-';
+        }
+
+        $tanggal = \Carbon\Carbon::parse($tanggal);
+
+        return $tanggal->day . ' ' . $this->namaBulan[$tanggal->month - 1] . ' ' . $tanggal->year;
+    }
  
     // Form tambah pasien baru
 public function create()
@@ -31,10 +76,18 @@ public function create()
 }
  
     // Simpan pasien baru sekaligus kunjungan pertamanya
+    //
+    // Dipakai oleh dua tempat: form lama (pasien/baru.blade.php, submit
+    // biasa -> redirect) dan modal "Daftarkan Pasien Baru" di halaman
+    // Pendaftaran (dipanggil lewat fetch/AJAX -> balas JSON). No. RM dan
+    // nama dokter boleh tidak dikirim: kalau kosong, akan dibuatkan
+    // otomatis supaya pasien tetap benar-benar tersimpan ke database
+    // (bukan cuma data dummy di JS) dan langsung muncul di antrian
+    // Pemeriksaan poli tujuannya.
     public function store(Request $request)
     {
         $request->validate([
-            'no_rm'              => 'required|unique:pasien,no_rm',
+            'no_rm'              => 'nullable|unique:pasien,no_rm',
             'nama'                => 'required',
             'jenis_kelamin'       => 'required',
             'tanggal_lahir'       => 'required|date',
@@ -42,17 +95,20 @@ public function create()
             'no_telepon'          => 'nullable',
             'alamat'              => 'required',
             'tanggal_kunjungan'   => 'required|date',
-            'dokter'              => 'required',
+            'dokter'              => 'nullable',
             'poli'                => 'required',
             'pembayaran'          => 'required',
         ]);
-        
- 
+
+        $noRm = $request->filled('no_rm') ? $request->no_rm : $this->noRmBerikutnya();
+
+        $kunjungan = null;
+
         // Satu transaksi: kalau simpan kunjungan gagal, data pasien ikut dibatalkan
         // (supaya tidak ada pasien "yatim" tanpa kunjungan).
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request, $noRm, &$kunjungan) {
             $pasien = Pasien::create([
-                'no_rm'         => $request->no_rm,
+                'no_rm'         => $noRm,
                 'nama'          => $request->nama,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,
@@ -61,20 +117,79 @@ public function create()
                 'alamat'        => $request->alamat,
             ]);
  
-            Kunjungan::create([
+            $kunjungan = Kunjungan::create([
                 'pasien_id'         => $pasien->id,
                 'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
                 'tanggal_kunjungan' => $request->tanggal_kunjungan,
-                'dokter'            => $request->dokter,
+                'dokter'            => $request->filled('dokter') ? $request->dokter : 'Dokter Jaga',
                 'poli'              => $request->poli,
                 'pembayaran'        => $request->pembayaran,
                 'status'            => 'Menunggu',
             ]);
         });
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success'    => true,
+                'no_rm'      => $noRm,
+                'no_antrian' => $kunjungan->no_antrian,
+                'poli'       => $kunjungan->poli,
+                'message'    => 'Pasien baru berhasil didaftarkan.',
+            ]);
+        }
  
         return redirect()
             ->route('pasien.lama')
             ->with('success', 'Pasien baru berhasil didaftarkan.');
+    }
+
+    // Simpan perubahan data pasien dari modal "Edit Data Pasien" di halaman
+    // Pendaftaran. Dicari berdasarkan no_rm (bukan id) karena itu yang
+    // tersimpan di baris tabel/tombol edit-nya.
+    public function update(Request $request, $no_rm)
+    {
+        $pasien = Pasien::where('no_rm', $no_rm)->firstOrFail();
+
+        $request->validate([
+            'nama'          => 'required',
+            'jenis_kelamin' => 'required',
+            'tanggal_lahir' => 'nullable|date',
+            'nik'           => 'required|digits:16|unique:pasien,nik,' . $pasien->id,
+            'no_telepon'    => 'nullable',
+            'alamat'        => 'required',
+        ]);
+
+        $pasien->update([
+            'nama'          => $request->nama,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'tanggal_lahir' => $request->filled('tanggal_lahir') ? $request->tanggal_lahir : $pasien->tanggal_lahir,
+            'nik'           => $request->nik,
+            'no_telepon'    => $request->no_telepon,
+            'alamat'        => $request->alamat,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pasien berhasil diperbarui.',
+            ]);
+        }
+
+        return back()->with('success', 'Data pasien berhasil diperbarui.');
+    }
+
+    // No. RM otomatis: nomor terbesar yang sudah ada di database + 1.
+    protected function noRmBerikutnya(): string
+    {
+        $mulaiDari = 123456; // No. RM awal yang dipakai untuk pasien baru
+
+        $terbesar = Pasien::query()
+            ->selectRaw('MAX(CAST(no_rm AS UNSIGNED)) as terbesar')
+            ->value('terbesar');
+
+        $terbesar = max((int) $terbesar, $mulaiDari - 1);
+
+        return (string) ($terbesar + 1);
     }
 
     public function cari(Request $request)

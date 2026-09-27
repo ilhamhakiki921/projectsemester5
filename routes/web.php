@@ -8,6 +8,7 @@ use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\ClinicalPathwayController;
 use App\Http\Controllers\RekamMedisController;
 use App\Http\Controllers\FarmasiController;
+use App\Http\Controllers\WilayahController;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -40,9 +41,7 @@ Route::middleware('web')->group(function () {
     Route::get('/dashboard/kunjungan-per-poli', [DashboardController::class, 'kunjunganPerPoli'])
         ->name('dashboard.kunjungan-per-poli');
 
-    Route::get('/pendaftaran', function () {
-        return view('pendaftaran.index');
-    })->name('pendaftaran');
+    Route::get('/pendaftaran', [PasienController::class, 'pendaftaran'])->name('pendaftaran');
 
     // ===========================
     // PASIEN LAMA
@@ -60,6 +59,17 @@ Route::middleware('web')->group(function () {
 
     Route::get('/pendaftaran/pasien-baru', [PasienController::class, 'create'])->name('pasien.baru');
     Route::post('/pendaftaran/pasien-baru', [PasienController::class, 'store'])->name('pasien.baru.store');
+    Route::put('/pendaftaran/pasien/{no_rm}', [PasienController::class, 'update'])->name('pasien.update');
+
+    // ===========================
+    // WILAYAH (PROVINSI/KABUPATEN/KECAMATAN)
+    // Proxy server-side supaya tidak kena CORS kalau dipanggil dari browser.
+    // ===========================
+
+    Route::get('/pendaftaran/wilayah/provinsi', [WilayahController::class, 'provinsi'])->name('wilayah.provinsi');
+    Route::get('/pendaftaran/wilayah/kabupaten/{provinsiId}', [WilayahController::class, 'kabupaten'])->name('wilayah.kabupaten');
+    Route::get('/pendaftaran/wilayah/kecamatan/{kabupatenId}', [WilayahController::class, 'kecamatan'])->name('wilayah.kecamatan');
+    Route::get('/pendaftaran/wilayah/kelurahan/{kecamatanId}', [WilayahController::class, 'kelurahan'])->name('wilayah.kelurahan');
 
     // ===========================
     // PEMERIKSAAN
