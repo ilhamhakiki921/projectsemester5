@@ -1,0 +1,7 @@
+.icd-dropdown{position:absolute;z-index:9999;max-height:260px;overflow-y:auto;background:#fff;border:1px solid #cfcfcf;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.15);font-family:'Poppins',sans-serif;font-size:10px}
+.icd-item{display:flex;gap:10px;align-items:baseline;padding:8px 10px;cursor:pointer;border-bottom:1px solid #f0f0f0}
+.icd-item:last-child{border-bottom:0}
+.icd-item:hover,.icd-item.is-active{background:#fdecea}
+.icd-code{flex:0 0 58px;font-weight:700;color:#7a0000}
+.icd-title{flex:1;color:#222;line-height:1.4}
+.icd-empty{padding:10px;color:#777}

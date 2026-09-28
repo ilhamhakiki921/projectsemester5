@@ -308,7 +308,7 @@
                     @if ($rekam->diagnosis_utama)
                         <div class="kv-grid">
                             <div class="kv-item"><strong>Diagnosis Utama</strong>{{ $rekam->diagnosis_utama }}</div>
-                            <div class="kv-item"><strong>Diagnosis Sekunder</strong>{{ $rekam->diagnosis_sekunder ?: '-' }}</div>
+                            <div class="kv-item"><strong>Diagnosis Sekunder</strong>{{ $rekam->diagnosis_sekunder ? str_replace(' | ', '; ', $rekam->diagnosis_sekunder) : '-' }}</div>
                             <div class="kv-item"><strong>Tindakan</strong>{{ $rekam->tindakan ?: '-' }}</div>
                         </div>
                     @else

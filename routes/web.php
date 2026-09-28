@@ -9,6 +9,7 @@ use App\Http\Controllers\ClinicalPathwayController;
 use App\Http\Controllers\RekamMedisController;
 use App\Http\Controllers\FarmasiController;
 use App\Http\Controllers\WilayahController;
+use App\Http\Controllers\Icd10Controller;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -70,6 +71,12 @@ Route::middleware('web')->group(function () {
     Route::get('/pendaftaran/wilayah/kabupaten/{provinsiId}', [WilayahController::class, 'kabupaten'])->name('wilayah.kabupaten');
     Route::get('/pendaftaran/wilayah/kecamatan/{kabupatenId}', [WilayahController::class, 'kecamatan'])->name('wilayah.kecamatan');
     Route::get('/pendaftaran/wilayah/kelurahan/{kecamatanId}', [WilayahController::class, 'kelurahan'])->name('wilayah.kelurahan');
+
+    // ===========================
+    // ICD-10 (autocomplete Diagnosa, sumber: WHO ICD-API)
+    // ===========================
+
+    Route::get('/icd10/cari', [Icd10Controller::class, 'cari'])->name('icd10.cari');
 
     // ===========================
     // PEMERIKSAAN

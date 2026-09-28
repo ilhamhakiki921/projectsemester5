@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    /*
+    | WHO ICD-API (ICD-10). Daftar & ambil Client ID/Secret di https://icd.who.int/icdapi
+    */
+    'who_icd' => [
+        'client_id'     => env('ICD_CLIENT_ID'),
+        'client_secret' => env('ICD_CLIENT_SECRET'),
+        'token_url'     => env('ICD_TOKEN_URL', 'https://icdaccessmanagement.who.int/connect/token'),
+        'base_url'      => env('ICD_BASE_URL', 'https://id.who.int'),
+        'release'       => env('ICD_RELEASE', '2019'),
+        'language'      => env('ICD_LANGUAGE', 'en'),
+    ],
+
 ];

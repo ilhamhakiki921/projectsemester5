@@ -2919,6 +2919,7 @@ body.sidebar-collapsed .main {
                         <option value="" selected disabled>Pilih cara pembayaran</option>
                         <option>Umum</option>
                         <option>BPJS</option>
+                        <option>Asuransi Lain</option>
                     </select>
                 </div>
 
@@ -2933,6 +2934,18 @@ body.sidebar-collapsed .main {
                         inputmode="numeric"
                         autocomplete="off"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);"
+                    >
+                </div>
+
+                {{-- Muncul otomatis kalau Cara Pembayaran = Asuransi Lain --}}
+                <div class="form-group" id="grupAsuransiLain" hidden>
+                    <label for="baruAsuransiLain">Nama Asuransi<span class="wajib">*</span></label>
+                    <input
+                        type="text"
+                        id="baruAsuransiLain"
+                        placeholder="Tulis nama asuransi"
+                        maxlength="100"
+                        autocomplete="off"
                     >
                 </div>
 
@@ -3954,7 +3967,8 @@ const FIELD_BARU_STEP2 = {
     baruPoli:           'Poli tujuan',
     baruJenisKunjungan: 'Jenis kunjungan',
     baruPembayaran:     'Cara pembayaran',
-    baruNoBpjs:         'Nomor BPJS'
+    baruNoBpjs:         'Nomor BPJS',
+    baruAsuransiLain:   'Nama asuransi'
 };
 
 const FIELD_BARU = Object.assign({}, FIELD_BARU_STEP1, FIELD_BARU_STEP2);
@@ -4027,6 +4041,8 @@ function resetFormPasienBaru() {
 
     document.getElementById('grupAgamaLain').hidden = true;
     document.getElementById('grupPekerjaanLain').hidden = true;
+    document.getElementById('grupAsuransiLain').hidden = true;
+    document.getElementById('grupBpjs').hidden = true;
 
     // Reset kombo wilayah (provinsi/kabupaten/kecamatan/kelurahan)
     document.getElementById('baruProvinsiId').value = '';
@@ -4511,6 +4527,11 @@ async function simpanPasienBaru() {
             return;
         }
 
+        // Nama asuransi hanya wajib kalau Cara Pembayaran = Asuransi Lain
+        if (id === 'baruAsuransiLain' && nilai('baruPembayaran') !== 'Asuransi Lain') {
+            return;
+        }
+
         if (!nilai(id)) {
 
             const el = document.getElementById(id);
@@ -4599,7 +4620,9 @@ async function simpanPasienBaru() {
                 kecamatan:          dataBaru.kecamatan,
                 tanggal_kunjungan:  dataBaru.tglKunjungan,
                 poli:               poliKeSlug(dataBaru.poli),
-                pembayaran:         nilai('baruPembayaran')
+                pembayaran:         nilai('baruPembayaran') === 'Asuransi Lain'
+                                        ? 'Asuransi Lain - ' + nilai('baruAsuransiLain')
+                                        : nilai('baruPembayaran')
             })
         });
 
@@ -4788,9 +4811,36 @@ function aturKolomBpjs(fokus) {
     }
 }
 
+// =========================
+// KOLOM NAMA ASURANSI (PASIEN BARU)
+// Muncul kalau Cara Pembayaran = Asuransi Lain, hilang lagi kalau bukan.
+// =========================
+
+function aturKolomAsuransiLain(fokus) {
+
+    const lain = document.getElementById('baruPembayaran').value === 'Asuransi Lain';
+    const grup = document.getElementById('grupAsuransiLain');
+    const input = document.getElementById('baruAsuransiLain');
+
+    grup.hidden = !lain;
+
+    if (lain) {
+
+        if (fokus) {
+            input.focus();
+        }
+
+    } else {
+
+        input.value = '';
+        tampilkanError('baruAsuransiLain', '');
+    }
+}
+
 document.getElementById('baruPembayaran')
     .addEventListener('change', function() {
         aturKolomBpjs(true);
+        aturKolomAsuransiLain(true);
     });
 
 

@@ -246,7 +246,8 @@ class PemeriksaanController extends Controller
         // array (boleh ditambah lebih dari satu lewat tombol "+ Tambah"),
         // sedangkan kolom di tabel rekam_medis cuma satu string per pasien.
         // Baris kosong dibuang, sisanya digabung dengan ", ".
-        $data['diagnosis_sekunder'] = implode(', ', array_filter(
+        // Pemisah ' | ' (bukan ', ') karena judul ICD-10 sering mengandung koma.
+        $data['diagnosis_sekunder'] = implode(' | ', array_filter(
             array_map('trim', $data['diagnosis_sekunder'])
         ));
 

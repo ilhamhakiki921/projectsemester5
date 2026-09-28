@@ -3,6 +3,7 @@
 @section('title', 'Diagnosa — ' . $pasien->nama)
 
 @section('style')
+<link rel="stylesheet" href="{{ asset('css/icd10.css') }}">
 
 <style>
 
@@ -420,7 +421,7 @@
 
                     $sekunder = old(
                         'diagnosis_sekunder',
-                        optional($rekam)->diagnosis_sekunder ? explode(', ', $rekam->diagnosis_sekunder) : []
+                        optional($rekam)->diagnosis_sekunder ? explode(' | ', $rekam->diagnosis_sekunder) : []
                     );
 
                     $tindakanList = old(
@@ -432,15 +433,15 @@
                     if (count($tindakanList) === 0) { $tindakanList = [null]; }
                 @endphp
 
-                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa">
+                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa" data-icd-url="{{ route('icd10.cari') }}">
                     @csrf
 
                     <div class="field-group">
                         <div class="field">
                             <label for="diagnosis_utama">Diagnosis Utama<span class="required-mark">*</span></label>
-                            <input type="text" id="diagnosis_utama" name="diagnosis_utama"
+                            <input type="text" id="diagnosis_utama" name="diagnosis_utama" data-icd="utama" autocomplete="off"
                                    value="{{ $utama }}"
-                                   placeholder="Isi diagnosis utama, contoh: Infeksi saluran pernapasan akut" required>
+                                   placeholder="Ketik kode atau nama penyakit (ICD-10), contoh: J06.9 / respiratory" required>
                         </div>
                     </div>
 
@@ -461,6 +462,7 @@
                                 @foreach ($sekunder as $nilai)
                                     @include('pemeriksaan.diagnosa-row', [
                                         'name' => 'diagnosis_sekunder',
+                                        'icd' => true,
                                         'label' => 'Diagnosis Sekunder',
                                         'placeholder' => 'Isi diagnosis sekunder, boleh dikosongkan jika tidak ada',
                                         'selected' => $nilai,
@@ -474,6 +476,7 @@
                             <template data-template>
                                 @include('pemeriksaan.diagnosa-row', [
                                     'name' => 'diagnosis_sekunder',
+                                        'icd' => true,
                                     'label' => 'Diagnosis Sekunder',
                                     'placeholder' => 'Isi diagnosis sekunder, boleh dikosongkan jika tidak ada',
                                     'removable' => true,
@@ -554,6 +557,8 @@
                 });
             })();
         </script>
+
+    <script src="{{ asset('js/icd10-autocomplete.js') }}"></script>
 
     </main>
 

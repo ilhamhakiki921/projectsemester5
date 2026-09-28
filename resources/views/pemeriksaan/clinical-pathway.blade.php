@@ -1,9 +1,9 @@
-@extends('layouts.pemeriksaan', ['tabAktif' => 'Clinical Phatway'])
+@extends('layouts.pemeriksaan', ['tabAktif' => 'Clinical Pathway'])
 
 @push('styles')
 <style>
-    .cp-card{border:1px solid #dedede;border-radius:12px;padding:22px 26px 26px;margin-bottom:18px;background:#fff}
-    .cp-h{margin:0 0 4px;font-size:17px;font-weight:700;color:#c00000}
+    .cp-card{border:2px solid #3b82f6;border-radius:10px;padding:20px 22px 24px;margin-bottom:18px;background:#fff}
+    .cp-h{margin:0 0 4px;font-size:15px;font-weight:700;color:#ed1111}
     .cp-sub{margin:0 0 16px;font-size:13px;color:#222}
     .cp-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 22px;margin-bottom:16px}
     .cp-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 44px}
