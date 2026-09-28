@@ -24,7 +24,7 @@
         <div class="dropdown-divider"></div>
         <div class="dropdown-label">DATA MASTER</div>
 
-        <a href="#" class="dropdown-item">Data User</a>
+        <a href="{{ route('user.index') }}" class="dropdown-item">Data User</a>
         <a href="#" class="dropdown-item">Data Poli</a>
         <a href="#" class="dropdown-item">Data Diagnosa/Penyakit</a>
         <a href="#" class="dropdown-item">Data Obat</a>

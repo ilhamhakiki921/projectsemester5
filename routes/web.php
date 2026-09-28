@@ -10,6 +10,7 @@ use App\Http\Controllers\RekamMedisController;
 use App\Http\Controllers\FarmasiController;
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\Icd10Controller;
+use App\Http\Controllers\UserController;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -106,6 +107,16 @@ Route::middleware('web')->group(function () {
         Route::get('clinical-pathway', [ClinicalPathwayController::class, 'index'])->name('clinical-pathway.index');
         Route::post('clinical-pathway', [ClinicalPathwayController::class, 'store'])->name('clinical-pathway.store');
     });
+
+    // ===========================
+    // DATA MASTER > DATA USER
+    // ===========================
+
+    Route::get('/data-user', [UserController::class, 'index'])->name('user.index');
+    Route::post('/data-user', [UserController::class, 'store'])->name('user.store');
+    Route::put('/data-user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::patch('/data-user/{user}/status', [UserController::class, 'toggleStatus'])->name('user.status');
+    Route::delete('/data-user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
     require __DIR__.'/penunjang.php';
 
