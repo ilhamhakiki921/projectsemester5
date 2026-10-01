@@ -2,6 +2,9 @@
 @php
     $tabAktif = $tabAktif ?? 'Diagnosa';
     $noRm = $pasien->no_rm ?? $rm;
+    // Tombol kembali bisa diganti per halaman (bawaan: kembali ke Diagnosa)
+    $backUrl   = $backUrl   ?? route('pemeriksaan.diagnosa', [$poli, $noRm]);
+    $backLabel = $backLabel ?? 'Kembali ke Diagnosa';
     $lahir = !empty($pasien?->tanggal_lahir) ? \Carbon\Carbon::parse($pasien->tanggal_lahir) : null;
     $tabs = [
         ['Asesment', route('pemeriksaan.asesmen', [$poli, $noRm])],
@@ -9,17 +12,18 @@
         ['Diagnosa', route('pemeriksaan.diagnosa', [$poli, $noRm])],
         ['Resep', route('pemeriksaan.resep', [$poli, $noRm])],
         ['Clinical Pathway', route('pemeriksaan.clinical-pathway', [$poli, $noRm])],
-        ['Penunjang', null],
-        ['Rujukan', null],
-        ['Autentikasi', null],
+        ['Penunjang', route('penunjang.index', [$poli, $noRm])],
+        ['Rujukan', route('rujukan.index', [$poli, $noRm])],
+        ['Autentikasi', route('autentikasi.index', [$poli, $noRm])],
     ];
 @endphp
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="google" content="notranslate">
     <title>Pemeriksaan — {{ $pasien->nama ?? 'Pasien' }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -69,9 +73,9 @@
 
             <x-popup-alert />
 
-            <a href="{{ route('pemeriksaan.diagnosa', [$poli, $noRm]) }}" class="back-link">
+            <a href="{{ $backUrl }}" class="back-link">
                 <i class="bi bi-arrow-left"></i>
-                Kembali ke Diagnosa
+                {{ $backLabel }}
             </a>
 
             <div class="identity-bar">

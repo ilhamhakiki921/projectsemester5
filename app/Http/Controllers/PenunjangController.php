@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pasien;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,18 +11,20 @@ class PenunjangController extends Controller
 {
     public function index($poli, $no_rm)
     {
-        // Jika model pasien Anda bukan App\Models\Pasien, ubah di sini
-        $pasien = class_exists(\App\Models\Pasien::class)
-            ? \App\Models\Pasien::where('no_rm', $no_rm)->first() : null;
+        $pasien = Pasien::where('no_rm', $no_rm)->first();
+
+        if (! $pasien) {
+            abort(404, 'Data pasien tidak ditemukan.');
+        }
 
         $riwayat = DB::table('permintaan_penunjang')
             ->where('no_rm', $no_rm)->orderBy('id')->get()
             ->map(fn ($r) => $this->format($r, $poli))->values();
 
         return view('pemeriksaan.penunjang', [
+            'poli'     => $poli,
+            'rm'       => $no_rm,
             'pasien'   => $pasien,
-            'no_rm'    => $no_rm,
-            'baseUrl'  => url("/pemeriksaan/{$poli}/{$no_rm}"),
             'storeUrl' => route('penunjang.store', [$poli, $no_rm]),
             'riwayat'  => $riwayat,
         ]);
@@ -32,15 +35,16 @@ class PenunjangController extends Controller
         $data = $request->validate([
             'pemeriksaan'   => 'required|array|min:1',
             'pemeriksaan.*' => 'string|max:100',
-            'hasil_ke'      => 'required|in:dokter,pasien',
             'keterangan'    => 'nullable|string|max:1000',
+        ], [
+            'pemeriksaan.required' => 'Pilih minimal satu pemeriksaan.',
         ]);
 
         $id = DB::table('permintaan_penunjang')->insertGetId([
             'no_rm'       => $no_rm,
             'pemeriksaan' => json_encode($data['pemeriksaan']),
-            'perlu_puasa' => $request->boolean('perlu_puasa'),
-            'hasil_ke'    => $data['hasil_ke'],
+            'perlu_puasa' => false,
+            'hasil_ke'    => 'dokter',
             'keterangan'  => $data['keterangan'] ?? null,
             'created_at'  => now(),
             'updated_at'  => now(),
@@ -65,7 +69,7 @@ class PenunjangController extends Controller
         return [
             'id'        => $r->id,
             'items'     => json_decode($r->pemeriksaan, true),
-            'tanggal'   => Carbon::parse($r->created_at)->translatedFormat('d M Y'),
+            'tanggal'   => Carbon::parse($r->created_at)->format('d-m-Y'),
             'status'    => $r->status,
             'hapus_url' => route('penunjang.destroy', [$poli, $r->no_rm, $r->id]),
         ];
