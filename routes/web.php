@@ -11,6 +11,8 @@ use App\Http\Controllers\FarmasiController;
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\Icd10Controller;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PoliController;
+use App\Http\Controllers\DiagnosaController;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -117,6 +119,25 @@ Route::middleware('web')->group(function () {
     Route::put('/data-user/{user}', [UserController::class, 'update'])->name('user.update');
     Route::patch('/data-user/{user}/status', [UserController::class, 'toggleStatus'])->name('user.status');
     Route::delete('/data-user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+
+    // ===========================
+    // DATA MASTER > DATA POLI
+    // ===========================
+
+    Route::get('/data-poli', [PoliController::class, 'index'])->name('poli.index');
+    Route::post('/data-poli', [PoliController::class, 'store'])->name('poli.store');
+    Route::put('/data-poli/{poli}', [PoliController::class, 'update'])->name('poli.update');
+    Route::delete('/data-poli/{poli}', [PoliController::class, 'destroy'])->name('poli.destroy');
+
+    // ===========================
+    // DATA MASTER > DATA DIAGNOSA/PENYAKIT (ICD-10)
+    // ===========================
+
+    Route::get('/data-diagnosa', [DiagnosaController::class, 'index'])->name('diagnosa.index');
+    Route::post('/data-diagnosa', [DiagnosaController::class, 'store'])->name('diagnosa.store');
+    Route::post('/data-diagnosa/import', [DiagnosaController::class, 'import'])->name('diagnosa.import');
+    Route::put('/data-diagnosa/{icd10}', [DiagnosaController::class, 'update'])->name('diagnosa.update');
+    Route::delete('/data-diagnosa/{icd10}', [DiagnosaController::class, 'destroy'])->name('diagnosa.destroy');
 
     require __DIR__.'/penunjang.php';
 

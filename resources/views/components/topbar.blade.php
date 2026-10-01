@@ -25,8 +25,8 @@
         <div class="dropdown-label">DATA MASTER</div>
 
         <a href="{{ route('user.index') }}" class="dropdown-item">Data User</a>
-        <a href="#" class="dropdown-item">Data Poli</a>
-        <a href="#" class="dropdown-item">Data Diagnosa/Penyakit</a>
+        <a href="{{ route('poli.index') }}" class="dropdown-item">Data Poli</a>
+        <a href="{{ route('diagnosa.index') }}" class="dropdown-item">Data Diagnosa/Penyakit</a>
         <a href="#" class="dropdown-item">Data Obat</a>
         <a href="#" class="dropdown-item">Data Pasien</a>
 
