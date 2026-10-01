@@ -306,15 +306,32 @@ class PemeriksaanController extends Controller
     {
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
 
-        $data = $request->validate([
-            'obat_id'           => 'required|exists:obat,id',
+        $request->validate([
+            'nama_obat'         => 'required|string|max:255',
+            'sediaan'           => 'required|string|max:255',
             'jumlah_obat'       => 'required|integer|min:1',
-            'dosis_obat'        => 'required|string',
-            'frekuensi'         => 'required|string',
+            'dosis_obat'        => 'required|string|max:255',
+            'frekuensi'         => 'required|string|max:255',
             'tanggal_penulisan' => 'required|date',
         ], $this->pesanValidasi());
 
+        // Semua kolom diisi manual. Obat dicari berdasarkan nama (tanpa peduli
+        // huruf besar/kecil); kalau belum ada, otomatis dibuat -- ID Obat
+        // dibuat otomatis oleh database.
+        $namaObat = trim($request->nama_obat);
+        $sediaan  = trim($request->sediaan);
+
+        $obat = Obat::whereRaw('LOWER(nama_obat) = ?', [mb_strtolower($namaObat)])->first();
+
+        if ($obat) {
+            $obat->update(['sediaan' => $sediaan]);
+        } else {
+            $obat = Obat::create(['nama_obat' => $namaObat, 'sediaan' => $sediaan]);
+        }
+
+        $data = $request->only(['jumlah_obat', 'dosis_obat', 'frekuensi', 'tanggal_penulisan']);
         $data['kunjungan_id'] = $kunjungan->id;
+        $data['obat_id']      = $obat->id;
 
         Resep::create($data);
 

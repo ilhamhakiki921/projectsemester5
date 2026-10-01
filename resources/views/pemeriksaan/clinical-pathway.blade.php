@@ -38,6 +38,9 @@
     .cp-box-body.cost{padding:0}
     .cp-box-body.cost textarea{width:100%;height:84px;border:0;padding:12px 14px;font:inherit;font-size:12px;resize:vertical;display:block}
     .cp-box-body.cost textarea:focus{outline:2px solid #c00000;outline-offset:-2px}
+    .cp-f-small{width:150px}
+    .cp-hr-in{border:0;border-top:1px solid #999;margin:16px 0 12px}
+    .cp-sub-title{font-size:11px;font-weight:700;color:#111;margin:0 0 6px}
     .cp-grid-tind{display:grid;grid-template-columns:2.2fr 1.1fr 1.6fr;gap:12px 22px}
     .cp-grid-solusi{display:grid;grid-template-columns:2.4fr 1.1fr 1.1fr 1.6fr;gap:12px 22px}
 
@@ -138,13 +141,27 @@
                 </div>
             </div>
 
-            {{-- Tindakan (ICD-9-CM) --}}
+            {{-- Pemeriksaan DPJP & Konsultasi --}}
             <div class="cp-box">
-                <div class="cp-box-head red">Tindakan (ICD-9-CM)</div>
+                <div class="cp-box-head red">Pemeriksaan DPJP &amp; Konsultasi</div>
+                <div class="cp-box-body">
+                    <div class="cp-f cp-f-small"><label>Pemeriksaan DPJP</label><input type="text" name="kunjungan[{{ $i }}][pemeriksaan_dpjp]" value="{{ $val($i, 'pemeriksaan_dpjp') }}"></div>
+                    <hr class="cp-hr-in">
+                    <div class="cp-sub-title">KONSULTASI</div>
+                    <div class="cp-grid2">
+                        <div class="cp-f"><label>Konsultasi / Bagian</label><input type="text" name="kunjungan[{{ $i }}][konsultasi_bagian]" value="{{ $val($i, 'konsultasi_bagian') }}"></div>
+                        <div class="cp-f"><label>Catatan</label><input type="text" name="kunjungan[{{ $i }}][konsultasi_catatan]" value="{{ $val($i, 'konsultasi_catatan') }}"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pemeriksaan Penunjang (ICD-9-CM) --}}
+            <div class="cp-box">
+                <div class="cp-box-head red">Pemeriksaan Penunjang (ICD-9-CM)</div>
                 <div class="cp-box-body">
                     <p>Kode mengacu pada ICD-9-CM.</p>
                     <div class="cp-grid-tind">
-                        <div class="cp-f"><label>Nama Tindakan</label><input type="text" name="kunjungan[{{ $i }}][tindakan_nama]" value="{{ $val($i, 'tindakan_nama') }}"></div>
+                        <div class="cp-f"><label>Jenis Pemeriksaan</label><input type="text" name="kunjungan[{{ $i }}][tindakan_nama]" value="{{ $val($i, 'tindakan_nama') }}"></div>
                         <div class="cp-f"><label>Kode ICD-9-CM</label><input type="text" name="kunjungan[{{ $i }}][tindakan_kode]" value="{{ $val($i, 'tindakan_kode') }}"></div>
                         <div class="cp-f"><label>Catatan / Hasil</label><input type="text" name="kunjungan[{{ $i }}][tindakan_catatan]" value="{{ $val($i, 'tindakan_catatan') }}"></div>
                     </div>
@@ -153,7 +170,7 @@
 
             {{-- Obat-obatan --}}
             <div class="cp-box">
-                <div class="cp-box-head">Obat-obatan</div>
+                <div class="cp-box-head red">Obat-obatan</div>
                 <div class="cp-box-body">
                     <p>Nama obat dapat dipilih dari Data Master Obat SIP-REK.</p>
                     <div class="cp-grid2">
@@ -165,7 +182,7 @@
 
             {{-- Pendidikan dan Promosi Kesehatan --}}
             <div class="cp-box">
-                <div class="cp-box-head">Pendidikan dan Promosi Kesehatan</div>
+                <div class="cp-box-head red">Pendidikan dan Promosi Kesehatan</div>
                 <div class="cp-box-body">
                     <p>Hospital Health Promotion.</p>
                     <div class="cp-grid2">
@@ -177,13 +194,13 @@
 
             {{-- Cost --}}
             <div class="cp-box">
-                <div class="cp-box-head">Cost</div>
+                <div class="cp-box-head red">Cost</div>
                 <div class="cp-box-body cost"><textarea name="kunjungan[{{ $i }}][cost]" aria-label="Cost">{{ $val($i, 'cost') }}</textarea></div>
             </div>
 
             {{-- Solusi Tindak Lanjut --}}
             <div class="cp-box">
-                <div class="cp-box-head">Solusi Tindak Lanjut</div>
+                <div class="cp-box-head red">Solusi Tindak Lanjut</div>
                 <div class="cp-box-body">
                     <p>Rencana perbaikan atas varians atau tindak lanjut pelayanan.</p>
                     <div class="cp-grid-solusi">

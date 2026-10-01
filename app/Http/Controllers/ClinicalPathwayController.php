@@ -16,6 +16,7 @@ class ClinicalPathwayController extends Controller
     private const FIELD_KUNJUNGAN = [
         'nomor', 'tanggal', 'dpjp', 'catatan',
         'diagnosis_utama', 'kode_utama', 'diagnosis_penyerta', 'kode_penyerta', 'komplikasi', 'kode_komplikasi',
+        'pemeriksaan_dpjp', 'konsultasi_bagian', 'konsultasi_catatan',
         'tindakan_nama', 'tindakan_kode', 'tindakan_catatan',
         'obat_nama', 'obat_keterangan', 'edukasi_materi', 'edukasi_keterangan', 'cost',
         'solusi_rencana', 'solusi_pj', 'solusi_target', 'solusi_catatan',

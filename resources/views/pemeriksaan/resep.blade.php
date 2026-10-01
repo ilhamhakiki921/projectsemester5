@@ -413,6 +413,25 @@
         background: #128a3e;
     }
 
+    .modal-error {
+        margin-bottom: 14px;
+        padding: 10px 12px;
+
+        border: 1px solid #fecaca;
+        border-radius: 6px;
+
+        background: #fef2f2;
+        color: #b91c1c;
+
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .modal-error ul {
+        margin: 0;
+        padding-left: 16px;
+    }
+
 </style>
 
 @endsection
@@ -552,6 +571,16 @@
         <form method="POST" action="{{ route('pemeriksaan.resep.store', [$poli, $pasien->no_rm]) }}" id="form-resep">
             @csrf
 
+            @if ($errors->any())
+                <div class="modal-error">
+                    <ul>
+                        @foreach ($errors->all() as $pesan)
+                            <li>{{ $pesan }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @php
                 $daftarObatJson = $daftarObat->map(fn ($o) => [
                     'id'      => $o->id,
@@ -566,18 +595,19 @@
                     <input
                         type="text"
                         id="inputNamaObat"
+                        name="nama_obat"
+                        value="{{ old('nama_obat') }}"
                         placeholder="Ketik nama obat"
                         autocomplete="off"
                         required
                     >
-                    <input type="hidden" name="obat_id" id="inputObatId" required>
                 </div>
             </div>
 
             <div class="modal-field-row">
                 <div class="modal-field">
                     <label>ID Obat</label>
-                    <input type="text" id="displayIdObat" placeholder="Terisi otomatis" readonly>
+                    <input type="text" id="displayIdObat" placeholder="Otomatis setelah disimpan" readonly>
                 </div>
                 <div class="modal-field">
                     <label>ID Resep</label>
@@ -587,30 +617,30 @@
 
             <div class="modal-field-group">
                 <div class="modal-field">
-                    <label>Sediaan</label>
-                    <input type="text" id="displaySediaan" placeholder="Terisi otomatis" readonly>
+                    <label>Sediaan<span class="required-mark">*</span></label>
+                    <input type="text" name="sediaan" id="displaySediaan" value="{{ old('sediaan') }}" placeholder="misal: Tablet, Kapsul, Sirup" required>
                 </div>
             </div>
 
             <div class="modal-field-row">
                 <div class="modal-field">
                     <label>Jumlah Obat<span class="required-mark">*</span></label>
-                    <input type="number" name="jumlah_obat" min="1" placeholder="misal: 10" required>
+                    <input type="number" name="jumlah_obat" min="1" value="{{ old('jumlah_obat') }}" placeholder="misal: 10" required>
                 </div>
                 <div class="modal-field">
                     <label>Dosis Obat<span class="required-mark">*</span></label>
-                    <input type="text" name="dosis_obat" placeholder="misal: 500 mg" required>
+                    <input type="text" name="dosis_obat" value="{{ old('dosis_obat') }}" placeholder="misal: 500 mg" required>
                 </div>
             </div>
 
             <div class="modal-field-row">
                 <div class="modal-field">
                     <label>Frekuensi<span class="required-mark">*</span></label>
-                    <input type="text" name="frekuensi" placeholder="misal: 3x sehari" required>
+                    <input type="text" name="frekuensi" value="{{ old('frekuensi') }}" placeholder="misal: 3x sehari" required>
                 </div>
                 <div class="modal-field">
                     <label>Tanggal Penulisan Resep<span class="required-mark">*</span></label>
-                    <input type="date" name="tanggal_penulisan" value="{{ now()->format('Y-m-d') }}" required>
+                    <input type="date" name="tanggal_penulisan" value="{{ old('tanggal_penulisan', now()->format('Y-m-d')) }}" required>
                 </div>
             </div>
 
@@ -631,22 +661,23 @@
 <script>
     var daftarObat = @json($daftarObatJson);
 
-    document.getElementById('inputNamaObat').addEventListener('input', function () {
-        var nilai = this.value.trim().toLowerCase();
+    var inputNama      = document.getElementById('inputNamaObat');
+    var displayId      = document.getElementById('displayIdObat');
+    var inputSediaan   = document.getElementById('displaySediaan');
+
+    // Semua kolom diisi manual. Kalau nama yang diketik kebetulan sudah ada
+    // di data obat, ID Obat ditampilkan (read-only) dan Sediaan diisi bila masih kosong.
+    inputNama.addEventListener('input', function () {
+        var nilai = inputNama.value.trim().toLowerCase();
         var cocok = daftarObat.find(function (o) { return o.nama.toLowerCase() === nilai; });
 
-        var idObatField   = document.getElementById('inputObatId');
-        var displayId      = document.getElementById('displayIdObat');
-        var displaySediaan = document.getElementById('displaySediaan');
-
         if (cocok) {
-            idObatField.value   = cocok.id;
-            displayId.value      = String(cocok.id).padStart(3, '0');
-            displaySediaan.value = cocok.sediaan;
+            displayId.value = String(cocok.id).padStart(3, '0');
+            if (inputSediaan.value.trim() === '') {
+                inputSediaan.value = cocok.sediaan;
+            }
         } else {
-            idObatField.value   = '';
-            displayId.value      = '';
-            displaySediaan.value = '';
+            displayId.value = '';
         }
     });
 
@@ -659,7 +690,6 @@
         });
     });
 
-    // Kalau redirect balik ke halaman ini dengan modal masih perlu dibuka lagi (misal validasi gagal), buka otomatis
     @if ($errors->any())
         document.getElementById('modalTambahResep').classList.add('show');
     @endif
