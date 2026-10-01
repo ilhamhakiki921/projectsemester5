@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -39,7 +40,7 @@ class UserController extends Controller
             'password'     => 'required|string|min:6|confirmed',
             'role'         => ['required', Rule::in(array_keys(self::ROLES))],
             'status'       => ['required', Rule::in(['aktif', 'nonaktif'])],
-        ], $this->pesan());
+        ] + $this->aturanEmail(), $this->pesan());
 
         // Password di-hash otomatis lewat cast 'hashed' pada model User.
         User::create($data);
@@ -55,7 +56,7 @@ class UserController extends Controller
             'password'     => 'nullable|string|min:6|confirmed',
             'role'         => ['required', Rule::in(array_keys(self::ROLES))],
             'status'       => ['required', Rule::in(['aktif', 'nonaktif'])],
-        ], $this->pesan());
+        ] + $this->aturanEmail($user->id), $this->pesan());
 
         // Password kosong = tidak diganti.
         if (empty($data['password'])) {
@@ -97,6 +98,24 @@ class UserController extends Controller
         return $this->kembali('User berhasil dihapus.');
     }
 
+    /**
+     * Aturan validasi email. Kalau kolom `email` belum ada di tabel users
+     * (migration belum dijalankan), aturan dilewati supaya simpan data tetap jalan.
+     */
+    private function aturanEmail(?int $abaikanId = null): array
+    {
+        if (! Schema::hasColumn('users', 'email')) {
+            return [];
+        }
+
+        $unik = Rule::unique('users', 'email');
+        if ($abaikanId) {
+            $unik->ignore($abaikanId);
+        }
+
+        return ['email' => ['nullable', 'email', 'max:100', $unik]];
+    }
+
     private function akunSendiri(User $user): bool
     {
         return Auth::check() && Auth::id() === $user->id;
@@ -117,6 +136,8 @@ class UserController extends Controller
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'username.required'     => 'Username wajib diisi.',
             'username.unique'       => 'Username sudah dipakai.',
+            'email.email'           => 'Format email tidak valid.',
+            'email.unique'          => 'Email sudah dipakai.',
             'username.regex'        => 'Username hanya boleh huruf, angka, titik, strip (-) dan underscore (_), tanpa spasi.',
             'password.required'     => 'Password wajib diisi.',
             'password.min'          => 'Password minimal 6 karakter.',

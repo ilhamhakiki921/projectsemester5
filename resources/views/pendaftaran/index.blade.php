@@ -2651,14 +2651,6 @@ body.sidebar-collapsed .main {
                 <p>Lengkapi identitas & informasi kunjungan</p>
             </div>
 
-            <button
-                type="button"
-                class="modal-close"
-                onclick="tutupModalPasienBaru()"
-            >
-                <i class="bi bi-x-lg"></i>
-            </button>
-
         </div>
 
 

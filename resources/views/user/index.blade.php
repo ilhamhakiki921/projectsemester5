@@ -15,25 +15,28 @@
 
     .main {
         min-height: 100vh;
-        background: #f5f5f5;
+        background: #ffffff;
     }
 
-    .content { width: 100%; padding: 25px 28px; }
+    /* garis bawah topbar sedikit lebih tebal, seperti desain */
+    .main .topbar { border-bottom: 2px solid #dcdcdc; }
+
+    .content { width: 100%; padding: 30px 28px; }
 
     /* ===== Toolbar (cari + tambah) ===== */
     .u-toolbar {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         justify-content: space-between;
         gap: 14px;
         flex-wrap: wrap;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
     }
 
     .u-search {
         position: relative;
         flex: 1 1 320px;
-        max-width: 420px;
+        max-width: 400px;
     }
 
     .u-search i {
@@ -95,15 +98,15 @@
     .u-filter:focus { border-color: #b40000; }
 
     .btn-tambah {
-        height: 40px;
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 0 18px;
-        border: none; border-radius: 8px;
+        height: 28px;
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 0 14px;
+        margin-bottom: -8px;
+        border: none; border-radius: 4px;
         background: #2a1fb8;
         color: #fff;
-        font-family: inherit; font-size: 12px; font-weight: 600;
+        font-family: inherit; font-size: 11px; font-weight: 600;
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba(42, 31, 184, .3);
         transition: background .15s, transform .1s;
     }
     .btn-tambah:hover { background: #1f1791; }
@@ -112,10 +115,9 @@
     /* ===== Card + tabel ===== */
     .u-card {
         background: #fff;
-        border: 1px solid #dcdfe4;
+        border: 1px solid #3a3a3a;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
     }
 
     .u-wrap { width: 100%; overflow-x: auto; }
@@ -123,8 +125,8 @@
     .u-table { width: 100%; border-collapse: collapse; min-width: 860px; }
 
     .u-table thead th {
-    padding: 15px 14px;
-    background: #d00000;
+        padding: 16px 14px;
+        background: linear-gradient(90deg, #7a0606 0%, #a31313 100%);
         color: #fff;
         font-size: 12px; font-weight: 600;
         text-align: left;
@@ -132,10 +134,10 @@
     }
 
     .u-table td {
-        padding: 12px 14px;
+        padding: 11px 14px;
         font-size: 12px;
         color: #1f2937;
-        border-bottom: 1px solid #eceef1;
+        border-bottom: 1px solid #e2e2e2;
         vertical-align: middle;
     }
 
@@ -160,23 +162,22 @@
 
     /* ===== Badge ===== */
     .badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 10.5px; font-weight: 600;
+        display: inline-block;
+        padding: 3px 14px;
+        border-radius: 10px;
+        font-size: 10.5px; font-weight: 700;
     }
-    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .badge-aktif    { background: #c9f0d8; color: #157347; }
-    .badge-nonaktif { background: #e5e7eb; color: #4b5563; }
+    .badge-aktif    { background: #86d3a4; color: #14532d; }
+    .badge-nonaktif { background: #777777; color: #111111; }
 
     /* ===== Tombol aksi ===== */
-    .act { display: flex; align-items: center; gap: 8px; }
+    .act { display: flex; align-items: center; gap: 14px; }
 
     .btn-act {
-        height: 28px; min-width: 38px;
+        height: 24px;
         display: inline-flex; align-items: center; justify-content: center; gap: 4px;
         padding: 0 10px;
-        border-radius: 6px;
+        border-radius: 5px;
         border: 1px solid transparent;
         font-family: inherit; font-size: 11px; font-weight: 500;
         cursor: pointer;
@@ -184,19 +185,19 @@
     }
     .btn-act:active { transform: scale(.94); }
 
-    .btn-view   { background: #7fa8ee; color: #10203f; }
+    .btn-view   { width: 46px; background: #7da4ec; color: #0f1f3d; }
     .btn-view:hover { filter: brightness(.92); }
 
-    .btn-edit   { background: #f4f4f5; border-color: #9ca3af; color: #111; }
-    .btn-edit:hover { background: #e5e7eb; }
+    .btn-edit   { width: 46px; background: #fff; border-color: #6b7280; color: #111; }
+    .btn-edit:hover { background: #f3f4f6; }
 
-    .btn-toggle { background: #fff; border-color: #9ca3af; color: #111; min-width: 88px; }
+    .btn-toggle { min-width: 84px; border-radius: 4px; background: #fff; border-color: #6b7280; color: #111; }
     .btn-toggle:hover { background: #f3f4f6; }
     .btn-toggle.is-off { border-color: #157347; color: #157347; }
     .btn-toggle.is-off:hover { background: #ecfaf1; }
 
-    .btn-del    { background: #d10000; color: #fff; }
-    .btn-del:hover { background: #a80000; }
+    .btn-del    { width: 32px; padding: 0; border-radius: 4px; background: #c40000; color: #fff; }
+    .btn-del:hover { background: #a00000; }
 
     .btn-act:disabled { opacity: .35; cursor: not-allowed; }
 
@@ -204,13 +205,6 @@
     .u-empty { display: none; padding: 40px 10px; text-align: center; color: #6b7280; font-size: 12px; }
     .u-empty i { display: block; font-size: 30px; color: #d1d5db; margin-bottom: 8px; }
     .u-empty.show { display: block; }
-
-    .u-foot {
-        padding: 11px 16px;
-        font-size: 11px; color: #6b7280;
-        border-top: 1px solid #eceef1;
-        background: #fafafa;
-    }
 
     /* ===== Modal ===== */
     .m-overlay {
@@ -298,6 +292,71 @@
     .m-confirm p  { font-size: 11.5px; color: #6b7280; line-height: 1.6; }
     .m-confirm b  { color: #111; }
 
+
+    /* ===== Modal Tambah / Edit User (khusus #modalForm) ===== */
+    #modalForm .m-box { max-width: 880px; border-radius: 24px; }
+    #modalForm .m-head {
+        display: block;
+        position: relative;
+        padding: 22px 32px 18px;
+        background: linear-gradient(90deg, #b81f1f 0%, #6e0f0f 55%, #470000 100%);
+        border-radius: 24px 24px 0 0;
+    }
+    #modalForm .m-head h3 { font-size: 19px; font-weight: 600; line-height: 1.2; }
+    #modalForm .m-head p  { margin-top: 3px; font-size: 10px; font-weight: 500; opacity: .95; }
+    #modalForm .m-close { position: absolute; top: 14px; right: 20px; }
+
+    #modalForm .m-body { padding: 30px 40px 4px; }
+
+    #modalForm .f-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 60px;
+        row-gap: 14px;
+    }
+    #modalForm .f-full { grid-column: 1 / -1; }
+    #modalForm .f-group { margin-bottom: 0; }
+
+    #modalForm .f-group label { margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #111; }
+    #modalForm .f-group label small { font-size: 10.5px; }
+
+    #modalForm .f-input {
+        height: 38px; padding: 0 14px;
+        border: 1px solid #555; border-radius: 10px;
+        font-size: 12.5px;
+    }
+    #modalForm .f-input:focus { border-color: #b40000; box-shadow: 0 0 0 3px rgba(180, 0, 0, .12); }
+    #modalForm .f-input.is-invalid { border-color: #d10000; }
+
+    #modalForm select.f-input {
+        appearance: none; -webkit-appearance: none; -moz-appearance: none;
+        padding-right: 40px; cursor: pointer;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%23111' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 5l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;
+    }
+
+    #modalForm .f-input::placeholder { color: #9ca3af; font-weight: 400; }
+    #modalForm .f-pass { position: relative; }
+    #modalForm .f-pass .f-input { padding-right: 44px; }
+    #modalForm .btn-eye {
+        position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        width: 26px; height: 26px; padding: 0;
+        display: flex; align-items: center; justify-content: center;
+        border: none; background: none; color: #374151; font-size: 16px; cursor: pointer;
+    }
+    #modalForm .btn-eye:hover { color: #b40000; }
+
+    #modalForm .m-foot { gap: 22px; padding: 30px 40px 28px; }
+    #modalForm .btn-m { height: 32px; min-width: 130px; padding: 0 18px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    #modalForm .btn-m-cancel { border-color: #555; color: #111; }
+    #modalForm .btn-m-save { background: #12c933; color: #fff; }
+    #modalForm .btn-m-save:hover { background: #0ea828; }
+
+    @media (max-width: 640px) {
+        #modalForm .f-grid { grid-template-columns: 1fr; row-gap: 12px; }
+        #modalForm .m-body { padding: 22px 20px 4px; }
+        #modalForm .m-foot { padding: 22px 20px 22px; gap: 12px; }
+    }
+
     /* detail */
     .d-top { text-align: center; padding: 6px 0 14px; }
     .d-top .u-avatar { width: 60px; height: 60px; font-size: 20px; margin: 0 auto 8px; }
@@ -309,6 +368,7 @@
     @media (max-width: 640px) {
         .content { padding: 18px 14px; }
         .u-search { max-width: none; }
+        .btn-tambah { margin-bottom: 0; }
         .f-row { grid-template-columns: 1fr; }
     }
 </style>
@@ -323,7 +383,7 @@
     <x-sidebar />
 
     <main class="main">
-        <x-topbar title="Data User" icon="house-fill" />
+        <x-topbar title="DATA USER" icon="house-fill" />
 
         <x-popup-alert />
 
@@ -339,19 +399,6 @@
                 </div>
 
                 <div class="u-tools">
-                    <select id="filterRole" class="u-filter">
-                        <option value="">Semua Role</option>
-                        @foreach ($roles as $val => $label)
-                            <option value="{{ $val }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-
-                    <select id="filterStatus" class="u-filter">
-                        <option value="">Semua Status</option>
-                        <option value="aktif">Aktif</option>
-                        <option value="nonaktif">Nonaktif</option>
-                    </select>
-
                     <button type="button" class="btn-tambah" id="btnTambah">
                         <i class="bi bi-plus-lg"></i> Tambah User
                     </button>
@@ -387,12 +434,7 @@
 
                                     <td class="col-no row-no">{{ $loop->iteration }}</td>
 
-                                    <td>
-                                        <div class="u-name">
-                                            <span class="u-avatar">{{ $inisial }}</span>
-                                            <span>{{ $u->nama_lengkap }}</span>
-                                        </div>
-                                    </td>
+                                    <td>{{ $u->nama_lengkap }}</td>
 
                                     <td class="u-username">{{ $u->username }}</td>
                                     <td>{{ $roles[$u->role] ?? $u->role }}</td>
@@ -407,6 +449,7 @@
                                             <button type="button" class="btn-act btn-view" title="Lihat detail"
                                                 data-nama="{{ $u->nama_lengkap }}"
                                                 data-username="{{ $u->username }}"
+                                                data-email="{{ $u->email ?: '-' }}"
                                                 data-role="{{ $roles[$u->role] ?? $u->role }}"
                                                 data-status="{{ ucfirst($u->status) }}"
                                                 data-dibuat="{{ optional($u->created_at)->format('d-m-Y H:i') ?? '-' }}"
@@ -418,6 +461,7 @@
                                                 data-id="{{ $u->id }}"
                                                 data-nama="{{ $u->nama_lengkap }}"
                                                 data-username="{{ $u->username }}"
+                                                data-email="{{ $u->email }}"
                                                 data-role="{{ $u->role }}"
                                                 data-status="{{ $u->status }}"
                                                 data-sendiri="{{ $sendiri ? 1 : 0 }}">
@@ -452,10 +496,6 @@
                         <span id="emptyText">{{ $users->isEmpty() ? 'Belum ada data user.' : 'Tidak ada user yang cocok.' }}</span>
                     </div>
                 </div>
-
-                <div class="u-foot">
-                    Menampilkan <b id="jmlTampil">{{ $users->count() }}</b> dari {{ $users->count() }} user
-                </div>
             </div>
 
         </section>
@@ -474,7 +514,7 @@
     <div class="m-box">
         <div class="m-head">
             <h3 id="formJudul">{{ $mode === 'edit' ? 'Edit User' : 'Tambah User' }}</h3>
-            <button type="button" class="m-close" data-tutup>&times;</button>
+            <p id="formSub">{{ $mode === 'edit' ? 'Perbarui akun pengguna SIP-REK' : 'Kelola akun pengguna SIP-REK' }}</p>
         </div>
 
         <form method="POST" id="formUser"
@@ -491,25 +531,33 @@
                     <div class="m-alert">Periksa kembali isian yang ditandai merah.</div>
                 @endif
 
-                <div class="f-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" id="fNama" class="f-input @error('nama_lengkap') is-invalid @enderror"
-                           value="{{ old('nama_lengkap') }}" maxlength="100" placeholder="Contoh: dr. Bagus Prasetyo">
-                    @error('nama_lengkap') <div class="f-error">{{ $message }}</div> @enderror
-                </div>
+                <div class="f-grid">
 
-                <div class="f-group">
-                    <label>Username</label>
-                    <input type="text" name="username" id="fUsername" class="f-input @error('username') is-invalid @enderror"
-                           value="{{ old('username') }}" maxlength="50" placeholder="Contoh: dr.bagus">
-                    @error('username') <div class="f-error">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="f-row">
                     <div class="f-group">
-                        <label>Role / Jabatan</label>
+                        <label for="fNama">Nama Lengkap</label>
+                        <input type="text" name="nama_lengkap" id="fNama" class="f-input @error('nama_lengkap') is-invalid @enderror"
+                               value="{{ old('nama_lengkap') }}" maxlength="100" placeholder="Contoh: dr. Bagus Prasetyo">
+                        @error('nama_lengkap') <div class="f-error">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="f-group">
+                        <label for="fUsername">Username</label>
+                        <input type="text" name="username" id="fUsername" class="f-input @error('username') is-invalid @enderror"
+                               value="{{ old('username') }}" maxlength="50" placeholder="Contoh: dr.bagus">
+                        @error('username') <div class="f-error">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="f-group">
+                        <label for="fEmail">Email</label>
+                        <input type="email" name="email" id="fEmail" class="f-input @error('email') is-invalid @enderror"
+                               value="{{ old('email') }}" maxlength="100" placeholder="Contoh: nama@klinik.com">
+                        @error('email') <div class="f-error">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="f-group">
+                        <label for="fRole">Role</label>
                         <select name="role" id="fRole" class="f-input @error('role') is-invalid @enderror">
-                            <option value="">Pilih role</option>
+                            <option value="">Pilih role / jabatan</option>
                             @foreach ($roles as $val => $label)
                                 <option value="{{ $val }}" {{ old('role') === $val ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -518,37 +566,39 @@
                     </div>
 
                     <div class="f-group">
-                        <label>Status</label>
-                        <select name="status" id="fStatus" class="f-input">
-                            <option value="aktif" {{ old('status', 'aktif') === 'aktif' ? 'selected' : '' }}>Aktif</option>
-                            <option value="nonaktif" {{ old('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="f-row">
-                    <div class="f-group">
-                        <label>Password <small id="hintPass">{{ $mode === 'edit' ? '(kosongkan jika tidak diganti)' : '' }}</small></label>
+                        <label for="fPass">Password <small id="hintPass">{{ $mode === 'edit' ? '(kosongkan jika tidak diganti)' : '' }}</small></label>
                         <div class="f-pass">
                             <input type="password" name="password" id="fPass" class="f-input @error('password') is-invalid @enderror"
-                                   placeholder="Min. 6 karakter" autocomplete="new-password">
-                            <button type="button" id="togglePass" aria-label="Tampilkan password"><i class="bi bi-eye"></i></button>
+                                   placeholder="Minimal 6 karakter" autocomplete="new-password">
+                            <button type="button" class="btn-eye" data-target="fPass" aria-label="Tampilkan password"><i class="bi bi-eye"></i></button>
                         </div>
                         @error('password') <div class="f-error">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="f-group">
-                        <label>Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" id="fPass2" class="f-input"
-                               placeholder="Ulangi password" autocomplete="new-password">
+                        <label for="fPass2">Konfirmasi Password</label>
+                        <div class="f-pass">
+                            <input type="password" name="password_confirmation" id="fPass2" class="f-input"
+                                   placeholder="Ulangi password" autocomplete="new-password">
+                            <button type="button" class="btn-eye" data-target="fPass2" aria-label="Tampilkan password"><i class="bi bi-eye"></i></button>
+                        </div>
                     </div>
+
+                    <div class="f-group f-full">
+                        <label for="fStatus">Status</label>
+                        <select name="status" id="fStatus" class="f-input">
+                            <option value="aktif" {{ old('status', 'aktif') === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                            <option value="nonaktif" {{ old('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                        </select>
+                    </div>
+
                 </div>
 
             </div>
 
             <div class="m-foot">
                 <button type="button" class="btn-m btn-m-cancel" data-tutup>Batal</button>
-                <button type="submit" class="btn-m btn-m-save">Simpan</button>
+                <button type="submit" class="btn-m btn-m-save">Simpan User</button>
             </div>
         </form>
     </div>
@@ -568,6 +618,7 @@
                 <strong id="dNama"></strong>
             </div>
             <div class="d-row"><span>Username</span><span id="dUsername"></span></div>
+            <div class="d-row"><span>Email</span><span id="dEmail"></span></div>
             <div class="d-row"><span>Role / Jabatan</span><span id="dRole"></span></div>
             <div class="d-row"><span>Status</span><span id="dStatus"></span></div>
             <div class="d-row"><span>Dibuat</span><span id="dDibuat"></span></div>
@@ -630,7 +681,9 @@
     const tutup = el => { el.classList.remove('show'); };
 
     $$('.m-overlay').forEach(ov => {
-        ov.addEventListener('mousedown', e => { if (e.target === ov) tutup(ov); });
+        if (ov.id !== 'modalForm') {
+            ov.addEventListener('mousedown', e => { if (e.target === ov) tutup(ov); });
+        }
         $$('[data-tutup]', ov).forEach(b => b.addEventListener('click', () => tutup(ov)));
     });
     document.addEventListener('keydown', e => {
@@ -638,24 +691,19 @@
     });
 
     /* ---------- Cari + filter (langsung, tanpa reload) ---------- */
-    const cari = $('#cariUser'), fRoleSel = $('#filterRole'), fStatusSel = $('#filterStatus');
+    const cari = $('#cariUser');
     const rows = $$('.user-row'), clearBtn = $('#clearCari');
 
     function terapkanFilter() {
         const q = cari.value.trim().toLowerCase();
-        const role = fRoleSel.value, status = fStatusSel.value;
         let n = 0;
 
         rows.forEach(tr => {
-            const cocok =
-                (!q || tr.dataset.search.includes(q)) &&
-                (!role || tr.dataset.role === role) &&
-                (!status || tr.dataset.status === status);
+            const cocok = !q || tr.dataset.search.includes(q);
             tr.style.display = cocok ? '' : 'none';
             if (cocok) { n++; $('.row-no', tr).textContent = n; }
         });
 
-        $('#jmlTampil').textContent = n;
         clearBtn.classList.toggle('show', q.length > 0);
 
         const kosong = $('#userEmpty');
@@ -664,25 +712,28 @@
             $('#emptyText').textContent = 'Tidak ada user yang cocok.';
         }
     }
-    [cari, fRoleSel, fStatusSel].forEach(el => el.addEventListener('input', terapkanFilter));
+    cari.addEventListener('input', terapkanFilter);
     clearBtn.addEventListener('click', () => { cari.value = ''; terapkanFilter(); cari.focus(); });
 
     /* ---------- Form tambah / edit ---------- */
     const modalForm = $('#modalForm'), form = $('#formUser');
 
     function resetForm() {
-        ['fNama', 'fUsername', 'fPass', 'fPass2'].forEach(id => $('#' + id).value = '');
+        ['fNama', 'fUsername', 'fEmail', 'fPass', 'fPass2'].forEach(id => $('#' + id).value = '');
         $('#fRole').value = '';
         $('#fStatus').value = 'aktif';
         $$('.is-invalid', form).forEach(el => el.classList.remove('is-invalid'));
         $$('.f-error, .m-alert', modalForm).forEach(el => el.remove());
         $('#fStatus').disabled = false;
         $('#fRole').disabled = false;
+        ['fPass', 'fPass2'].forEach(id => $('#' + id).type = 'password');
+        $$('.btn-eye i', modalForm).forEach(i => i.className = 'bi bi-eye');
     }
 
     $('#btnTambah').addEventListener('click', () => {
         resetForm();
         $('#formJudul').textContent = 'Tambah User';
+        $('#formSub').textContent = 'Kelola akun pengguna SIP-REK';
         form.action = @json(route('user.store'));
         $('#fMethod').value = 'POST';
         $('#fMode').value = 'tambah';
@@ -696,12 +747,14 @@
         const d = btn.dataset;
         resetForm();
         $('#formJudul').textContent = 'Edit User';
+        $('#formSub').textContent = 'Perbarui akun pengguna SIP-REK';
         form.action = BASE + '/' + d.id;
         $('#fMethod').value = 'PUT';
         $('#fMode').value = 'edit';
         $('#fId').value = d.id;
         $('#fNama').value = d.nama;
         $('#fUsername').value = d.username;
+        $('#fEmail').value = d.email || '';
         $('#fRole').value = d.role;
         $('#fStatus').value = d.status;
         $('#hintPass').textContent = '(kosongkan jika tidak diganti)';
@@ -713,13 +766,14 @@
         $('#fNama').focus();
     }));
 
-    $('#togglePass').addEventListener('click', () => {
-        const p = $('#fPass'), ic = $('#togglePass i');
-        const tampil = p.type === 'password';
-        p.type = tampil ? 'text' : 'password';
-        $('#fPass2').type = p.type;
+    /* ---------- Ikon mata: tampil / sembunyikan password ---------- */
+    $$('.btn-eye').forEach(btn => btn.addEventListener('click', () => {
+        const input = $('#' + btn.dataset.target), ic = $('i', btn);
+        const tampil = input.type === 'password';
+        input.type = tampil ? 'text' : 'password';
         ic.className = tampil ? 'bi bi-eye-slash' : 'bi bi-eye';
-    });
+        btn.setAttribute('aria-label', tampil ? 'Sembunyikan password' : 'Tampilkan password');
+    }));
 
     /* ---------- Detail ---------- */
     $$('.btn-view').forEach(btn => btn.addEventListener('click', () => {
@@ -727,6 +781,7 @@
         $('#dInisial').textContent = d.inisial;
         $('#dNama').textContent = d.nama;
         $('#dUsername').textContent = d.username;
+        $('#dEmail').textContent = d.email;
         $('#dRole').textContent = d.role;
         $('#dStatus').textContent = d.status;
         $('#dDibuat').textContent = d.dibuat;
