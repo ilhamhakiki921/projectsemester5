@@ -1510,7 +1510,14 @@ body.sidebar-collapsed .main {
     color: #5a6472;
     border: 1px solid #d8dce2;
     border-radius: 7px;
-    cursor: not-allowed;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+#modalPasienBaru .btn-data-lain:hover {
+    background: #e2e5ea;
 }
 
 #modalPasienBaru .identitas-columns {
@@ -2065,6 +2072,156 @@ body.sidebar-collapsed .main {
 .btn-daftarkan:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+
+/* =========================
+   MODAL DATA LAIN PASIEN
+========================= */
+
+#modalDataLain {
+    z-index: 10002;
+}
+
+.modal-data-lain {
+    width: 720px;
+    max-width: 100%;
+    max-height: calc(100vh - 40px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    animation: modalMasuk 0.2s ease;
+}
+
+.data-lain-header {
+    flex-shrink: 0;
+    padding: 16px 24px;
+    background: linear-gradient(90deg, #b91c1c 0%, #7f1d1d 55%, #450a0a 100%);
+}
+
+.data-lain-header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+.data-lain-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px 24px;
+}
+
+.data-lain-card {
+    padding: 16px 20px 20px;
+    border: 1px solid #c9cfd6;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.data-lain-judul {
+    display: inline-block;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #222;
+    font-size: 11px;
+    font-weight: 600;
+    color: #222;
+    text-transform: uppercase;
+}
+
+.data-lain-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 28px;
+}
+
+.data-lain-kolom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.data-lain-kolom .form-group {
+    gap: 4px;
+}
+
+.data-lain-kolom .form-group label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #222;
+}
+
+.data-lain-kolom .form-group input,
+.data-lain-kolom .form-group select {
+    height: 34px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 5px;
+    border-color: #b8bec6;
+}
+
+.data-lain-kolom .form-group select {
+    width: 150px;
+    max-width: 100%;
+}
+
+.data-lain-aksi {
+    margin-top: auto;
+    padding-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-dl-batal,
+.btn-dl-simpan {
+    height: 32px;
+    min-width: 92px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-dl-batal {
+    background: #7a7d82;
+}
+
+.btn-dl-batal:hover {
+    background: #62656a;
+}
+
+.btn-dl-simpan {
+    background: #3fc54f;
+}
+
+.btn-dl-simpan:hover {
+    background: #2fa43e;
+}
+
+@media (max-width: 700px) {
+
+    .data-lain-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .data-lain-kolom + .data-lain-kolom {
+        margin-top: 12px;
+    }
 }
 
 </style>
@@ -2654,16 +2811,6 @@ body.sidebar-collapsed .main {
                         >
                     </div>
 
-                    <div class="form-group">
-                        <label for="baruBahasa">Bahasa</label>
-                        <input
-                            type="text"
-                            id="baruBahasa"
-                            placeholder="Contoh: Indonesia, Jawa"
-                            autocomplete="off"
-                        >
-                    </div>
-
                 </div>
 
                 <div class="identitas-kolom">
@@ -2963,11 +3110,17 @@ body.sidebar-collapsed .main {
     <button
         type="button"
         class="btn-data-lain"
-        onclick="void(0)"
-        disabled
-        title="Segera hadir"
+        onclick="bukaModalDataLain()"
     >
         Data lain
+    </button>
+
+    <button
+        type="button"
+        class="btn-batal"
+        onclick="tutupModalPasienBaru()"
+    >
+        Batal
     </button>
 
     <button
@@ -2999,6 +3152,112 @@ body.sidebar-collapsed .main {
     </button>
 
 </div>
+
+    </div>
+
+</div>
+
+
+{{-- =========================
+     MODAL DATA LAIN PASIEN (dibuka dari tombol "Data lain" di Pasien Baru)
+========================== --}}
+
+<div id="modalDataLain" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="dataLainJudul">
+
+    <div class="modal-data-lain">
+
+        <div class="data-lain-header">
+            <h2 id="dataLainJudul">Data Lain Pasien</h2>
+        </div>
+
+        <div class="data-lain-body">
+
+            <div class="data-lain-card">
+
+                <div class="data-lain-judul">Detail Lain</div>
+
+                <div class="data-lain-grid">
+
+                    {{-- KOLOM KIRI --}}
+                    <div class="data-lain-kolom">
+
+                        <div class="form-group">
+                            <label for="baruNoKk">No. KK</label>
+                            <input type="text" id="baruNoKk" maxlength="16" inputmode="numeric" autocomplete="off"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruDomisili">Domisili</label>
+                            <input type="text" id="baruDomisili" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruNip">NIP</label>
+                            <input type="text" id="baruNip" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruJabatan">Jabatan</label>
+                            <input type="text" id="baruJabatan" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruDivisi">Divisi</label>
+                            <input type="text" id="baruDivisi" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruDepartemen">Departemen</label>
+                            <input type="text" id="baruDepartemen" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruSubDepartemen">Sub Departemen</label>
+                            <input type="text" id="baruSubDepartemen" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruPerusahaan">Perusahaan</label>
+                            <input type="text" id="baruPerusahaan" autocomplete="off">
+                        </div>
+
+                    </div>
+
+                    {{-- KOLOM KANAN --}}
+                    <div class="data-lain-kolom">
+
+                        <div class="form-group">
+                            <label for="baruSuku">Suku</label>
+                            <input type="text" id="baruSuku" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruBahasa">Bahasa</label>
+                            <input type="text" id="baruBahasa" placeholder="Contoh: Indonesia, Jawa" autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baruKewarganegaraan">Kewarganegaraan</label>
+                            <select id="baruKewarganegaraan">
+                                <option value="" selected></option>
+                                <option value="WNI">WNI</option>
+                                <option value="WNA">WNA</option>
+                            </select>
+                        </div>
+
+                        <div class="data-lain-aksi">
+                            <button type="button" class="btn-dl-batal" onclick="batalDataLain()">Batal</button>
+                            <button type="button" class="btn-dl-simpan" onclick="simpanDataLain()">Simpan</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -4032,12 +4291,14 @@ function resetFormPasienBaru() {
     });
 
     // Field tambahan yang bukan bagian dari validasi wajib
-    ['baruTitle', 'baruUsia', 'baruBahasa', 'baruAgamaLain', 'baruPekerjaanLain'].forEach(function(id) {
+    ['baruTitle', 'baruUsia', 'baruAgamaLain', 'baruPekerjaanLain'].forEach(function(id) {
         document.getElementById(id).value = '';
         tampilkanError(id, '');
     });
 
     document.getElementById('baruNegara').value = 'Indonesia';
+
+    kosongkanDataLain();
 
     document.getElementById('grupAgamaLain').hidden = true;
     document.getElementById('grupPekerjaanLain').hidden = true;
@@ -4375,6 +4636,69 @@ document.addEventListener('click', function(e) {
 
 
 // =========================
+// DATA LAIN PASIEN (modal dari tombol "Data lain")
+// Isiannya disimpan di form selama modal Pasien Baru masih terbuka,
+// ikut terkirim saat pasien didaftarkan, dan dikosongkan lagi saat form direset.
+// =========================
+
+const FIELD_DATA_LAIN = [
+    'baruNoKk', 'baruDomisili', 'baruNip', 'baruJabatan', 'baruDivisi',
+    'baruDepartemen', 'baruSubDepartemen', 'baruPerusahaan',
+    'baruSuku', 'baruBahasa', 'baruKewarganegaraan'
+];
+
+let snapshotDataLain = {};
+
+function ambilDataLain() {
+
+    const hasil = {};
+
+    FIELD_DATA_LAIN.forEach(function(id) {
+        hasil[id] = document.getElementById(id).value.trim();
+    });
+
+    return hasil;
+}
+
+function kosongkanDataLain() {
+
+    FIELD_DATA_LAIN.forEach(function(id) {
+        document.getElementById(id).value = '';
+    });
+
+    snapshotDataLain = {};
+}
+
+function bukaModalDataLain() {
+
+    // Simpan kondisi awal supaya tombol Batal bisa mengembalikannya
+    snapshotDataLain = ambilDataLain();
+
+    document.getElementById('modalDataLain').classList.add('show');
+    document.getElementById('baruNoKk').focus();
+}
+
+function tutupModalDataLain() {
+
+    document.getElementById('modalDataLain').classList.remove('show');
+}
+
+function batalDataLain() {
+
+    FIELD_DATA_LAIN.forEach(function(id) {
+        document.getElementById(id).value = snapshotDataLain[id] || '';
+    });
+
+    tutupModalDataLain();
+}
+
+function simpanDataLain() {
+
+    tutupModalDataLain();
+}
+
+
+// =========================
 // GENERAL CONSENT (PASIEN BARU)
 // Wajib disetujui dulu sebelum data pasien baru benar-benar disimpan.
 // =========================
@@ -4619,6 +4943,19 @@ async function simpanPasienBaru() {
                 alamat:             dataBaru.alamat,
                 kecamatan:          dataBaru.kecamatan,
                 tanggal_kunjungan:  dataBaru.tglKunjungan,
+                data_lain: {
+                    no_kk:            nilai('baruNoKk'),
+                    domisili:         nilai('baruDomisili'),
+                    nip:              nilai('baruNip'),
+                    jabatan:          nilai('baruJabatan'),
+                    divisi:           nilai('baruDivisi'),
+                    departemen:       nilai('baruDepartemen'),
+                    sub_departemen:   nilai('baruSubDepartemen'),
+                    perusahaan:       nilai('baruPerusahaan'),
+                    suku:             nilai('baruSuku'),
+                    bahasa:           nilai('baruBahasa'),
+                    kewarganegaraan:  nilai('baruKewarganegaraan')
+                },
                 poli:               poliKeSlug(dataBaru.poli),
                 pembayaran:         nilai('baruPembayaran') === 'Asuransi Lain'
                                         ? 'Asuransi Lain - ' + nilai('baruAsuransiLain')
@@ -5518,6 +5855,11 @@ document.addEventListener('keydown', function(event) {
 
         if (document.getElementById('popupPeringatan').classList.contains('show')) {
             tutupPopupPeringatan();
+            return;
+        }
+
+        if (document.getElementById('modalDataLain').classList.contains('show')) {
+            batalDataLain();
             return;
         }
 
