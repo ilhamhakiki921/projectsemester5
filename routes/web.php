@@ -13,6 +13,8 @@ use App\Http\Controllers\Icd10Controller;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PoliController;
 use App\Http\Controllers\DiagnosaController;
+use App\Http\Controllers\ObatController;
+use App\Http\Controllers\DataPasienController;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -138,6 +140,23 @@ Route::middleware('web')->group(function () {
     Route::post('/data-diagnosa/import', [DiagnosaController::class, 'import'])->name('diagnosa.import');
     Route::put('/data-diagnosa/{icd10}', [DiagnosaController::class, 'update'])->name('diagnosa.update');
     Route::delete('/data-diagnosa/{icd10}', [DiagnosaController::class, 'destroy'])->name('diagnosa.destroy');
+
+    // ===========================
+    // DATA MASTER > DATA OBAT
+    // ===========================
+
+    Route::get('/data-obat', [ObatController::class, 'index'])->name('obat.index');
+    Route::post('/data-obat', [ObatController::class, 'store'])->name('obat.store');
+    Route::put('/data-obat/{obat}', [ObatController::class, 'update'])->name('obat.update');
+    Route::delete('/data-obat/{obat}', [ObatController::class, 'destroy'])->name('obat.destroy');
+
+    // ===========================
+    // DATA MASTER > DATA PASIEN
+    // (pasien baru didaftarkan lewat menu Pendaftaran; di sini hanya lihat & edit)
+    // ===========================
+
+    Route::get('/data-pasien', [DataPasienController::class, 'index'])->name('data-pasien.index');
+    Route::put('/data-pasien/{pasien}', [DataPasienController::class, 'update'])->name('data-pasien.update');
 
     require __DIR__.'/penunjang.php';
 

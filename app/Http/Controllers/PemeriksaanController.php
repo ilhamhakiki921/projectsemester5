@@ -315,18 +315,29 @@ class PemeriksaanController extends Controller
             'tanggal_penulisan' => 'required|date',
         ], $this->pesanValidasi());
 
-        // Semua kolom diisi manual. Obat dicari berdasarkan nama (tanpa peduli
-        // huruf besar/kecil); kalau belum ada, otomatis dibuat -- ID Obat
-        // dibuat otomatis oleh database.
+        // Obat dicari berdasarkan nama + dosis + sediaan (tanpa peduli huruf besar/kecil),
+        // karena satu nama obat bisa punya beberapa dosis ("Paracetamol" 500 mg dan 650 mg).
+        // Kalau belum ada, otomatis dibuat di Data Obat. Nama disimpan TANPA dosis;
+        // kalau dosis terlanjur diketik di nama ("Paracetamol 500mg"), dipisahkan otomatis.
         $namaObat = trim($request->nama_obat);
         $sediaan  = trim($request->sediaan);
+        $dosis    = Obat::rapikanDosis($request->dosis_obat);
 
-        $obat = Obat::whereRaw('LOWER(nama_obat) = ?', [mb_strtolower($namaObat)])->first();
+        [$namaBersih, $dosisDariNama] = Obat::pisahDosis($namaObat);
+        $namaObat = $namaBersih;
+        $dosis    = $dosis ?? $dosisDariNama;
 
-        if ($obat) {
-            $obat->update(['sediaan' => $sediaan]);
-        } else {
-            $obat = Obat::create(['nama_obat' => $namaObat, 'sediaan' => $sediaan]);
+        $obat = Obat::whereRaw('LOWER(nama_obat) = ?', [mb_strtolower($namaObat)])
+            ->whereRaw('LOWER(sediaan) = ?', [mb_strtolower($sediaan)])
+            ->where(fn ($q) => $dosis === null ? $q->whereNull('dosis') : $q->where('dosis', $dosis))
+            ->first();
+
+        if (! $obat) {
+            $obat = Obat::create([
+                'nama_obat' => $namaObat,
+                'dosis'     => $dosis,
+                'sediaan'   => $sediaan,
+            ]);
         }
 
         $data = $request->only(['jumlah_obat', 'dosis_obat', 'frekuensi', 'tanggal_penulisan']);

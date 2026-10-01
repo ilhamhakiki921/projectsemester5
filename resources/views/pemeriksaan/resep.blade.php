@@ -585,6 +585,7 @@
                 $daftarObatJson = $daftarObat->map(fn ($o) => [
                     'id'      => $o->id,
                     'nama'    => $o->nama_obat,
+                    'dosis'   => $o->dosis,
                     'sediaan' => $o->sediaan,
                 ]);
             @endphp
@@ -597,7 +598,7 @@
                         id="inputNamaObat"
                         name="nama_obat"
                         value="{{ old('nama_obat') }}"
-                        placeholder="Ketik nama obat"
+                        placeholder="Nama saja, tanpa dosis (mis. Paracetamol)"
                         autocomplete="off"
                         required
                     >
@@ -629,7 +630,7 @@
                 </div>
                 <div class="modal-field">
                     <label>Dosis Obat<span class="required-mark">*</span></label>
-                    <input type="text" name="dosis_obat" value="{{ old('dosis_obat') }}" placeholder="misal: 500 mg" required>
+                    <input type="text" name="dosis_obat" id="inputDosis" value="{{ old('dosis_obat') }}" placeholder="misal: 500 mg" required>
                 </div>
             </div>
 
@@ -665,11 +666,25 @@
     var displayId      = document.getElementById('displayIdObat');
     var inputSediaan   = document.getElementById('displaySediaan');
 
-    // Semua kolom diisi manual. Kalau nama yang diketik kebetulan sudah ada
-    // di data obat, ID Obat ditampilkan (read-only) dan Sediaan diisi bila masih kosong.
-    inputNama.addEventListener('input', function () {
-        var nilai = inputNama.value.trim().toLowerCase();
-        var cocok = daftarObat.find(function (o) { return o.nama.toLowerCase() === nilai; });
+    var inputDosis = document.getElementById('inputDosis');
+
+    // Nama obat ditulis TANPA dosis; dosis ada di kolom sendiri. Kalau nama (+ dosis)
+    // yang diketik sudah ada di Data Obat, ID Obat ditampilkan dan Sediaan / Dosis
+    // diisi otomatis bila masih kosong.
+    function cocokkanObat() {
+        var nama  = inputNama.value.trim().toLowerCase();
+        var dosis = inputDosis.value.trim().toLowerCase().replace(/\s+/g, '');
+
+        var kandidat = daftarObat.filter(function (o) { return o.nama.toLowerCase() === nama; });
+        var cocok = kandidat.find(function (o) {
+            return (o.dosis || '').toLowerCase().replace(/\s+/g, '') === dosis;
+        });
+
+        // Hanya satu obat dengan nama ini -> aman diisi otomatis
+        if (!cocok && kandidat.length === 1 && dosis === '') {
+            cocok = kandidat[0];
+            inputDosis.value = cocok.dosis || '';
+        }
 
         if (cocok) {
             displayId.value = String(cocok.id).padStart(3, '0');
@@ -679,7 +694,10 @@
         } else {
             displayId.value = '';
         }
-    });
+    }
+
+    inputNama.addEventListener('input', cocokkanObat);
+    inputDosis.addEventListener('input', cocokkanObat);
 
     document.querySelectorAll('#form-resep [required]').forEach(function (field) {
         field.addEventListener('invalid', function () {
