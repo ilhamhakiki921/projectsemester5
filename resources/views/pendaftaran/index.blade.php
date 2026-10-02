@@ -2084,6 +2084,140 @@ body.sidebar-collapsed .main {
     margin-top: 2px;
 }
 
+/* Isi General Consent */
+.gc-identitas {
+    display: grid;
+    grid-template-columns: 1.4fr 1.2fr 1fr;
+    gap: 12px;
+
+    padding: 12px 14px;
+    margin-bottom: 14px;
+
+    border: 1px solid #d5dddd;
+    border-radius: 10px;
+    background: #f8faf9;
+}
+
+.gc-identitas span {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 11px;
+    color: #78909c;
+}
+
+.gc-identitas strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1c2b33;
+}
+
+.gc-intro {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1c2b33;
+}
+
+.gc-list {
+    margin: 0 0 16px;
+    padding: 12px 16px 12px 34px;
+
+    max-height: 260px;
+    overflow-y: auto;
+
+    border: 1px solid #d5dddd;
+    border-radius: 10px;
+
+    font-size: 12px;
+    line-height: 1.6;
+    color: #37474f;
+}
+
+.gc-list li {
+    margin-bottom: 8px;
+}
+
+.gc-list li:last-child {
+    margin-bottom: 0;
+}
+
+.gc-list b {
+    color: #1c2b33;
+}
+
+.gc-judul {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1c2b33;
+}
+
+.gc-pilihan {
+    display: flex;
+    gap: 22px;
+    margin-bottom: 10px;
+}
+
+.gc-pilihan label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    font-size: 12px;
+    color: #455a64;
+    cursor: pointer;
+}
+
+.gc-wali {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.gc-wali label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #455a64;
+}
+
+.gc-wali input {
+    width: 100%;
+    height: 40px;
+
+    padding: 0 12px;
+
+    border: 1px solid #d5dddd;
+    border-radius: 8px;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+.gc-wali input:focus {
+    outline: 2px solid #0f766e;
+    outline-offset: 1px;
+}
+
+/* Penanda di Step 2 bahwa General Consent sudah disetujui */
+.gc-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0 0 16px;
+    padding: 10px 14px;
+
+    border: 1px solid #b7e4c7;
+    border-radius: 10px;
+    background: #ecf8f0;
+
+    font-size: 12px;
+    font-weight: 500;
+    color: #14602a;
+}
+
 .btn-daftarkan:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -3022,6 +3156,11 @@ body.sidebar-collapsed .main {
 
         <div id="pasienBaruStep2" hidden>
 
+            <div class="gc-status" id="gcStatus" hidden>
+                <i class="bi bi-check-circle-fill"></i>
+                <span id="gcStatusTeks"></span>
+            </div>
+
             {{-- INFORMASI KUNJUNGAN --}}
             <div class="form-section-title">
                 INFORMASI KUNJUNGAN
@@ -3271,8 +3410,7 @@ body.sidebar-collapsed .main {
 
 {{-- =========================
      MODAL GENERAL CONSENT (PASIEN BARU)
-     Kerangka & tombolnya dulu - konten/desain persetujuannya menyusul,
-     tinggal isi bagian "consent-placeholder" di bawah kalau desainnya sudah fix.
+     Muncul otomatis setelah identitas pasien (Step 1) diisi, sebelum lanjut ke Informasi Kunjungan.
 ========================== --}}
 
 <div id="modalGeneralConsent" class="modal-overlay">
@@ -3301,9 +3439,44 @@ body.sidebar-collapsed .main {
         {{-- BODY --}}
         <div class="modal-body">
 
-            {{-- TODO: ganti kotak placeholder ini dengan konten/desain General Consent yang sebenarnya --}}
-            <div class="consent-placeholder">
-                Konten General Consent menyusul (masih proses desain)
+            {{-- Identitas pasien terisi otomatis dari Step 1 --}}
+            <div class="gc-identitas">
+                <div><span>Nama Pasien</span><strong id="gcNama">-</strong></div>
+                <div><span>NIK</span><strong id="gcNik">-</strong></div>
+                <div><span>Tanggal Lahir</span><strong id="gcLahir">-</strong></div>
+            </div>
+
+            {{-- Isi persetujuan: draf standar, sesuaikan dengan ketentuan fasilitas --}}
+            <p class="gc-intro">Dengan ini saya menyatakan telah menerima penjelasan dan menyetujui hal-hal berikut:</p>
+
+            <ol class="gc-list">
+                <li><b>Persetujuan pelayanan kesehatan.</b> Saya setuju untuk diperiksa dan memperoleh pelayanan kesehatan sesuai kebutuhan medis di fasilitas ini, termasuk pemeriksaan, pengobatan, dan pemeriksaan penunjang.</li>
+                <li><b>Hak dan kewajiban pasien.</b> Saya telah mendapat informasi tentang hak dan kewajiban pasien dan memahaminya.</li>
+                <li><b>Tata tertib.</b> Saya bersedia mematuhi tata tertib dan peraturan yang berlaku di fasilitas ini.</li>
+                <li><b>Kerahasiaan informasi medis.</b> Saya memahami bahwa data dan rekam medis saya dijaga kerahasiaannya dan hanya dibuka untuk kepentingan pelayanan, sesuai peraturan perundang-undangan.</li>
+                <li><b>Pelepasan informasi.</b> Saya mengizinkan informasi yang diperlukan dibuka kepada pihak penjamin pembayaran (BPJS/asuransi) untuk keperluan klaim, serta kepada tenaga kesehatan yang terlibat dalam perawatan saya.</li>
+                <li><b>Informasi biaya.</b> Saya telah mendapat informasi tentang biaya pelayanan dan bersedia menyelesaikan pembayaran sesuai cara pembayaran yang dipilih.</li>
+                <li><b>Barang berharga.</b> Saya memahami bahwa barang berharga yang dibawa menjadi tanggung jawab saya sendiri.</li>
+                <li><b>Tindakan khusus.</b> Saya memahami bahwa tindakan tertentu yang berisiko memerlukan persetujuan tindakan (informed consent) tersendiri.</li>
+            </ol>
+
+            {{-- Siapa yang memberikan persetujuan --}}
+            <div class="gc-judul">Yang memberikan persetujuan</div>
+
+            <div class="gc-pilihan">
+                <label><input type="radio" name="gcPemberi" value="Pasien" checked onchange="aturPemberiGeneralConsent()"> Pasien sendiri</label>
+                <label><input type="radio" name="gcPemberi" value="Wali" onchange="aturPemberiGeneralConsent()"> Keluarga/wali pasien</label>
+            </div>
+
+            <div class="gc-wali" id="gcWaliBox" hidden>
+                <div>
+                    <label for="gcWaliNama">Nama Keluarga/Wali<span class="wajib">*</span></label>
+                    <input type="text" id="gcWaliNama" placeholder="Nama yang menyetujui" oninput="aturTombolGeneralConsent()">
+                </div>
+                <div>
+                    <label for="gcWaliHubungan">Hubungan dengan Pasien<span class="wajib">*</span></label>
+                    <input type="text" id="gcWaliHubungan" placeholder="Contoh: Suami, Anak" oninput="aturTombolGeneralConsent()">
+                </div>
             </div>
 
             <label class="consent-agree">
@@ -3311,10 +3484,10 @@ body.sidebar-collapsed .main {
                 <input
                     type="checkbox"
                     id="cbGeneralConsent"
-                    onchange="document.getElementById('btnSetujuGeneralConsent').disabled = !this.checked;"
+                    onchange="aturTombolGeneralConsent()"
                 >
 
-                Pasien/keluarga menyetujui isi General Consent di atas
+                Saya telah membaca, memahami, dan menyetujui isi General Consent di atas
 
             </label>
 
@@ -4233,10 +4406,20 @@ function hariIniIso() {
 }
 
 let generalConsentDisetujui = false;
+let generalConsentData = null;
+
+function resetGeneralConsent() {
+    generalConsentDisetujui = false;
+    generalConsentData = null;
+    document.getElementById('gcStatus').hidden = true;
+}
 
 function bukaModalPasienBaru() {
 
-    generalConsentDisetujui = false;
+    resetGeneralConsent();
+
+    // selalu mulai dari Step 1 (Identitas Pasien)
+    kembaliKeIdentitasPasien();
 
     resetFormPasienBaru();
 
@@ -4691,11 +4874,26 @@ function simpanDataLain() {
 
 // =========================
 // GENERAL CONSENT (PASIEN BARU)
-// Wajib disetujui dulu sebelum data pasien baru benar-benar disimpan.
+// Muncul otomatis setelah Identitas Pasien (Step 1) diisi; wajib disetujui
+// sebelum lanjut ke Informasi Kunjungan dan sebelum pasien disimpan.
 // =========================
 
 function bukaModalGeneralConsent() {
 
+    const nilai = function(id) {
+        return document.getElementById(id).value.trim();
+    };
+
+    // Identitas pasien terisi otomatis dari Step 1
+    document.getElementById('gcNama').textContent  = nilai('baruNama') || '-';
+    document.getElementById('gcNik').textContent   = nilai('baruNik') || '-';
+    document.getElementById('gcLahir').textContent = isoKeTeks(nilai('baruTglLahir')) || '-';
+
+    // Mulai dari kondisi bersih
+    document.querySelector('input[name="gcPemberi"][value="Pasien"]').checked = true;
+    document.getElementById('gcWaliNama').value = '';
+    document.getElementById('gcWaliHubungan').value = '';
+    document.getElementById('gcWaliBox').hidden = true;
     document.getElementById('cbGeneralConsent').checked = false;
     document.getElementById('btnSetujuGeneralConsent').disabled = true;
 
@@ -4711,14 +4909,83 @@ function tutupModalGeneralConsent() {
 }
 
 
+function pemberiGeneralConsent() {
+
+    return document.querySelector('input[name="gcPemberi"]:checked').value;
+}
+
+
+// Pilih "Keluarga/wali" -> kolom nama & hubungan muncul (terisi dari data keluarga di Step 1)
+function aturPemberiGeneralConsent() {
+
+    const wali = pemberiGeneralConsent() === 'Wali';
+
+    document.getElementById('gcWaliBox').hidden = !wali;
+
+    if (wali) {
+
+        const nama = document.getElementById('gcWaliNama');
+        const hub  = document.getElementById('gcWaliHubungan');
+
+        if (!nama.value.trim()) {
+            nama.value = document.getElementById('keluargaNama').value.trim();
+        }
+
+        if (!hub.value.trim()) {
+            hub.value = document.getElementById('keluargaHubungan').value || '';
+        }
+
+        nama.focus();
+    }
+
+    aturTombolGeneralConsent();
+}
+
+
+// Tombol "Setuju & Lanjutkan" aktif kalau sudah dicentang dan data penyetuju lengkap
+function aturTombolGeneralConsent() {
+
+    const dicentang = document.getElementById('cbGeneralConsent').checked;
+
+    let lengkap = true;
+
+    if (pemberiGeneralConsent() === 'Wali') {
+        lengkap = document.getElementById('gcWaliNama').value.trim() !== ''
+               && document.getElementById('gcWaliHubungan').value.trim() !== '';
+    }
+
+    document.getElementById('btnSetujuGeneralConsent').disabled = !(dicentang && lengkap);
+}
+
+
 function setujuiGeneralConsent() {
+
+    if (document.getElementById('btnSetujuGeneralConsent').disabled) {
+        return;
+    }
+
+    const wali = pemberiGeneralConsent() === 'Wali';
+
+    generalConsentData = {
+        pemberi:   wali ? 'Wali' : 'Pasien',
+        nama:      wali
+                    ? document.getElementById('gcWaliNama').value.trim()
+                    : document.getElementById('baruNama').value.trim(),
+        hubungan:  wali ? document.getElementById('gcWaliHubungan').value.trim() : 'Pasien sendiri',
+        waktu:     new Date().toISOString()
+    };
 
     generalConsentDisetujui = true;
 
     tutupModalGeneralConsent();
 
-    // Lanjutkan proses pendaftaran yang tadi berhenti nunggu persetujuan
-    simpanPasienBaru();
+    // Masih di Step 1 -> lanjut ke Informasi Kunjungan.
+    // Sudah di Step 2 (pengaman) -> lanjutkan proses simpan yang tadi berhenti.
+    if (!document.getElementById('pasienBaruStep1').hidden) {
+        tampilkanStep2();
+    } else {
+        simpanPasienBaru();
+    }
 }
 
 
@@ -4808,10 +5075,31 @@ function lanjutKeInformasiKunjungan() {
         return;
     }
 
+    // Identitas sudah benar -> pasien/keluarga mengisi General Consent dulu,
+    // baru lanjut ke Informasi Kunjungan.
+    if (!generalConsentDisetujui) {
+        bukaModalGeneralConsent();
+        return;
+    }
+
+    tampilkanStep2();
+}
+
+
+function tampilkanStep2() {
+
     document.getElementById('pasienBaruStep1').hidden = true;
     document.getElementById('pasienBaruStep2').hidden = false;
     document.getElementById('footerPasienBaruStep1').hidden = true;
     document.getElementById('footerPasienBaruStep2').hidden = false;
+
+    // Penanda General Consent sudah disetujui
+    if (generalConsentData) {
+        document.getElementById('gcStatusTeks').textContent =
+            'General Consent disetujui oleh ' + generalConsentData.nama +
+            (generalConsentData.pemberi === 'Wali' ? ' (' + generalConsentData.hubungan + ')' : ' (pasien sendiri)');
+        document.getElementById('gcStatus').hidden = false;
+    }
 
     document.getElementById('baruTglKunjungan').focus();
 }
@@ -4934,6 +5222,7 @@ async function simpanPasienBaru() {
                 alamat:             dataBaru.alamat,
                 kecamatan:          dataBaru.kecamatan,
                 tanggal_kunjungan:  dataBaru.tglKunjungan,
+                general_consent:    generalConsentData,
                 data_lain: {
                     no_kk:            nilai('baruNoKk'),
                     domisili:         nilai('baruDomisili'),
@@ -4962,8 +5251,6 @@ async function simpanPasienBaru() {
 
     } catch (err) {
 
-        generalConsentDisetujui = false;
-
         alert('Gagal menyimpan data pasien ke database. Silakan coba lagi.\n(' + err.message + ')');
         return;
     }
@@ -4975,7 +5262,9 @@ async function simpanPasienBaru() {
     // Kosongkan form supaya siap dipakai untuk pasien berikutnya
     resetFormPasienBaru();
 
-    generalConsentDisetujui = false;
+    resetGeneralConsent();
+
+    kembaliKeIdentitasPasien();
 
     tutupModalPasienBaru();
 

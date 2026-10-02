@@ -2,11 +2,13 @@
  
 namespace App\Http\Controllers;
  
+use App\Models\GeneralConsent;
 use App\Models\Pasien;
 use App\Models\Poli;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
  
 class PasienController extends Controller
 {
@@ -91,6 +93,11 @@ public function create()
             'dokter'              => 'nullable',
             'poli'                => 'required',
             'pembayaran'          => 'required',
+            'general_consent'           => 'nullable|array',
+            'general_consent.pemberi'   => 'nullable|in:Pasien,Wali',
+            'general_consent.nama'      => 'nullable|string|max:255',
+            'general_consent.hubungan'  => 'nullable|string|max:100',
+            'general_consent.waktu'     => 'nullable|date',
         ]);
 
         $noRm = $request->filled('no_rm') ? $request->no_rm : $this->noRmBerikutnya();
@@ -111,6 +118,20 @@ public function create()
                 'kecamatan'     => $request->kecamatan,
             ]);
  
+            // General Consent (diisi setelah Identitas Pasien di form pendaftaran)
+            $gc = $request->input('general_consent');
+
+            if (is_array($gc) && ! empty($gc['nama']) && Schema::hasTable('general_consent')) {
+                GeneralConsent::create([
+                    'pasien_id'           => $pasien->id,
+                    'pemberi_persetujuan' => $gc['pemberi'] ?? 'Pasien',
+                    'nama_penyetuju'      => $gc['nama'],
+                    'hubungan'            => $gc['hubungan'] ?? null,
+                    'setuju'              => true,
+                    'disetujui_pada'      => ! empty($gc['waktu']) ? \Carbon\Carbon::parse($gc['waktu']) : now(),
+                ]);
+            }
+
             $kunjungan = Kunjungan::create([
                 'pasien_id'         => $pasien->id,
                 'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),

@@ -27,4 +27,9 @@ class Pasien extends Model
     {
         return $this->hasMany(Kunjungan::class);
     }
+
+    public function generalConsent()
+    {
+        return $this->hasOne(GeneralConsent::class);
+    }
 }
