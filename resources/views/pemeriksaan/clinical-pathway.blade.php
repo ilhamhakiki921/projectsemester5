@@ -18,10 +18,13 @@
     .cp-f.err input,.cp-f.err select{border-color:#c00000}
 
     .cp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
-    .cp-chip{width:46px;padding:4px 0 3px;border:1px solid #333;border-radius:5px;background:#fff;font:inherit;text-align:center;cursor:pointer;line-height:1.2}
+    .cp-chip{min-width:62px;padding:4px 12px 3px;border:1px solid #333;border-radius:5px;background:#fff;font:inherit;text-align:center;cursor:pointer;line-height:1.2}
     .cp-chip b{display:block;font-size:11px;font-weight:600}
     .cp-chip small{display:block;font-size:8px;color:#777}
     .cp-chip.terisi small{color:#14803a;font-weight:600}
+    .cp-chip[hidden],.cp-add[hidden]{display:none}
+    .cp-add{width:38px;border:1px solid #c00000;border-radius:5px;background:#fff;color:#c00000;font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer}
+    .cp-add:hover{background:#fdecec}
     .cp-chip.on{border-color:#c00000;background:#fdecec;box-shadow:0 0 0 1px #c00000}
 
     .cp-panel[hidden]{display:none}
@@ -113,17 +116,18 @@
     {{-- 2. Aktivitas Pelayanan --}}
     <section class="cp-card">
         <h2 class="cp-h">Aktivitas Pelayanan</h2>
-        <p class="cp-sub">Pilih kunjungan untuk mengisi detail pelayanan. <span id="cp-terisi">{{ $terisiAwal }}</span> dari 12 kunjungan terisi.</p>
+        <p class="cp-sub">Pilih minggu untuk mengisi detail pelayanan. <span id="cp-terisi">{{ $terisiAwal }}</span> dari <span id="cp-total">1</span> minggu terisi.</p>
 
         <div class="cp-chips">
             @for ($i = 1; $i <= 12; $i++)
-                <button type="button" class="cp-chip" data-chip="{{ $i }}"><b>{{ $i }}</b><small data-status>Kosong</small></button>
+                <button type="button" class="cp-chip" data-chip="{{ $i }}" @if ($i > 1) hidden @endif><b>Minggu-{{ $i }}</b><small data-status>Kosong</small></button>
             @endfor
+            <button type="button" class="cp-add" id="cp-add" title="Tambah minggu" aria-label="Tambah minggu">+</button>
         </div>
 
         @for ($i = 1; $i <= 12; $i++)
         <div class="cp-panel" data-panel="{{ $i }}" hidden>
-            <div class="cp-kj-head"><strong>Kunjungan {{ $i }}</strong><span>dari maksimal 12</span></div>
+            <div class="cp-kj-head"><strong>Minggu-{{ $i }}</strong><span>dari maksimal 12 minggu</span></div>
             <div class="cp-kj-info" data-info>Tanggal belum diisi • DPJP belum dipilih</div>
             <hr class="cp-hr">
 
@@ -265,6 +269,17 @@
     var chips = form.querySelectorAll('[data-chip]');
     var panels = form.querySelectorAll('[data-panel]');
     var counter = document.getElementById('cp-terisi');
+    var total = document.getElementById('cp-total');
+    var addBtn = document.getElementById('cp-add');
+    var MAX = chips.length;
+    var visible = 1;
+
+    function setVisible(n) {
+        visible = Math.min(MAX, Math.max(1, n));
+        chips.forEach(function (c, i) { c.hidden = (i + 1) > visible; });
+        addBtn.hidden = visible >= MAX;
+        total.textContent = visible;
+    }
 
     function filled(p) {
         var f = p.querySelectorAll('input, textarea');
@@ -297,13 +312,23 @@
         var chip = e.target.closest('[data-chip]');
         if (chip) show(chip.getAttribute('data-chip'));
     });
+    addBtn.addEventListener('click', function () {
+        setVisible(visible + 1);
+        show(visible);
+    });
     form.addEventListener('input', refresh);
     document.getElementById('cp-reset').addEventListener('click', function () {
-        setTimeout(function () { refresh(); show(1); }, 0);
+        setTimeout(function () { setVisible(1); refresh(); show(1); }, 0);
     });
 
+    // Tampilkan minggu sampai minggu terakhir yang sudah terisi / yang error
+    var aktif = parseInt(form.getAttribute('data-aktif') || 1, 10);
+    var terakhir = 1;
+    panels.forEach(function (p, i) { if (filled(p)) terakhir = i + 1; });
+    setVisible(Math.max(terakhir, aktif));
+
     refresh();
-    show(form.getAttribute('data-aktif') || 1);
+    show(aktif);
 })();
 </script>
 @endpush

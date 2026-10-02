@@ -84,12 +84,12 @@
             <label class="rj-opt on" id="optInternal">
                 <input type="radio" name="jenis" value="Internal" checked>
                 <span class="dot"></span>
-                <span><b>Rujukan Internal</b> - ke poli dalam klinik</span>
+                <span><b>Rujukan Internal</b></span>
             </label>
             <label class="rj-opt" id="optEksternal">
                 <input type="radio" name="jenis" value="Eksternal">
                 <span class="dot"></span>
-                <span><b>Rujukan Eksternal</b> - ke RS/fasyankes lain</span>
+                <span><b>Rujukan Eksternal</b></span>
             </label>
         </div>
 

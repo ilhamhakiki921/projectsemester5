@@ -375,11 +375,6 @@ body {
 
         <section class="content">
 
-            <a href="{{ route('pemeriksaan.index', ['poli' => $antrian->poli]) }}" class="back-link">
-                <i class="bi bi-arrow-left"></i>
-                Kembali ke Antrian
-            </a>
-
             {{-- IDENTITAS PASIEN --}}
             <div class="card">
 

@@ -34,21 +34,22 @@
 @push('styles')
 <style>
     .pj-card{border:1px solid #6b6b6b;border-radius:14px;padding:26px 22px 28px;background:#fff}
-    .pj-h{margin:0;font-size:14px;font-weight:600;color:#111}
-    .pj-sub{margin:2px 0 14px;font-size:9px;font-weight:500;color:#333}
+    .pj-h{margin:0 0 16px;font-size:15px;font-weight:700;color:#ed1111}
+    .pj-sub{margin:0 0 16px;font-size:11px;font-weight:500;color:#222}
 
-    .pj-table{width:100%;border-collapse:separate;border-spacing:0}
-    .pj-table thead th{background:linear-gradient(90deg,#a11a1e,#5c0a0c);color:#fff;font-size:12px;font-weight:600;padding:11px 14px;text-align:center}
-    .pj-table thead th:first-child{border-radius:6px 0 0 6px}
-    .pj-table thead th:last-child{border-radius:0 6px 6px 0}
-    .pj-table tbody td{padding:12px 14px;border-bottom:1px solid #eee;text-align:center;font-size:12px;vertical-align:top}
+    .pj-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #8a8a8a;border-radius:8px;overflow:hidden}
+    .pj-table thead th{background:linear-gradient(90deg,#a11a1e,#5c0a0c);color:#fff;font-size:12px;font-weight:600;padding:11px 14px;text-align:center;border-right:1px solid rgba(255,255,255,.35)}
+    .pj-table thead th:last-child{border-right:0}
+    .pj-table tbody td{padding:12px 14px;border-bottom:1px solid #cfcfcf;border-right:1px solid #cfcfcf;text-align:center;font-size:12px;vertical-align:top}
+    .pj-table tbody td:last-child{border-right:0}
+    .pj-table tbody tr:last-child td{border-bottom:0}
     .pj-table tbody td.l{text-align:left}
-    .pj-table tbody tr.empty td{border:0;padding:34px 14px 80px;font-size:10px;font-weight:500;color:#222}
+    .pj-table tbody tr.empty td{padding:34px 14px 80px;font-size:12px;font-weight:500;color:#222}
     .pj-badge{display:inline-block;background:#fff3cd;color:#8a6100;border-radius:10px;padding:2px 10px;font-size:11px;font-weight:500}
     .pj-del{border:1px solid #a11a1e;color:#a11a1e;background:#fff;border-radius:6px;padding:2px 12px;font:inherit;font-size:11px;cursor:pointer}
     .pj-del:hover{background:#a11a1e;color:#fff}
 
-    .pj-ftitle{margin:34px 0 14px 4px;font-size:12px;font-weight:600;color:#111}
+    .pj-ftitle{margin:34px 0 14px;font-size:15px;font-weight:700;color:#ed1111}
     .pj-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
     .pj-col{display:flex;flex-direction:column;gap:16px}
     .pj-box{border:1px solid #cfcfcf;border-radius:8px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.18);overflow:hidden}
@@ -75,7 +76,7 @@
     .pj-ck input{width:13px;height:13px;flex-shrink:0;accent-color:#a11a1e;cursor:pointer}
 
     .pj-ket{margin-top:26px}
-    .pj-ket label{display:block;font-size:10px;font-weight:600;color:#111;margin:0 0 6px 2px}
+    .pj-ket label{display:block;font-size:15px;font-weight:700;color:#ed1111;margin:0 0 8px}
     .pj-ket textarea{display:block;width:100%;height:68px;border:1px solid #bdbdbd;border-radius:8px;padding:10px 14px;font:inherit;font-size:10px;resize:vertical;text-align:center}
     .pj-ket textarea::placeholder{color:#777;font-size:9px;text-align:center}
     .pj-ket textarea:focus{outline:2px solid #a11a1e;outline-offset:1px}
@@ -97,7 +98,6 @@
 @section('konten')
 <section class="pj-card">
     <h3 class="pj-h">Pemeriksaan Penunjang — Permintaan Laboratorium</h3>
-    <p class="pj-sub">Formulir mengikuti form Instalasi Laboratorium Merah Putih Group</p>
 
     <table class="pj-table">
         <thead>

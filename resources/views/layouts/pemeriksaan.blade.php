@@ -7,7 +7,7 @@
     $backLabel = $backLabel ?? 'Kembali ke Diagnosa';
     $lahir = !empty($pasien?->tanggal_lahir) ? \Carbon\Carbon::parse($pasien->tanggal_lahir) : null;
     $tabs = [
-        ['Asesment', route('pemeriksaan.asesmen', [$poli, $noRm])],
+        ['Anamnesa', route('pemeriksaan.asesmen', [$poli, $noRm])],
         ['SOAP', route('pemeriksaan.soap', [$poli, $noRm])],
         ['Diagnosa', route('pemeriksaan.diagnosa', [$poli, $noRm])],
         ['Resep', route('pemeriksaan.resep', [$poli, $noRm])],
@@ -82,10 +82,12 @@
 
             <x-popup-alert />
 
+            @if ($backLabel !== 'Kembali ke Antrian')
             <a href="{{ $backUrl }}" class="back-link">
                 <i class="bi bi-arrow-left"></i>
                 {{ $backLabel }}
             </a>
+            @endif
 
             <div class="identity-bar">
                 <div class="identity-name-block">

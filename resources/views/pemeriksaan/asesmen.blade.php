@@ -297,12 +297,6 @@
 
             <x-popup-alert />
 
-            {{-- KEMBALI --}}
-            <a href="{{ route('pemeriksaan.index', $poli) }}" class="back-link">
-                <i class="bi bi-arrow-left"></i>
-                Kembali ke Antrian
-            </a>
-
 
             {{-- IDENTITAS PASIEN --}}
             <div class="identity-bar">
@@ -342,7 +336,7 @@
 
             {{-- TABS --}}
             <div class="tabs">
-                <span class="tab-item active">Asesment</span>
+                <span class="tab-item active">Anamnesa</span>
                 <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="tab-item">SOAP</a>
                 <span class="tab-item disabled">Diagnosa</span>
                 <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
