@@ -39,7 +39,7 @@ class ClinicalPathwayController extends Controller
             'nama_pasien' => 'nullable|string|max:150',
             'rencana_kunjungan' => 'required|integer|min:1|max:12',
             'interval_kunjungan' => 'nullable|string|max:50',
-            'satuan_interval' => 'nullable|string|max:50',
+            'satuan_interval' => 'nullable|in:Hari,Minggu,Bulan',
             'diagnosis' => 'required|string|max:255',
             'kode_icd10' => 'required|string|max:20',
             'kunjungan' => 'nullable|array',

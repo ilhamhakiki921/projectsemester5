@@ -10,11 +10,12 @@
     .cp-f{display:flex;flex-direction:column;gap:6px;min-width:0}
     .cp-f label{font-size:11px;font-weight:600;color:#111}
     .cp-f label i{color:#c00000;font-style:normal}
-    .cp-f input,.cp-f textarea{width:100%;height:38px;border:1px solid #333;border-radius:5px;padding:0 12px;font:inherit;font-size:12px;background:#fff;color:#111}
+    .cp-f input,.cp-f select,.cp-f textarea{width:100%;height:38px;border:1px solid #333;border-radius:5px;padding:0 12px;font:inherit;font-size:12px;background:#fff;color:#111}
     .cp-f textarea{height:84px;padding:10px 12px;resize:vertical}
     .cp-f input::placeholder,.cp-f textarea::placeholder{color:#8a8a8a;font-size:11px}
-    .cp-f input:focus,.cp-f textarea:focus{outline:2px solid #c00000;outline-offset:1px}
-    .cp-f.err input{border-color:#c00000}
+    .cp-f select{cursor:pointer}
+    .cp-f input:focus,.cp-f select:focus,.cp-f textarea:focus{outline:2px solid #c00000;outline-offset:1px}
+    .cp-f.err input,.cp-f.err select{border-color:#c00000}
 
     .cp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
     .cp-chip{width:46px;padding:4px 0 3px;border:1px solid #333;border-radius:5px;background:#fff;font:inherit;text-align:center;cursor:pointer;line-height:1.2}
@@ -96,7 +97,14 @@
         <div class="cp-grid3">
             <div class="cp-f"><label>Rencana Rawat Jalan (kali kunjungan) <i>*</i></label><input type="number" min="1" max="12" name="rencana_kunjungan" value="{{ $hdr('rencana_kunjungan') }}" placeholder="misal 6" required></div>
             <div class="cp-f"><label>Interval Kunjungan</label><input type="text" name="interval_kunjungan" value="{{ $hdr('interval_kunjungan') }}" placeholder="Interval kunjungan"></div>
-            <div class="cp-f"><label>Satuan Interval</label><input type="text" name="satuan_interval" value="{{ $hdr('satuan_interval') }}" placeholder="Interval satuan"></div>
+            <div class="cp-f"><label>Satuan Interval</label>
+                <select name="satuan_interval">
+                    <option value="">Pilih satuan</option>
+                    @foreach (['Hari', 'Minggu', 'Bulan'] as $opsi)
+                        <option value="{{ $opsi }}" @selected(strcasecmp($hdr('satuan_interval'), $opsi) === 0)>{{ $opsi }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="cp-f"><label>Diagnosis <i>*</i></label><input type="text" name="diagnosis" value="{{ $hdr('diagnosis') }}" placeholder="Cari diagnosis" required></div>
             <div class="cp-f"><label>Kode ICD-10 <i>*</i></label><input type="text" name="kode_icd10" value="{{ $hdr('kode_icd10') }}" placeholder="Cari diagnosis" required></div>
         </div>
