@@ -139,9 +139,9 @@ body.sidebar-collapsed .main {
 
 
     .search-input:focus {
-        border-color: #0f766e;
+        border-color: #b40000;
 
-        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.08);
+        box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
     }
 
 
@@ -742,9 +742,9 @@ body.sidebar-collapsed .main {
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #0f766e;
+    border-color: #b40000;
 
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.08);
+    box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
 }
 
 
@@ -1155,10 +1155,9 @@ body.sidebar-collapsed .main {
 }
 
 .pasien-baru-body textarea:focus {
-    border-color: #0f766e;
+    border-color: #b40000;
 
-    box-shadow:
-        0 0 0 3px rgba(15, 118, 110, 0.08);
+    box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
 }
 
 

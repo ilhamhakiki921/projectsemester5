@@ -357,7 +357,8 @@
     }
 
     .modal-field input:focus {
-        border-color: #3b82f6;
+        border-color: #b40000;
+        box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
     }
 
     .modal-field input[readonly] {

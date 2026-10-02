@@ -58,6 +58,15 @@
 
         .flash { margin: 0 0 14px; padding: 12px 16px; border-radius: 8px; font-size: 12px; background: #e8f7ea; color: #14602a; border: 1px solid #b8e2c0; }
     </style>
+    <style>
+        /* Warna fokus kolom isian: merah (fallback untuk kolom yang belum punya aturan sendiri) */
+        :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]), select, textarea):focus {
+            outline: none;
+            border-color: #b40000;
+            box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
+        }
+    </style>
+
     @stack('styles')
 </head>
 <body>

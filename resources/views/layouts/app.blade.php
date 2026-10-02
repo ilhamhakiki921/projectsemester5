@@ -17,6 +17,15 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <style>
+        /* Warna fokus kolom isian: merah (fallback untuk kolom yang belum punya aturan sendiri) */
+        :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]), select, textarea):focus {
+            outline: none;
+            border-color: #b40000;
+            box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
+        }
+    </style>
+
     @yield('style')
     
 </head>

@@ -39,8 +39,8 @@
 }
 
 .phone-input:focus-within {
-    border-color: #2f6f6a;
-    box-shadow: 0 0 0 3px rgba(47, 111, 106, 0.10);
+    border-color: #b40000;
+    box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
 }
 
 .phone-prefix {
@@ -182,12 +182,12 @@
 }
 
 .form-group textarea:focus {
-    border-color: #555;
+    border-color: #b40000;
 }
 
     .form-group input:focus,
     .form-group select:focus {
-        border-color: #555;
+        border-color: #b40000;
     }
 
     .radio-wrapper {
