@@ -3,21 +3,13 @@
 namespace App\Http\Controllers;
  
 use App\Models\Pasien;
+use App\Models\Poli;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
  
 class PasienController extends Controller
 {
-    // Label tampilan untuk slug poli yang disimpan di kolom kunjungan.poli
-    protected $labelPoli = [
-        'umum'         => 'Poli Umum',
-        'gigi'         => 'Poli Gigi',
-        'dalam'        => 'Poli Dalam',
-        'mikrobiologi' => 'Mikrobiologi',
-        'fisioterapi'  => 'Fisioterapi',
-    ];
-
     protected $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
     // Halaman Data Pasien (tabel list pasien lama)
@@ -48,7 +40,7 @@ class PasienController extends Controller
                     : '-';
 
                 $p->poli_label = $kunjungan
-                    ? ($this->labelPoli[$kunjungan->poli] ?? ucfirst($kunjungan->poli))
+                    ? (Poli::daftar()[$kunjungan->poli] ?? ucfirst($kunjungan->poli))
                     : '-';
 
                 return $p;

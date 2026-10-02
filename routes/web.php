@@ -92,6 +92,7 @@ Route::middleware('web')->group(function () {
     Route::post('/pemeriksaan/{poli}/{no_rm}/asesmen', [PemeriksaanController::class, 'simpanAsesmen'])->name('pemeriksaan.asesmen.store');
     Route::get('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'soap'])->name('pemeriksaan.soap');
     Route::post('/pemeriksaan/{poli}/{no_rm}/soap', [PemeriksaanController::class, 'simpanSoap'])->name('pemeriksaan.soap.store');
+    Route::get('/pemeriksaan/{poli}/{no_rm}/informed-consent', [PemeriksaanController::class, 'informedConsent'])->name('pemeriksaan.informed-consent');
     Route::get('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'diagnosa'])->name('pemeriksaan.diagnosa');
     Route::post('/pemeriksaan/{poli}/{no_rm}/diagnosa', [PemeriksaanController::class, 'simpanDiagnosa'])->name('pemeriksaan.diagnosa.store');
     Route::get('/pemeriksaan/{poli}/{no_rm}/resep', [PemeriksaanController::class, 'resep'])->name('pemeriksaan.resep');

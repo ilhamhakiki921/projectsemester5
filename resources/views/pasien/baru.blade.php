@@ -654,20 +654,12 @@
                                     Pilih poli
                                 </option>
 
-                                <option value="umum"
-                                    {{ old('poli') == 'umum' ? 'selected' : '' }}>
-                                    Poli Umum
-                                </option>
-
-                                <option value="gigi"
-                                    {{ old('poli') == 'gigi' ? 'selected' : '' }}>
-                                    Poli Gigi
-                                </option>
-
-                                <option value="anak"
-                                    {{ old('poli') == 'anak' ? 'selected' : '' }}>
-                                    Poli Anak
-                                </option>
+                                @foreach (\App\Models\Poli::daftar(true) as $slugPoli => $namaPoliOpsi)
+                                    <option value="{{ $slugPoli }}"
+                                        {{ old('poli') == $slugPoli ? 'selected' : '' }}>
+                                        {{ $namaPoliOpsi }}
+                                    </option>
+                                @endforeach
 
                             </select>
 

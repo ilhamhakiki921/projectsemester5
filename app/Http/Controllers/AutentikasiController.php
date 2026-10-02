@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Poli;
 use App\Models\AutentikasiPemeriksaan;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
@@ -11,13 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class AutentikasiController extends Controller
 {
-    protected $daftarPoli = [
-        'umum'         => 'Poli Umum',
-        'gigi'         => 'Poli Gigi',
-        'dalam'        => 'Poli Dalam',
-        'mikrobiologi' => 'Mikrobiologi',
-        'fisioterapi'  => 'Fisioterapi',
-    ];
+    protected $daftarPoli = [];
+
+    public function __construct()
+    {
+        $this->daftarPoli = Poli::daftar();
+    }
 
     /** Pasien + kunjungan terbaru di poli ini (sama seperti tab Pemeriksaan lain). */
     protected function konteks($poli, $no_rm): array

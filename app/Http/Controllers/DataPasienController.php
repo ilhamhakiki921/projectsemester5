@@ -2,21 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Poli;
 use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class DataPasienController extends Controller
 {
-    // Label tampilan untuk slug poli yang disimpan di kolom kunjungan.poli
-    private const LABEL_POLI = [
-        'umum'         => 'Poli Umum',
-        'gigi'         => 'Poli Gigi',
-        'dalam'        => 'Poli Dalam',
-        'mikrobiologi' => 'Mikrobiologi',
-        'fisioterapi'  => 'Fisioterapi',
-    ];
-
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
@@ -37,7 +29,7 @@ class DataPasienController extends Controller
         return view('data-pasien.index', [
             'pasiens'   => $pasiens,
             'q'         => $q,
-            'labelPoli' => self::LABEL_POLI,
+            'labelPoli' => Poli::daftar(),
         ]);
     }
 

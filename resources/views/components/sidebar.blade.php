@@ -67,30 +67,15 @@
 
         <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}">
 
-            <a href="{{ route('pemeriksaan.index', 'umum') }}"
-               class="submenu-item {{ request()->routeIs('pemeriksaan.*') && (request()->route('poli') === 'umum' || request()->route('poli') === null) ? 'active' : '' }}">
-                Poli Umum
-            </a>
-
-            <a href="{{ route('pemeriksaan.index', 'gigi') }}"
-               class="submenu-item {{ request()->route('poli') === 'gigi' ? 'active' : '' }}">
-                Poli Gigi
-            </a>
-
-            <a href="{{ route('pemeriksaan.index', 'dalam') }}"
-               class="submenu-item {{ request()->route('poli') === 'dalam' ? 'active' : '' }}">
-                Poli Dalam
-            </a>
-
-            <a href="{{ route('pemeriksaan.index', 'mikrobiologi') }}"
-               class="submenu-item {{ request()->route('poli') === 'mikrobiologi' ? 'active' : '' }}">
-                Mikrobiologi
-            </a>
-
-            <a href="{{ route('pemeriksaan.index', 'fisioterapi') }}"
-               class="submenu-item {{ request()->route('poli') === 'fisioterapi' ? 'active' : '' }}">
-                Fisioterapi
-            </a>
+            @php
+                $poliSaatIni = request()->route('poli');
+            @endphp
+            @foreach (\App\Models\Poli::daftar(true) as $slugPoli => $namaPoliMenu)
+                <a href="{{ route('pemeriksaan.index', $slugPoli) }}"
+                   class="submenu-item {{ request()->routeIs('pemeriksaan.*') && ($poliSaatIni === $slugPoli || ($slugPoli === 'umum' && $poliSaatIni === null)) ? 'active' : '' }}">
+                    {{ $namaPoliMenu }}
+                </a>
+            @endforeach
 
         </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Poli;
 use App\Models\Kunjungan;
 use App\Models\Obat;
 use App\Models\Pasien;
@@ -14,13 +15,12 @@ class PemeriksaanController extends Controller
     /**
      * Daftar poli yang tersedia.
      */
-    protected $daftarPoli = [
-        'umum'         => 'Poli Umum',
-        'gigi'         => 'Poli Gigi',
-        'dalam'        => 'Poli Dalam',
-        'mikrobiologi' => 'Mikrobiologi',
-        'fisioterapi'  => 'Fisioterapi',
-    ];
+    protected $daftarPoli = [];
+
+    public function __construct()
+    {
+        $this->daftarPoli = Poli::daftar();
+    }
 
     protected function pesanValidasi()
     {
@@ -61,7 +61,8 @@ class PemeriksaanController extends Controller
     public function index(Request $request, $poli = 'umum')
     {
         if (! array_key_exists($poli, $this->daftarPoli)) {
-            $poli = 'umum';
+            $poli = array_key_exists('umum', $this->daftarPoli) ? 'umum' : array_key_first($this->daftarPoli);
+            abort_if($poli === null, 404, 'Belum ada poli. Tambahkan dulu di Data Poli.');
         }
 
         $antrian = Kunjungan::with('pasien')
@@ -186,7 +187,11 @@ class PemeriksaanController extends Controller
             'objective'  => 'required|string',
             'assessment' => 'required|string',
             'plan'       => 'required|string',
+            'butuh_informed_consent' => 'nullable|in:ya,tidak',
         ], $this->pesanValidasi());
+
+        $butuhIc = ($data['butuh_informed_consent'] ?? 'tidak') === 'ya';
+        $data['butuh_informed_consent'] = $butuhIc;
 
         RekamMedis::updateOrCreate(
             ['kunjungan_id' => $kunjungan->id],
@@ -196,10 +201,44 @@ class PemeriksaanController extends Controller
         session()->flash('popup', [
             'type'    => 'success',
             'title'   => 'SOAP Tersimpan!',
-            'message' => 'Data SOAP berhasil masuk ke rekam medis pasien. Lanjutkan ke tab Diagnosa.',
+            'message' => $butuhIc
+                ? 'Data SOAP berhasil masuk ke rekam medis pasien. Lanjutkan ke tab Informed Consent.'
+                : 'Data SOAP berhasil masuk ke rekam medis pasien. Lanjutkan ke tab Diagnosa.',
         ]);
 
-        return redirect()->route('pemeriksaan.diagnosa', [$poli, $no_rm]);
+        return $butuhIc
+            ? redirect()->route('pemeriksaan.informed-consent', [$poli, $no_rm])
+            : redirect()->route('pemeriksaan.diagnosa', [$poli, $no_rm]);
+    }
+
+    // ==========================================================
+    // INFORMED CONSENT (tab muncul di antara SOAP dan Diagnosa
+    // kalau di halaman SOAP dipilih "Ya")
+    // ==========================================================
+
+    public function informedConsent($poli, $no_rm)
+    {
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+        $rekam     = $kunjungan->rekamMedis;
+
+        if (! $rekam || ! $rekam->subjective || ! $rekam->butuh_informed_consent) {
+            session()->flash('popup', [
+                'type'    => 'warning',
+                'title'   => 'Informed Consent Belum Aktif',
+                'message' => 'Pilih "Ya" pada pertanyaan Informed Consent di halaman SOAP, lalu simpan SOAP terlebih dahulu.',
+            ]);
+
+            return redirect()->route('pemeriksaan.soap', [$poli, $no_rm]);
+        }
+
+        return view('pemeriksaan.informed-consent', [
+            'poli'      => $poli,
+            'rm'        => $no_rm,
+            'namaPoli'  => $this->daftarPoli[$poli],
+            'kunjungan' => $kunjungan,
+            'pasien'    => $kunjungan->pasien,
+            'rekam'     => $rekam,
+        ]);
     }
 
     // ==========================================================

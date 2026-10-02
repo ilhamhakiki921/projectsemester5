@@ -3047,11 +3047,9 @@ body.sidebar-collapsed .main {
 
                     <select id="baruPoli" required>
                         <option value="" selected disabled>Pilih poli tujuan</option>
-                        <option>Poli Umum</option>
-                        <option>Poli Dalam</option>
-                        <option>Poli Gigi</option>
-                        <option>Fisioterapi</option>
-                        <option>Mikrobiologi</option>
+                        @foreach (\App\Models\Poli::daftar(true) as $namaPoliOpsi)
+                            <option>{{ $namaPoliOpsi }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -3457,25 +3455,11 @@ body.sidebar-collapsed .main {
                             Pilih poli tujuan
                         </option>
 
-                        <option value="Poli Umum">
-                            Poli Umum
-                        </option>
-
-                        <option value="Poli Dalam">
-                            Poli Dalam
-                        </option>
-
-                        <option value="Poli Gigi">
-                            Poli Gigi
-                        </option>
-
-                        <option value="Fisioterapi">
-                            Fisioterapi
-                        </option>
-
-                        <option value="Mikrobiologi">
-                            Mikrobiologi
-                        </option>
+                        @foreach (\App\Models\Poli::daftar(true) as $namaPoliOpsi)
+                            <option value="{{ $namaPoliOpsi }}">
+                                {{ $namaPoliOpsi }}
+                            </option>
+                        @endforeach
 
                     </select>
 
@@ -5083,13 +5067,8 @@ function tambahBarisPasienBaru(d) {
 // terbuka, dan otomatis lenyap begitu tab/browser ditutup.
 
 function poliKeSlug(poliText) {
-    const peta = {
-        'Poli Umum':    'umum',
-        'Poli Gigi':    'gigi',
-        'Poli Dalam':   'dalam',
-        'Mikrobiologi': 'mikrobiologi',
-        'Fisioterapi':  'fisioterapi'
-    };
+    // nama poli -> slug, diambil dari Data Poli (otomatis ikut poli baru)
+    const peta = @json(array_flip(\App\Models\Poli::daftar()));
     return peta[poliText] || 'umum';
 }
 

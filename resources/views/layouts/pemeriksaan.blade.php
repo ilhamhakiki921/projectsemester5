@@ -16,6 +16,11 @@
         ['Rujukan', route('rujukan.index', [$poli, $noRm])],
         ['Autentikasi', route('autentikasi.index', [$poli, $noRm])],
     ];
+
+    // Tab Informed Consent muncul di antara SOAP dan Diagnosa kalau di halaman SOAP dipilih "Ya"
+    if (\App\Models\RekamMedis::butuhInformedConsent($poli, $noRm)) {
+        array_splice($tabs, 2, 0, [['Informed Consent', route('pemeriksaan.informed-consent', [$poli, $noRm])]]);
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="id" translate="no">
@@ -81,13 +86,6 @@
         <section class="content">
 
             <x-popup-alert />
-
-            @if ($backLabel !== 'Kembali ke Antrian')
-            <a href="{{ $backUrl }}" class="back-link">
-                <i class="bi bi-arrow-left"></i>
-                {{ $backLabel }}
-            </a>
-            @endif
 
             <div class="identity-bar">
                 <div class="identity-name-block">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Poli;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
 use App\Models\RekamMedis;
@@ -19,14 +20,12 @@ class DashboardController extends Controller
      * dan label pada grafik "Kunjungan Pasien Per Poli".
      * Key harus sama persis dengan nilai kolom `kunjungan.poli`.
      */
-    protected $daftarPoli = [
-        'umum'         => 'Poli Umum',
-        'gigi'         => 'Poli Gigi',
-        'anak'         => 'Poli Anak',
-        'dalam'        => 'Poli Dalam',
-        'mikrobiologi' => 'Mikrobiologi',
-        'fisioterapi'  => 'Fisioterapi',
-    ];
+    protected $daftarPoli = [];
+
+    public function __construct()
+    {
+        $this->daftarPoli = Poli::daftar();
+    }
 
     /**
      * Nama bulan untuk dropdown "Periode" pada tabel 10 Besar Penyakit.

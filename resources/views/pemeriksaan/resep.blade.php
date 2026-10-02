@@ -453,11 +453,6 @@
 
             <x-popup-alert />
 
-            <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien->no_rm]) }}" class="back-link">
-                <i class="bi bi-arrow-left"></i>
-                Kembali ke Diagnosa
-            </a>
-
             <div class="identity-bar">
 
                 <div class="identity-name-block">
@@ -495,6 +490,9 @@
             <div class="tabs">
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Anamnesa</a>
                 <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="tab-item">SOAP</a>
+                @if (\App\Models\RekamMedis::butuhInformedConsent($poli, $pasien->no_rm))
+                    <a href="{{ route('pemeriksaan.informed-consent', [$poli, $pasien->no_rm]) }}" class="tab-item">Informed Consent</a>
+                @endif
                 <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien->no_rm]) }}" class="tab-item">Diagnosa</a>
                 <span class="tab-item active">Resep</span>
                 <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>

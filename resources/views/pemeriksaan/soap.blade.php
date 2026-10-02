@@ -135,6 +135,23 @@
         background: transparent;
     }
 
+    .tab-item[hidden] { display: none; }
+
+    /* Pilihan Informed Consent */
+    .field .ic-tanya { margin: 0 0 8px; font-size: 11px; color: #333; }
+    .field .ic-pilihan { display: flex; gap: 10px; }
+    .field label.ic-opt { display: inline-block; margin: 0; cursor: pointer; }
+    .ic-opt input { position: absolute; opacity: 0; pointer-events: none; }
+    .ic-opt span {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 72px; height: 34px; padding: 0 18px;
+        border: 1px solid #bdbdbd; border-radius: 6px; background: #fff;
+        font-size: 11px; font-weight: 600; color: #222;
+    }
+    .ic-opt input:checked + span { border-color: #c00000; background: #fdecec; color: #c00000; box-shadow: 0 0 0 1px #c00000; }
+    .ic-opt input:focus-visible + span { outline: 2px solid #c00000; outline-offset: 2px; }
+    .field .ic-catatan { display: block; margin-top: 8px; font-size: 9.5px; color: #777; }
+
     .tab-item.active {
         background: #7a0000;
         color: #ffffff;
@@ -255,11 +272,6 @@
 
             <x-popup-alert />
 
-            <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="back-link">
-                <i class="bi bi-arrow-left"></i>
-                Kembali ke Asesmen
-            </a>
-
             <div class="identity-bar">
 
                 <div class="identity-name-block">
@@ -297,6 +309,8 @@
             <div class="tabs">
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Anamnesa</a>
                 <span class="tab-item active">SOAP</span>
+                <a href="{{ route('pemeriksaan.informed-consent', [$poli, $pasien->no_rm]) }}" class="tab-item" id="tabInformedConsent"
+                   @unless (\App\Models\RekamMedis::butuhInformedConsent($poli, $pasien->no_rm)) hidden @endunless>Informed Consent</a>
                 <span class="tab-item disabled">Diagnosa</span>
                 <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
                 <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
@@ -349,6 +363,27 @@
                         </div>
                     </div>
 
+                    @php
+                        $icAwal = old('butuh_informed_consent', optional($rekam)->butuh_informed_consent ? 'ya' : 'tidak');
+                    @endphp
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Informed Consent</label>
+                            <p class="ic-tanya">Apakah pasien membutuhkan Informed Consent?</p>
+                            <div class="ic-pilihan">
+                                <label class="ic-opt">
+                                    <input type="radio" name="butuh_informed_consent" value="ya" @checked($icAwal === 'ya')>
+                                    <span>Ya</span>
+                                </label>
+                                <label class="ic-opt">
+                                    <input type="radio" name="butuh_informed_consent" value="tidak" @checked($icAwal !== 'ya')>
+                                    <span>Tidak</span>
+                                </label>
+                            </div>
+                            <small class="ic-catatan">Pilih "Ya" untuk menampilkan tab Informed Consent di antara SOAP dan Diagnosa.</small>
+                        </div>
+                    </div>
+
                     <div class="form-footer">
                         <button type="submit" class="btn-simpan">
                             Simpan SOAP
@@ -372,6 +407,22 @@
         });
         field.addEventListener('input', function () {
             field.setCustomValidity('');
+        });
+    });
+
+    // Pilih "Ya" -> tab Informed Consent langsung muncul (tersimpan permanen setelah Simpan SOAP)
+    document.querySelectorAll('input[name="butuh_informed_consent"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            var tab = document.getElementById('tabInformedConsent');
+            if (! tab) return;
+
+            var tampil = (this.value === 'ya');
+            tab.hidden = ! tampil;
+
+            // Klik "Ya" -> gulir ke atas supaya tab Informed Consent yang baru muncul terlihat
+            if (tampil) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         });
     });
 

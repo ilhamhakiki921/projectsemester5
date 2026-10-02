@@ -807,17 +807,11 @@ body {
                                     Pilih poli
                                 </option>
 
-                                <option value="umum">
-                                    Poli Umum
-                                </option>
-
-                                <option value="gigi">
-                                    Poli Gigi
-                                </option>
-
-                                <option value="anak">
-                                    Poli Anak
-                                </option>
+                                @foreach (\App\Models\Poli::daftar(true) as $slugPoli => $namaPoliOpsi)
+                                    <option value="{{ $slugPoli }}">
+                                        {{ $namaPoliOpsi }}
+                                    </option>
+                                @endforeach
 
                             </select>
 
