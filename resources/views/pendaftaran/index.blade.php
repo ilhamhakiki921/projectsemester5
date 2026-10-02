@@ -527,7 +527,9 @@ body.sidebar-collapsed .main {
     align-items: center;
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.48);
+    background: rgba(17, 24, 39, .55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 
     z-index: 9999;
 
@@ -875,7 +877,9 @@ body.sidebar-collapsed .main {
 
     padding: 20px;
 
-    background: rgba(0, 0, 0, 0.48);
+    background: rgba(17, 24, 39, .55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 
     z-index: 10000;
 }
@@ -1838,7 +1842,9 @@ body.sidebar-collapsed .main {
 
     padding: 20px;
 
-    background: rgba(0, 0, 0, 0.48);
+    background: rgba(17, 24, 39, .55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 
     z-index: 10050;
 }
