@@ -222,8 +222,8 @@
     }
     .btn-m-cancel { background: #fff; border-color: #555; color: #111; }
     .btn-m-cancel:hover { background: #f3f4f6; }
-    .btn-m-save { background: #12c933; color: #fff; }
-    .btn-m-save:hover { background: #0ea828; }
+    .btn-m-save { background: #16a34a; color: #fff; }
+    .btn-m-save:hover { background: #128a3e; }
     .btn-m-danger { background: #d10000; color: #fff; }
     .btn-m-danger:hover { background: #a80000; }
 

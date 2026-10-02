@@ -164,7 +164,7 @@
     .form-card {
         background: #ffffff;
 
-        border: 2px solid #3b82f6;
+        border: 2px solid #b40000;
         border-radius: 10px;
 
         padding: 24px 26px;

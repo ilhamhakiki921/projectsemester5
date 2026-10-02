@@ -348,8 +348,8 @@
     #modalForm .m-foot { gap: 22px; padding: 30px 40px 28px; }
     #modalForm .btn-m { height: 32px; min-width: 130px; padding: 0 18px; border-radius: 6px; font-size: 12px; font-weight: 600; }
     #modalForm .btn-m-cancel { border-color: #555; color: #111; }
-    #modalForm .btn-m-save { background: #12c933; color: #fff; }
-    #modalForm .btn-m-save:hover { background: #0ea828; }
+    #modalForm .btn-m-save { background: #16a34a; color: #fff; }
+    #modalForm .btn-m-save:hover { background: #128a3e; }
 
     @media (max-width: 640px) {
         #modalForm .f-grid { grid-template-columns: 1fr; row-gap: 12px; }

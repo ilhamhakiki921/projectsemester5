@@ -836,6 +836,16 @@ body.sidebar-collapsed .main {
 }
 
 
+/* Tombol Simpan: hijau */
+.btn-daftarkan.btn-simpan-hijau:not(:disabled) {
+    background: #16a34a;
+}
+
+.btn-daftarkan.btn-simpan-hijau:not(:disabled):hover {
+    background: #128a3e;
+}
+
+
 /* =========================
    RESPONSIVE MODAL
 ========================== */
@@ -1102,7 +1112,7 @@ body.sidebar-collapsed .main {
     font-size: 15px;
     font-weight: 600;
 
-    color: #0f766e;
+    color: #111111;
 }
 
 
@@ -2205,11 +2215,11 @@ body.sidebar-collapsed .main {
 }
 
 .btn-dl-simpan {
-    background: #3fc54f;
+    background: #16a34a;
 }
 
 .btn-dl-simpan:hover {
-    background: #2fa43e;
+    background: #128a3e;
 }
 
 @media (max-width: 700px) {
@@ -3116,7 +3126,7 @@ body.sidebar-collapsed .main {
 
     <button
         type="button"
-        class="btn-daftarkan"
+        class="btn-daftarkan btn-simpan-hijau"
         onclick="lanjutKeInformasiKunjungan()"
     >
         Simpan
@@ -3692,7 +3702,7 @@ body.sidebar-collapsed .main {
 
     <button
         type="button"
-        class="btn-daftarkan"
+        class="btn-daftarkan btn-simpan-hijau"
         onclick="simpanEdit()"
     >
         Simpan Perubahan

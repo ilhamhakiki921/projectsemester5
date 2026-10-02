@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-masuk">Simpan Password</button>
+        <button type="submit" class="btn-masuk" style="background: #16a34a;">Simpan Password</button>
     </form>
 
     <div class="back-link">

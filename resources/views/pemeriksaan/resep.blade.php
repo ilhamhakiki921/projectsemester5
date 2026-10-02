@@ -151,7 +151,7 @@
     .resep-card {
         background: #ffffff;
 
-        border: 2px solid #3b82f6;
+        border: 2px solid #b40000;
         border-radius: 10px;
 
         padding: 20px 22px;
@@ -519,7 +519,6 @@
                                 <th>No</th>
                                 <th>ID Obat</th>
                                 <th>Nama Obat</th>
-                                <th>ID Resep</th>
                                 <th>Sediaan</th>
                                 <th>Jumlah Obat</th>
                                 <th>Dosis Obat</th>
@@ -533,7 +532,6 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ str_pad($item->obat_id, 3, '0', STR_PAD_LEFT) }}</td>
                                     <td>{{ $item->obat->nama_obat }}</td>
-                                    <td>{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}</td>
                                     <td>{{ $item->obat->sediaan }}</td>
                                     <td>{{ $item->jumlah_obat }}</td>
                                     <td>{{ $item->dosis_obat }}</td>
@@ -542,7 +540,7 @@
                                 </tr>
                             @empty
                                 <tr class="empty-row">
-                                    <td colspan="9">Belum ada resep obat untuk pasien ini. Klik "+ Tambah Obat" untuk menambahkan.</td>
+                                    <td colspan="8">Belum ada resep obat untuk pasien ini. Klik "+ Tambah Obat" untuk menambahkan.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -606,17 +604,6 @@
                 </div>
             </div>
 
-            <div class="modal-field-row">
-                <div class="modal-field">
-                    <label>ID Obat</label>
-                    <input type="text" id="displayIdObat" placeholder="Otomatis setelah disimpan" readonly>
-                </div>
-                <div class="modal-field">
-                    <label>ID Resep</label>
-                    <input type="text" value="Otomatis setelah disimpan" readonly>
-                </div>
-            </div>
-
             <div class="modal-field-group">
                 <div class="modal-field">
                     <label>Sediaan<span class="required-mark">*</span></label>
@@ -664,14 +651,13 @@
     var daftarObat = @json($daftarObatJson);
 
     var inputNama      = document.getElementById('inputNamaObat');
-    var displayId      = document.getElementById('displayIdObat');
     var inputSediaan   = document.getElementById('displaySediaan');
 
     var inputDosis = document.getElementById('inputDosis');
 
     // Nama obat ditulis TANPA dosis; dosis ada di kolom sendiri. Kalau nama (+ dosis)
-    // yang diketik sudah ada di Data Obat, ID Obat ditampilkan dan Sediaan / Dosis
-    // diisi otomatis bila masih kosong.
+    // yang diketik sudah ada di Data Obat, Sediaan / Dosis diisi otomatis
+    // bila masih kosong.
     function cocokkanObat() {
         var nama  = inputNama.value.trim().toLowerCase();
         var dosis = inputDosis.value.trim().toLowerCase().replace(/\s+/g, '');
@@ -688,12 +674,9 @@
         }
 
         if (cocok) {
-            displayId.value = String(cocok.id).padStart(3, '0');
             if (inputSediaan.value.trim() === '') {
                 inputSediaan.value = cocok.sediaan;
             }
-        } else {
-            displayId.value = '';
         }
     }
 

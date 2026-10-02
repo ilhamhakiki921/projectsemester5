@@ -5,7 +5,7 @@
 ])
 
 @php
-    // Struktur form: kolom => kotak => [sub-judul (atau null), daftar pemeriksaan]
+    // Struktur form: kolom => kotak (dropdown) => [sub-judul (atau null), daftar pemeriksaan]
     $kolom = [
         [
             ['Kimia Klinik', [
@@ -15,10 +15,10 @@
                 ['Faal Ginjal', ['Serum Creatinin', 'BUN', 'Uric Acid']],
                 ['Penanda Tumor', ['CEA', 'Ca 125', 'Ca 15-3', 'AFP', 'Beta HCG', 'Ca 19-9']],
             ]],
-        ],
-        [
             ['Elektrolit', [[null, ['Natrium', 'Kalium', 'Chlorida', 'Calcium']]]],
             ['Hematologi', [[null, ['Darah Lengkap', 'LED / BBS', 'Hb', 'Eritrosit', 'Leukosit', 'Hitung Jenis', 'Hapusan darah tepi', 'Trombosit', 'Hematokrit / PCV', 'Malaria', 'Golongan darah + Rhesus', 'Waktu pendarahan', 'Waktu pembekuan']]]],
+        ],
+        [
             ['Faeces', [[null, ['Faeces lengkap']]]],
             ['Tiroid', [[null, ['T3', 'T4', 'TSHs', 'FT4']]]],
             ['TORCH', [[null, ['Toxoplasma', 'Rubella', 'Cyto Megalo Virus (CMV)', 'Herpes Simplex']]]],
@@ -52,7 +52,22 @@
     .pj-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
     .pj-col{display:flex;flex-direction:column;gap:16px}
     .pj-box{border:1px solid #cfcfcf;border-radius:8px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.18);overflow:hidden}
-    .pj-box > h4{margin:0;padding:10px;text-align:center;color:#fff;font-size:12px;font-weight:600;border-radius:8px;background:linear-gradient(90deg,#a11a1e,#5c0a0c)}
+    .pj-box > h4{margin:0;font-size:12px;font-weight:600;border-radius:8px;background:linear-gradient(90deg,#a11a1e,#5c0a0c)}
+    .pj-box.open > h4{border-radius:8px 8px 0 0}
+
+    /* Judul kategori = tombol dropdown */
+    .pj-toggle{position:relative;display:flex;align-items:center;justify-content:center;width:100%;padding:11px 44px;border:0;background:transparent;color:#fff;font:inherit;font-size:12px;font-weight:600;cursor:pointer;text-align:center}
+    .pj-toggle:focus-visible{outline:2px solid #fff;outline-offset:-4px;border-radius:8px}
+    .pj-meta{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px}
+    .pj-count{display:inline-block;background:#fff;color:#a11a1e;border-radius:10px;padding:1px 8px;font-size:9.5px;font-weight:700;line-height:1.5}
+    .pj-count[hidden]{display:none}
+    .pj-chev{display:inline-block;width:7px;height:7px;margin-top:-3px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg);transition:transform .25s,margin .25s}
+    .pj-box.open .pj-chev{transform:rotate(225deg);margin-top:3px}
+
+    /* Isi dropdown: membuka/menutup dengan halus, kotak di bawahnya otomatis bergeser */
+    .pj-body{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .25s ease,visibility 0s .25s}
+    .pj-box.open .pj-body{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .25s ease,visibility 0s}
+    .pj-clip{overflow:hidden;min-height:0}
     .pj-in{padding:10px 14px 14px}
     .pj-grp{font-size:9.5px;font-weight:700;color:#111;margin:8px 0 4px}
     .pj-grp:first-child{margin-top:0}
@@ -105,19 +120,31 @@
                 <div class="pj-col">
                     @foreach ($kotakKotak as [$judul, $grupGrup])
                         <div class="pj-box">
-                            <h4>{{ $judul }}</h4>
-                            <div class="pj-in">
-                                @foreach ($grupGrup as [$sub, $items])
-                                    @if ($sub)
-                                        <div class="pj-grp">{{ $sub }}</div>
-                                    @endif
-                                    @foreach ($items as $item)
-                                        <label class="pj-ck">
-                                            <input type="checkbox" name="pemeriksaan[]" value="{{ $item }}">
-                                            {{ $item }}
-                                        </label>
-                                    @endforeach
-                                @endforeach
+                            <h4>
+                                <button type="button" class="pj-toggle" aria-expanded="false">
+                                    {{ $judul }}
+                                    <span class="pj-meta">
+                                        <span class="pj-count" hidden></span>
+                                        <span class="pj-chev"></span>
+                                    </span>
+                                </button>
+                            </h4>
+                            <div class="pj-body">
+                                <div class="pj-clip">
+                                    <div class="pj-in">
+                                        @foreach ($grupGrup as [$sub, $items])
+                                            @if ($sub)
+                                                <div class="pj-grp">{{ $sub }}</div>
+                                            @endif
+                                            @foreach ($items as $item)
+                                                <label class="pj-ck">
+                                                    <input type="checkbox" name="pemeriksaan[]" value="{{ $item }}">
+                                                    {{ $item }}
+                                                </label>
+                                            @endforeach
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -150,6 +177,7 @@
     const form  = document.getElementById('pjForm');
     const btn   = document.getElementById('pjBtn');
     const toastEl = document.getElementById('pjToast');
+    const boxes = form.querySelectorAll('.pj-box');
     const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
     function toast(msg, err) {
@@ -158,6 +186,22 @@
         clearTimeout(toast.t);
         toast.t = setTimeout(() => toastEl.classList.remove('show'), 2400);
     }
+
+    // Dropdown kategori: buka/tutup, dan tampilkan jumlah pemeriksaan yang dicentang
+    function hitung(box) {
+        const n = box.querySelectorAll('input[type=checkbox]:checked').length;
+        const c = box.querySelector('.pj-count');
+        c.textContent = n + ' dipilih';
+        c.hidden = !n;
+    }
+    function aturBuka(box, buka) {
+        box.classList.toggle('open', buka);
+        box.querySelector('.pj-toggle').setAttribute('aria-expanded', buka ? 'true' : 'false');
+    }
+    boxes.forEach(box => {
+        box.querySelector('.pj-toggle').addEventListener('click', () => aturBuka(box, !box.classList.contains('open')));
+        box.addEventListener('change', () => hitung(box));
+    });
 
     function render() {
         if (!data.length) {
@@ -210,6 +254,7 @@
             data.push(await res.json());
             render();
             form.reset();
+            boxes.forEach(box => { hitung(box); aturBuka(box, false); });
             toast('Permintaan laboratorium berhasil dibuat');
         } catch (_) {
             toast('Gagal menyimpan, coba lagi', true);

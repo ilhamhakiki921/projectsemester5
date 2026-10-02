@@ -48,6 +48,11 @@
     .rj-btn{border:0;border-radius:8px;padding:10px 28px;font:inherit;font-size:11px;font-weight:600;color:#fff;background:#1717d6;cursor:pointer}
     .rj-btn:hover{filter:brightness(.9)}
     .rj-btn:disabled{opacity:.6;cursor:wait}
+    .rj-act{gap:10px}
+    .rj-btn.simpan{background:#16a34a}
+    .rj-btn.simpan:hover{background:#128a3e;filter:none}
+    .rj-btn.hapus{background:#fff;color:#b40000;border:1px solid #b40000}
+    .rj-btn.hapus:hover{background:#b40000;color:#fff;filter:none}
 
     .rj-toast{position:fixed;top:18px;right:18px;z-index:9999;background:#1d1d1d;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;border-left:4px solid #12c400;box-shadow:0 4px 14px rgba(0,0,0,.3);opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none;max-width:340px}
     .rj-toast.err{border-color:#ff5a5f}
@@ -143,6 +148,8 @@
         </div>
 
         <div class="rj-act">
+            <button type="button" class="rj-btn hapus" id="rjHapus">Hapus</button>
+            <button type="button" class="rj-btn simpan" id="rjSimpan">Simpan</button>
             <button type="submit" class="rj-btn" id="rjBtn">Cetak Rujukan</button>
         </div>
     </form>
@@ -159,7 +166,8 @@
     let data       = @json($riwayat);
 
     const form = document.getElementById('rjForm'), rows = document.getElementById('rjRows'),
-          btn = document.getElementById('rjBtn'), toastEl = document.getElementById('rjToast');
+          btn = document.getElementById('rjBtn'), toastEl = document.getElementById('rjToast'),
+          btnSimpan = document.getElementById('rjSimpan'), btnHapus = document.getElementById('rjHapus');
     const blok = { Internal: document.getElementById('blokInternal'), Eksternal: document.getElementById('blokEksternal') };
     const opt  = { Internal: document.getElementById('optInternal'),  Eksternal: document.getElementById('optEksternal') };
     const esc  = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -214,10 +222,19 @@
         } catch (_) { toast('Gagal menghapus', true); }
     });
 
-    form.addEventListener('submit', async e => {
-        e.preventDefault();
-        btn.disabled = true;
-        const jendela = window.open('', '_blank');   // dibuka sekarang supaya tidak diblokir popup-blocker
+    function kunciTombol(kunci) { btn.disabled = btnSimpan.disabled = btnHapus.disabled = kunci; }
+
+    // Kosongkan form: semua isian kembali ke kondisi awal (resume medis terisi lagi dari data pemeriksaan)
+    function kosongkanForm() {
+        form.reset();
+        pilihJenis(form.querySelector('input[name="jenis"]:checked').value);
+    }
+
+    // cetak = true  -> simpan lalu buka surat rujukan untuk dicetak (tombol "Cetak Rujukan")
+    // cetak = false -> hanya simpan, datanya masuk ke tabel di atas (tombol "Simpan")
+    async function kirim(cetak) {
+        kunciTombol(true);
+        const jendela = cetak ? window.open('', '_blank') : null;   // dibuka sekarang supaya tidak diblokir popup-blocker
         try {
             const res = await fetch(storeUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, body: new FormData(form) });
             if (res.status === 422) {
@@ -229,14 +246,25 @@
             if (!res.ok) throw new Error();
             const saved = await res.json();
             data.push(saved); render();
-            if (jendela) jendela.location = saved.cetak_url;
-            else toast('Rujukan tersimpan. Klik "Cetak" di tabel untuk mencetak.');
-            if (saved.jenis === 'Internal') toast('Rujukan internal dibuat, pasien masuk antrian poli tujuan');
+            if (cetak) {
+                if (jendela) jendela.location = saved.cetak_url;
+                else toast('Rujukan tersimpan. Klik "Cetak" di tabel untuk mencetak.');
+                if (saved.jenis === 'Internal') toast('Rujukan internal dibuat, pasien masuk antrian poli tujuan');
+            } else {
+                kosongkanForm();
+                toast(saved.jenis === 'Internal'
+                    ? 'Rujukan internal tersimpan, pasien masuk antrian poli tujuan'
+                    : 'Surat rujukan tersimpan');
+            }
         } catch (_) {
             if (jendela) jendela.close();
             toast('Gagal menyimpan, coba lagi', true);
-        } finally { btn.disabled = false; }
-    });
+        } finally { kunciTombol(false); }
+    }
+
+    form.addEventListener('submit', e => { e.preventDefault(); kirim(true); });
+    btnSimpan.addEventListener('click', () => kirim(false));
+    btnHapus.addEventListener('click', () => { kosongkanForm(); toast('Isian form dikosongkan'); });
 
     render();
 })();

@@ -303,7 +303,7 @@ body {
     border: none;
     border-radius: 8px;
 
-    background: #b30000;
+    background: #16a34a;
     color: #ffffff;
 
     font-family: 'Poppins', sans-serif;
@@ -316,7 +316,7 @@ body {
 }
 
 .btn-simpan:hover {
-    background: #8a0000;
+    background: #128a3e;
 }
 
 .status-badge {

@@ -2,7 +2,7 @@
 
 @push('styles')
 <style>
-    .cp-card{border:2px solid #3b82f6;border-radius:10px;padding:20px 22px 24px;margin-bottom:18px;background:#fff}
+    .cp-card{border:2px solid #b40000;border-radius:10px;padding:20px 22px 24px;margin-bottom:18px;background:#fff}
     .cp-h{margin:0 0 4px;font-size:15px;font-weight:700;color:#ed1111}
     .cp-sub{margin:0 0 16px;font-size:13px;color:#222}
     .cp-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 22px;margin-bottom:16px}
@@ -46,7 +46,7 @@
 
     .cp-save h3{margin:0 0 10px;font-size:18px;font-weight:700}
     .cp-btn{border:0;border-radius:4px;padding:7px 14px;font:inherit;font-size:10px;font-weight:700;color:#fff;cursor:pointer}
-    .cp-btn.simpan{background:#00b512}
+    .cp-btn.simpan{background:#16a34a}
     .cp-btn.reset{background:#c00000}
     .cp-btn:hover{filter:brightness(.92)}
 
