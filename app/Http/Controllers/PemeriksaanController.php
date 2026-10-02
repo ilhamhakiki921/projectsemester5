@@ -190,8 +190,11 @@ class PemeriksaanController extends Controller
             'butuh_informed_consent' => 'nullable|in:ya,tidak',
         ], $this->pesanValidasi());
 
-        $butuhIc = ($data['butuh_informed_consent'] ?? 'tidak') === 'ya';
+        // Informed Consent hanya ada di Poli Gigi
+        $butuhIc = RekamMedis::poliPunyaInformedConsent($poli)
+            && ($data['butuh_informed_consent'] ?? 'tidak') === 'ya';
         $data['butuh_informed_consent'] = $butuhIc;
+        RekamMedis::tandaiSession($kunjungan->id, $butuhIc);
 
         RekamMedis::updateOrCreate(
             ['kunjungan_id' => $kunjungan->id],
@@ -216,28 +219,58 @@ class PemeriksaanController extends Controller
     // kalau di halaman SOAP dipilih "Ya")
     // ==========================================================
 
+    /**
+     * Dipanggil otomatis (AJAX) saat pilihan Ya/Tidak Informed Consent di halaman SOAP diklik,
+     * supaya tab Informed Consent langsung bisa dibuka tanpa menunggu tombol Simpan SOAP.
+     */
+    public function setStatusInformedConsent(Request $request, $poli, $no_rm)
+    {
+        abort_unless(RekamMedis::poliPunyaInformedConsent($poli), 404);
+
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        $data = $request->validate([
+            'butuh_informed_consent' => 'required|in:ya,tidak',
+        ]);
+
+        $butuh = $data['butuh_informed_consent'] === 'ya';
+
+        // Simpan di session dulu supaya tab langsung bisa dipakai
+        RekamMedis::tandaiSession($kunjungan->id, $butuh);
+
+        // Simpan permanen di database (dilewati kalau kolom belum ada)
+        $tersimpan = true;
+        try {
+            RekamMedis::updateOrCreate(
+                ['kunjungan_id' => $kunjungan->id],
+                ['butuh_informed_consent' => $butuh]
+            );
+        } catch (\Throwable $e) {
+            $tersimpan = false;
+            report($e);
+        }
+
+        return response()->json(['ok' => true, 'tersimpan_db' => $tersimpan]);
+    }
+
     public function informedConsent($poli, $no_rm)
     {
-        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
-        $rekam     = $kunjungan->rekamMedis;
-
-        if (! $rekam || ! $rekam->subjective || ! $rekam->butuh_informed_consent) {
-            session()->flash('popup', [
-                'type'    => 'warning',
-                'title'   => 'Informed Consent Belum Aktif',
-                'message' => 'Pilih "Ya" pada pertanyaan Informed Consent di halaman SOAP, lalu simpan SOAP terlebih dahulu.',
-            ]);
-
+        // Informed Consent baru ada di Poli Gigi; poli lain kembali ke SOAP
+        if (! RekamMedis::poliPunyaInformedConsent($poli)) {
             return redirect()->route('pemeriksaan.soap', [$poli, $no_rm]);
         }
 
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        // Tab Informed Consent hanya tampil kalau di SOAP dipilih "Ya", jadi halaman ini
+        // selalu boleh dibuka dari tab tersebut (tidak lagi bergantung pada isi database).
         return view('pemeriksaan.informed-consent', [
             'poli'      => $poli,
             'rm'        => $no_rm,
             'namaPoli'  => $this->daftarPoli[$poli],
             'kunjungan' => $kunjungan,
             'pasien'    => $kunjungan->pasien,
-            'rekam'     => $rekam,
+            'rekam'     => $kunjungan->rekamMedis,
         ]);
     }
 

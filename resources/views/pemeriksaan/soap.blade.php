@@ -309,8 +309,10 @@
             <div class="tabs">
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Anamnesa</a>
                 <span class="tab-item active">SOAP</span>
+                @if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
                 <a href="{{ route('pemeriksaan.informed-consent', [$poli, $pasien->no_rm]) }}" class="tab-item" id="tabInformedConsent"
-                   @unless (\App\Models\RekamMedis::butuhInformedConsent($poli, $pasien->no_rm)) hidden @endunless>Informed Consent</a>
+                   @unless (old('butuh_informed_consent') === 'ya') hidden @endunless>Informed Consent</a>
+                @endif
                 <span class="tab-item disabled">Diagnosa</span>
                 <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
                 <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
@@ -363,8 +365,9 @@
                         </div>
                     </div>
 
+                    @if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
                     @php
-                        $icAwal = old('butuh_informed_consent', optional($rekam)->butuh_informed_consent ? 'ya' : 'tidak');
+                        $icAwal = old('butuh_informed_consent', 'tidak');
                     @endphp
                     <div class="field-group">
                         <div class="field">
@@ -383,6 +386,7 @@
                             <small class="ic-catatan">Pilih "Ya" untuk menampilkan tab Informed Consent di antara SOAP dan Diagnosa.</small>
                         </div>
                     </div>
+                    @endif
 
                     <div class="form-footer">
                         <button type="submit" class="btn-simpan">
@@ -419,9 +423,29 @@
             var tampil = (this.value === 'ya');
             tab.hidden = ! tampil;
 
+            // Simpan pilihan langsung ke database supaya tab bisa diklik sebelum Simpan SOAP
+            fetch(@json(route('pemeriksaan.informed-consent.status', [$poli, $pasien->no_rm])), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('#form-soap input[name="_token"]').value
+                },
+                body: JSON.stringify({ butuh_informed_consent: this.value })
+            }).catch(function () {});
+
             // Klik "Ya" -> gulir ke atas supaya tab Informed Consent yang baru muncul terlihat
             if (tampil) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                [document.documentElement, document.body, document.querySelector('.main')].forEach(function (el) {
+                    if (el && el.scrollTo) el.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+
+                // Sorot sebentar supaya jelas tab Informed Consent baru muncul
+                tab.animate(
+                    [{ boxShadow: '0 0 0 0 rgba(180,0,0,.55)' }, { boxShadow: '0 0 0 10px rgba(180,0,0,0)' }],
+                    { duration: 900, iterations: 2 }
+                );
             }
         });
     });

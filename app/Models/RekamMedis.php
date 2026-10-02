@@ -51,19 +51,48 @@ class RekamMedis extends Model
     /**
      * Apakah kunjungan terbaru pasien di poli ini ditandai butuh Informed Consent
      * (pilihan "Ya" di halaman SOAP). Dipakai untuk menampilkan tab Informed Consent.
+     * Status hanya berlaku untuk kunjungan tersebut, jadi kunjungan baru selalu mulai dari "tidak".
      */
+    /** Informed Consent baru tersedia untuk poli tertentu (poli lain belum dibuat). */
+    public const POLI_INFORMED_CONSENT = ['gigi'];
+
+    public static function poliPunyaInformedConsent(?string $poli): bool
+    {
+        return in_array($poli, self::POLI_INFORMED_CONSENT, true);
+    }
+
     public static function butuhInformedConsent(string $poli, string $noRm): bool
     {
-        $kunci = $poli . '|' . $noRm;
+        if (! static::poliPunyaInformedConsent($poli)) {
+            return false;
+        }
+
+        $kunjungan = null;
+
+        try {
+            $kunjungan = Kunjungan::where('poli', $poli)
+                ->whereHas('pasien', fn ($q) => $q->where('no_rm', $noRm))
+                ->latest('id')
+                ->first();
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if (! $kunjungan) {
+            return false;
+        }
+
+        $kunci = (string) $kunjungan->id;
+
+        // Pilihan terbaru dari halaman SOAP (disimpan di session per kunjungan) didahulukan
+        $dariSession = session('ic_aktif', []);
+        if (array_key_exists($kunci, $dariSession)) {
+            return (bool) $dariSession[$kunci];
+        }
 
         if (! array_key_exists($kunci, static::$cacheInformedConsent)) {
             try {
-                $kunjungan = Kunjungan::where('poli', $poli)
-                    ->whereHas('pasien', fn ($q) => $q->where('no_rm', $noRm))
-                    ->latest('id')
-                    ->first();
-
-                static::$cacheInformedConsent[$kunci] = (bool) optional(optional($kunjungan)->rekamMedis)->butuh_informed_consent;
+                static::$cacheInformedConsent[$kunci] = (bool) optional($kunjungan->rekamMedis)->butuh_informed_consent;
             } catch (\Throwable $e) {
                 // kolom belum ada (migrasi belum dijalankan) -> anggap tidak butuh
                 static::$cacheInformedConsent[$kunci] = false;
@@ -71,6 +100,14 @@ class RekamMedis extends Model
         }
 
         return static::$cacheInformedConsent[$kunci];
+    }
+
+    /** Catat pilihan Ya/Tidak Informed Consent di session, per kunjungan. */
+    public static function tandaiSession(int $kunjunganId, bool $butuh): void
+    {
+        $data = session('ic_aktif', []);
+        $data[(string) $kunjunganId] = $butuh;
+        session(['ic_aktif' => $data]);
     }
 
     public function kunjungan()
