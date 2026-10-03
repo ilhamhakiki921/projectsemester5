@@ -424,16 +424,16 @@
 
                     <div class="field-row cols-3">
                         <div class="field">
-                            <label>Respiratory Rate<span class="required-mark">*</span></label>
-                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', optional($rekam)->respiratory_rate) }}" placeholder="Laju napas dalam x/menit" required>
+                            <label>Respiratory Rate</label>
+                            <input type="text" name="respiratory_rate" value="{{ old('respiratory_rate', optional($rekam)->respiratory_rate) }}" placeholder="Laju napas dalam x/menit">
                         </div>
                         <div class="field">
-                            <label>Saturasi<span class="required-mark">*</span></label>
-                            <input type="text" name="saturasi" value="{{ old('saturasi', optional($rekam)->saturasi) }}" placeholder="Saturasi oksigen dalam %" required>
+                            <label>Saturasi</label>
+                            <input type="text" name="saturasi" value="{{ old('saturasi', optional($rekam)->saturasi) }}" placeholder="Saturasi oksigen dalam %">
                         </div>
                         <div class="field">
-                            <label>GCS<span class="required-mark">*</span></label>
-                            <input type="text" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" placeholder="Nilai GCS, format E4V5M6" required>
+                            <label>GCS</label>
+                            <input type="text" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" placeholder="Nilai GCS, format E4V5M6">
                         </div>
                     </div>
 
