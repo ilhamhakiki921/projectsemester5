@@ -183,7 +183,8 @@ class RujukanController extends Controller
         }
 
         $terapi = $kunjungan->resep->map(function ($r) {
-            return '- ' . trim(($r->obat->nama_obat ?? 'Obat') . ' ' . $r->jumlah_obat . ' | ' . $r->dosis_obat . ' | ' . $r->frekuensi);
+            $satuan = $this->satuanObat($r->obat->sediaan ?? '');
+            return '- ' . trim(($r->obat->nama_obat ?? 'Obat') . ' ' . $r->jumlah_obat . ' ' . $satuan . ', ' . $r->dosis_obat . ', ' . $r->frekuensi);
         })->all();
         if ($rm?->tindakan) {
             $terapi[] = 'Tindakan: ' . $rm->tindakan;
@@ -194,6 +195,32 @@ class RujukanController extends Controller
             'diagnosa' => $diagnosa,
             'terapi'   => implode("\n", $terapi),
         ];
+    }
+
+    /** Satuan jumlah obat yang lazim diserahkan apoteker, berdasarkan sediaan. */
+    protected function satuanObat(string $sediaan): string
+    {
+        $s = strtolower(trim($sediaan));
+
+        return match (true) {
+            str_contains($s, 'tablet')   => 'tablet',
+            str_contains($s, 'kapsul')   => 'kapsul',
+            str_contains($s, 'kaplet')   => 'kaplet',
+            str_contains($s, 'sirup'),
+            str_contains($s, 'syrup'),
+            str_contains($s, 'suspensi'),
+            str_contains($s, 'tetes')    => 'botol',
+            str_contains($s, 'sachet'),
+            str_contains($s, 'serbuk')   => 'sachet',
+            str_contains($s, 'salep'),
+            str_contains($s, 'krim'),
+            str_contains($s, 'cream'),
+            str_contains($s, 'gel')      => 'tube',
+            str_contains($s, 'inhaler')  => 'inhaler',
+            str_contains($s, 'injeksi'),
+            str_contains($s, 'ampul')    => 'ampul',
+            default                      => $s !== '' ? $s : 'buah',
+        };
     }
 
     protected function format(SuratRujukan $s, $poli, $no_rm): array
