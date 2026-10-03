@@ -4295,7 +4295,7 @@ function tutupModalKunjungan() {
 }
 
 
-function daftarkanKunjungan() {
+async function daftarkanKunjungan() {
 
     const wajib = ['tanggalKunjungan', 'poliTujuan', 'jenisKunjungan', 'caraPembayaran'];
 
@@ -4327,13 +4327,56 @@ function daftarkanKunjungan() {
         }
     }
 
-    tutupModalKunjungan();
-
+    const noRm = document.getElementById('modalRm').textContent.trim();
     const nama = document.getElementById('modalNama').textContent || '-';
+
+    // Simpan sungguhan ke database supaya pasien muncul di antrian Pemeriksaan poli tujuannya
+    let hasil;
+
+    try {
+
+        const response = await fetch('/pendaftaran/pasien/' + encodeURIComponent(noRm) + '/kunjungan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                tanggal_kunjungan: document.getElementById('tanggalKunjungan').value,
+                poli:              poliKeSlug(document.getElementById('poliTujuan').value),
+                pembayaran:        document.getElementById('caraPembayaran').value
+            })
+        });
+
+        hasil = await response.json();
+
+        if (!response.ok || !hasil.success) {
+            throw new Error(hasil.message || 'Gagal menyimpan kunjungan.');
+        }
+
+    } catch (err) {
+
+        alert('Gagal menyimpan kunjungan ke database. Silakan coba lagi.\n(' + err.message + ')');
+        return;
+    }
+
+    // Perbarui kolom Tgl Kunjungan & Poli di baris pasien tersebut
+    document.querySelectorAll('#tabelPasienBody tr').forEach(function(tr) {
+
+        const rm = tr.querySelector('.rm-number');
+
+        if (rm && rm.textContent.trim() === noRm && tr.cells.length > 6) {
+            tr.cells[5].textContent = hasil.tgl_text;
+            tr.cells[6].textContent = hasil.poli_label;
+        }
+    });
+
+    tutupModalKunjungan();
 
     tampilkanPopupSimpan(
         'Kunjungan berhasil didaftarkan',
-        'Pendaftaran kunjungan untuk pasien <strong></strong> berhasil diproses.',
+        'Pasien <strong></strong> masuk antrian Pemeriksaan ' + hasil.poli_label + ' (No. antrian ' + hasil.no_antrian + ').',
         nama,
         false
     );

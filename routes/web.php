@@ -57,6 +57,7 @@ Route::middleware('web')->group(function () {
     Route::get('/pendaftaran/pasien/cari', [PasienController::class, 'cari'])->name('pasien.cari');
     Route::get('/pendaftaran/pasien-lama/{id}/edit', [PasienController::class, 'edit'])->name('pasien.lama.edit');
     Route::post('/pendaftaran/pasien-lama/{id}/kunjungan', [PasienController::class, 'storeKunjungan'])->name('pasien.lama.kunjungan.store');
+    Route::post('/pendaftaran/pasien/{no_rm}/kunjungan', [PasienController::class, 'storeKunjunganByRm'])->name('pasien.kunjungan.store');
     Route::delete('/pendaftaran/pasien-lama/{id}', [PasienController::class, 'destroy'])->name('pasien.lama.destroy');
 
     // ===========================

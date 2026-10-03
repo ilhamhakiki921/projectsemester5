@@ -287,6 +287,41 @@ public function create()
             ->with('success', 'Kunjungan pasien berhasil didaftarkan.');
     }
  
+    // Daftarkan kunjungan pasien lama dari modal di halaman Pendaftaran (AJAX).
+    // Kunjungan disimpan ke database sehingga pasien langsung muncul di antrian
+    // Pemeriksaan poli yang dituju.
+    public function storeKunjunganByRm(Request $request, $no_rm)
+    {
+        $pasien = Pasien::where('no_rm', $no_rm)->firstOrFail();
+
+        $request->validate([
+            'tanggal_kunjungan' => 'required|date',
+            'dokter'            => 'nullable',
+            'poli'              => 'required',
+            'pembayaran'        => 'required',
+        ]);
+
+        abort_unless(array_key_exists($request->poli, Poli::daftar()), 422, 'Poli tujuan tidak valid.');
+
+        $kunjungan = Kunjungan::create([
+            'pasien_id'         => $pasien->id,
+            'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
+            'tanggal_kunjungan' => $request->tanggal_kunjungan,
+            'dokter'            => $request->filled('dokter') ? $request->dokter : 'Dokter Jaga',
+            'poli'              => $request->poli,
+            'pembayaran'        => $request->pembayaran,
+            'status'            => 'Menunggu',
+        ]);
+
+        return response()->json([
+            'success'     => true,
+            'no_antrian'  => $kunjungan->no_antrian,
+            'tgl_text'    => $this->tanggalKeTeks($kunjungan->tanggal_kunjungan),
+            'poli_label'  => Poli::daftar()[$kunjungan->poli] ?? ucfirst($kunjungan->poli),
+            'message'     => 'Kunjungan berhasil didaftarkan.',
+        ]);
+    }
+
     // Hapus pasien
     public function destroy($id)
     {
