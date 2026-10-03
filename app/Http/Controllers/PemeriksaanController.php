@@ -125,13 +125,13 @@ class PemeriksaanController extends Controller
             'riwayat_pengobatan'         => 'required|string',
             'tb'                         => 'required|string',
             'td'                         => 'required|string',
-            'respiratory_rate'           => 'required|string',
+            'respiratory_rate'           => 'nullable|string',
             'berat_badan'                => 'required|string',
             'detak_jantung'              => 'required|string',
-            'saturasi'                   => 'required|string',
+            'saturasi'                   => 'nullable|string',
             'imt'                        => 'required|string',
             'suhu_badan'                 => 'required|string',
-            'gcs'                        => 'required|string',
+            'gcs'                        => 'nullable|string',
         ], $this->pesanValidasi());
 
         RekamMedis::updateOrCreate(
@@ -428,12 +428,64 @@ class PemeriksaanController extends Controller
     }
 
     // ==========================================================
-    // CLINICAL PATHWAY (masih placeholder, menunggu desain)
+    // CLINICAL PATHWAY
+    // Data yang sudah disimpan dimuat kembali supaya form terisi lagi
+    // ketika tab Clinical Pathway dibuka ulang (tidak perlu input ulang).
+    // Penyimpanan (POST) ditangani ClinicalPathwayController@store.
     // ==========================================================
 
     public function clinicalPathway($poli, $no_rm)
     {
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        $pathway = \App\Models\ClinicalPathway::with('kunjungan')
+            ->where('no_rm', $no_rm)
+            ->where('poli', $poli)
+            ->first();
+
+        $riwayat = \App\Models\ClinicalPathway::withCount('kunjungan as terisi')
+            ->latest('updated_at')
+            ->get();
+
+        $daftarDokter = \App\Models\User::where('role', 'dokter')
+            ->where('status', 'aktif')
+            ->orderBy('nama_lengkap')
+            ->pluck('nama_lengkap');
+
+        // ------------------------------------------------------------------
+        // Data otomatis dari tab Diagnosa & Resep (dipakai sebagai isian awal
+        // selama Clinical Pathway belum pernah disimpan / kolomnya masih kosong)
+        // ------------------------------------------------------------------
+        $kunjungan->load(['resep.obat']);
+        $rekam = $kunjungan->rekamMedis;
+        $potong = fn ($teks) => mb_substr((string) $teks, 0, 255);
+
+        $autoHeader = [
+            'diagnosis'  => $potong(optional($rekam)->diagnosis_utama),
+            'kode_icd10' => $potong(optional($rekam)->kode_icd10),
+        ];
+
+        $namaObat = [];
+        $ketObat  = [];
+        foreach ($kunjungan->resep as $r) {
+            $nama = trim(optional($r->obat)->nama_obat . ' ' . optional($r->obat)->dosis);
+            $namaObat[] = $nama;
+            $ketObat[]  = $r->dosis_obat . ', ' . $r->frekuensi . ', jumlah ' . $r->jumlah_obat;
+        }
+        if (count($ketObat) > 1) {
+            foreach ($ketObat as $n => $ket) {
+                $ketObat[$n] = $namaObat[$n] . ': ' . $ket;
+            }
+        }
+
+        $autoKunjungan = [
+            'diagnosis_utama'    => $potong(optional($rekam)->diagnosis_utama),
+            'kode_utama'         => $potong(optional($rekam)->kode_icd10),
+            'diagnosis_penyerta' => $potong(str_replace(' | ', '; ', (string) optional($rekam)->diagnosis_sekunder)),
+            'tindakan_nama'      => $potong(optional($rekam)->tindakan),
+            'obat_nama'          => $potong(implode(', ', $namaObat)),
+            'obat_keterangan'    => $potong(implode(' | ', $ketObat)),
+        ];
 
         return view('pemeriksaan.clinical-pathway', [
             'poli'      => $poli,
@@ -441,6 +493,11 @@ class PemeriksaanController extends Controller
             'kunjungan' => $kunjungan,
             'pasien'    => $kunjungan->pasien,
             'rm'        => $no_rm,
+            'pathway'   => $pathway,
+            'riwayat'   => $riwayat,
+            'daftarDokter' => $daftarDokter,
+            'autoHeader'   => $autoHeader,
+            'autoKunjungan' => $autoKunjungan,
         ]);
     }
 }
