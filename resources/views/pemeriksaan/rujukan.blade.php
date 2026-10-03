@@ -7,7 +7,7 @@
 @push('styles')
 <style>
     .rj-card{border:1px solid #6b6b6b;border-radius:14px;padding:22px 20px 26px;background:#fff}
-    .rj-title{margin:0;font-size:11px;font-weight:700;color:#c00000;text-transform:uppercase}
+    .rj-title{margin:0 0 14px;font-size:11px;font-weight:700;color:#c00000;text-transform:uppercase}
     .rj-sub{margin:2px 0 14px;font-size:9px;font-weight:500;color:#222}
 
     .rj-table{width:100%;border-collapse:separate;border-spacing:0}
@@ -15,7 +15,7 @@
     .rj-table thead th:first-child{border-radius:8px 0 0 8px}
     .rj-table thead th:last-child{border-radius:0 8px 8px 0}
     .rj-table tbody td{background:#ececec;padding:10px;border-top:1px solid #dcdcdc;text-align:center;font-size:11px;vertical-align:middle}
-    .rj-table tbody tr.empty td{padding:44px 10px;color:#777;border-top:0}
+    .rj-table tbody tr.empty td{padding:44px 10px;color:#222;border-top:0}
     .rj-table small{display:block;color:#666;font-size:9.5px}
     .rj-tag{display:inline-block;border-radius:10px;padding:2px 10px;font-size:10px;font-weight:600;background:#fff;border:1px solid #a11a1e;color:#a11a1e}
     .rj-tag.eks{background:#a11a1e;color:#fff}
@@ -65,7 +65,6 @@
 @section('konten')
 <section class="rj-card">
     <h3 class="rj-title">Surat Rujukan</h3>
-    <p class="rj-sub">Rujukan internal (antar poli dalam klinik) atau eksternal (ke RS/fasyankes lain) — format mengikuti surat rujukan Klinik Utama Merah Putih</p>
 
     <table class="rj-table">
         <thead>
@@ -110,7 +109,6 @@
                     <input type="date" id="rjJadwal" name="jadwal_datang" value="{{ now()->toDateString() }}" min="{{ now()->toDateString() }}">
                 </div>
             </div>
-            <p class="rj-note">Pada tanggal jadwal ini, pasien otomatis terdaftar dan masuk antrian di poli Tujuan (pendaftaran &amp; Pemeriksaan).</p>
         </div>
 
         {{-- ============ FORM RUJUKAN EKSTERNAL ============ --}}
