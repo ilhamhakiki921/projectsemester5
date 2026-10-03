@@ -343,7 +343,8 @@
         margin-left: 2px;
     }
 
-    .modal-field input {
+    .modal-field input,
+    .modal-field select {
         width: 100%;
 
         padding: 8px 10px;
@@ -358,7 +359,13 @@
         outline: none;
     }
 
-    .modal-field input:focus {
+    .modal-field select {
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .modal-field input:focus,
+    .modal-field select:focus {
         border-color: #b40000;
         box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
     }
@@ -544,12 +551,6 @@
                     </table>
                 </div>
 
-                <div class="form-footer">
-                    <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="btn-lanjut">
-                        Lanjut ke Clinical Pathway
-                    </a>
-                </div>
-
             </div>
 
         </section>
@@ -604,7 +605,12 @@
             <div class="modal-field-group">
                 <div class="modal-field">
                     <label>Sediaan<span class="required-mark">*</span></label>
-                    <input type="text" name="sediaan" id="displaySediaan" value="{{ old('sediaan') }}" placeholder="misal: Tablet, Kapsul, Sirup" required>
+                    <select name="sediaan" id="displaySediaan" required>
+                        <option value="">Pilih sediaan</option>
+                        @foreach (['Tablet', 'Tablet Kunyah', 'Kapsul', 'Sirup', 'Sachet', 'Salep', 'Tetes', 'Injeksi', 'Inhaler', 'Suppositoria'] as $opsiSediaan)
+                            <option value="{{ $opsiSediaan }}" @selected(strcasecmp((string) old('sediaan'), $opsiSediaan) === 0)>{{ $opsiSediaan }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -671,8 +677,13 @@
         }
 
         if (cocok) {
-            if (inputSediaan.value.trim() === '') {
-                inputSediaan.value = cocok.sediaan;
+            if (inputSediaan.value === '') {
+                // cocokkan tanpa peduli huruf besar/kecil dengan pilihan dropdown
+                Array.prototype.forEach.call(inputSediaan.options, function (opt) {
+                    if (opt.value !== '' && opt.value.toLowerCase() === String(cocok.sediaan).toLowerCase()) {
+                        inputSediaan.value = opt.value;
+                    }
+                });
             }
         }
     }
@@ -685,6 +696,9 @@
             field.setCustomValidity('Kolom ini wajib diisi.');
         });
         field.addEventListener('input', function () {
+            field.setCustomValidity('');
+        });
+        field.addEventListener('change', function () {
             field.setCustomValidity('');
         });
     });

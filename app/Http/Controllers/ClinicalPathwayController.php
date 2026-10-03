@@ -61,7 +61,7 @@ class ClinicalPathwayController extends Controller
                 $errors["kunjungan.$i.tanggal"] = "Kunjungan $i: tanggal wajib diisi.";
             }
             if (blank($r['dpjp'] ?? null)) {
-                $errors["kunjungan.$i.dpjp"] = "Kunjungan $i: Kode / Nama DPJP wajib diisi.";
+                $errors["kunjungan.$i.dpjp"] = "Kunjungan $i: Dokter wajib dipilih.";
             }
         }
         if ($errors) {
