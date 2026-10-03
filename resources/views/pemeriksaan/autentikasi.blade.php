@@ -126,16 +126,19 @@
 
 @push('scripts')
 @if ($autentikasi)
-<script>
-document.getElementById('auCetak').addEventListener('click', () => {
-    const d = @json([
+@php
+    $dataCetak = [
         'nama'    => $autentikasi->nama_dokter,
         'jabatan' => $autentikasi->jabatan,
         'waktu'   => $autentikasi->waktu_autentikasi->locale('id')->translatedFormat('d M Y, H:i'),
         'pasien'  => $pasien->nama,
         'rm'      => $pasien->no_rm,
         'ttd'     => $autentikasi->tanda_tangan,
-    ]);
+    ];
+@endphp
+<script>
+document.getElementById('auCetak').addEventListener('click', () => {
+    const d = @json($dataCetak);
     const w = window.open('', '_blank');
     w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Autentikasi Pemeriksaan</title>
 <style>body{font-family:Arial,sans-serif;padding:32px;color:#111}h2{margin:0 0 4px}table{margin-top:18px;border-collapse:collapse;font-size:14px}td{padding:4px 14px 4px 0}
