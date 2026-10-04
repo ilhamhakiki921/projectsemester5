@@ -58,7 +58,15 @@ class AutentikasiController extends Controller
         [$pasien, $kunjungan] = $this->konteks($poli, $no_rm);
         $kunjungan->load('rekamMedis');
 
-        $autentikasi = AutentikasiPemeriksaan::where('kunjungan_id', $kunjungan->id)->first();
+        $tersimpan   = AutentikasiPemeriksaan::where('kunjungan_id', $kunjungan->id)->first();
+        $bagianKosong = $this->bagianKosong($kunjungan);
+
+        // Tampilan "Terautentikasi" hanya untuk kunjungan yang benar-benar sudah dilayani:
+        // data Asesmen/SOAP/Diagnosa terisi dan status kunjungan sudah Selesai.
+        // Selain itu (belum diisi / belum dilayani) tetap tampil form + tanda tangan.
+        $autentikasi = ($tersimpan && ! $bagianKosong && $kunjungan->status === 'Selesai')
+            ? $tersimpan
+            : null;
 
         return view('pemeriksaan.autentikasi', [
             'poli'        => $poli,
@@ -66,8 +74,8 @@ class AutentikasiController extends Controller
             'pasien'      => $pasien,
             'kunjungan'   => $kunjungan,
             'autentikasi' => $autentikasi,
-            'bagianKosong' => $this->bagianKosong($kunjungan),
-            'namaDefault' => $autentikasi?->nama_dokter
+            'bagianKosong' => $bagianKosong,
+            'namaDefault' => $tersimpan?->nama_dokter
                 ?? (Auth::check() ? Auth::user()->nama_lengkap : $kunjungan->dokter),
             'storeUrl'    => route('autentikasi.store', [$poli, $no_rm]),
         ]);
