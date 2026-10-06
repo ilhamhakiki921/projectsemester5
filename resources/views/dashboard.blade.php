@@ -100,6 +100,8 @@
     .dashboard-content {
         width: 100%;
         padding: 25px 28px 30px;
+        /* supaya kotak statistik mengikuti lebar area konten (sudah dikurangi sidebar), bukan lebar layar */
+        container-type: inline-size;
     }
 
     /* =========================
@@ -117,6 +119,7 @@
 
 .stat-card {
     position: relative;
+    min-width: 0;
     min-height: 126px;
     padding: 18px 18px;
 
@@ -155,7 +158,7 @@
 /* Angka */
 
 .stat-number {
-    font-size: 32px;
+    font-size: clamp(26px, 3.2cqw, 32px);
     line-height: 1.1;
     font-weight: 700;
     color: #c90000;
@@ -196,11 +199,11 @@
 }
 
 
-/* Responsive */
+/* Responsive: mengikuti lebar area konten (bukan lebar layar),
+   jadi sidebar normal/ciut dan zoom/scaling laptop otomatis ikut dihitung */
 
-/* Layar lebar tapi belum cukup untuk 5 kolom: 3 kolom (baris terakhir
-   berisi 2 kartu, tetap rapi tanpa ruang kosong yang aneh) */
-@media (max-width: 1300px) {
+/* Area konten kurang dari 940px: 3 kolom */
+@container (max-width: 940px) {
 
     .stat-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -208,9 +211,8 @@
 
 }
 
-/* Tablet: 2 kolom. Kartu terakhir (ke-5) melebar penuh 1 baris supaya
-   tidak menyisakan kolom kosong di sampingnya */
-@media (max-width: 820px) {
+/* Area konten kurang dari 620px: 2 kolom, kartu ke-5 melebar penuh */
+@container (max-width: 620px) {
 
     .stat-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -222,8 +224,8 @@
 
 }
 
-/* HP: 1 kolom, semua kartu bertumpuk rapi ke bawah */
-@media (max-width: 480px) {
+/* Area konten kurang dari 400px: 1 kolom */
+@container (max-width: 400px) {
 
     .stat-grid {
         grid-template-columns: 1fr;
