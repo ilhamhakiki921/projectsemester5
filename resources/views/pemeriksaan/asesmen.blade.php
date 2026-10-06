@@ -338,12 +338,12 @@
             <div class="tabs">
                 <span class="tab-item active">Anamnesa</span>
                 <a href="{{ route('pemeriksaan.soap', [$poli, $pasien->no_rm]) }}" class="tab-item">SOAP</a>
-                <span class="tab-item disabled">Diagnosa</span>
+                <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien->no_rm]) }}" class="tab-item">Diagnosa</a>
                 <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
                 <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
-                <span class="tab-item disabled">Penunjang</span>
-                <span class="tab-item disabled">Rujukan</span>
-                <span class="tab-item disabled">Autentikasi</span>
+                <a href="{{ route('penunjang.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Penunjang</a>
+                <a href="{{ route('rujukan.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Rujukan</a>
+                <a href="{{ route('autentikasi.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Autentikasi</a>
             </div>
 
             @if ($errors->any())

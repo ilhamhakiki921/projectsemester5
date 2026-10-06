@@ -1829,51 +1829,78 @@ body.sidebar-collapsed .main {
 
 
 /* =========================
-   POPUP BERHASIL DISIMPAN
+   POPUP (TOAST) POJOK KANAN ATAS
+   Otomatis hilang dalam 3 detik
 ========================= */
+
+@keyframes toastMasuk {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastKeluar {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-12px); }
+}
 
 .popup-overlay {
     position: fixed;
-    inset: 0;
+    top: 18px;
+    right: 18px;
 
     display: none;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
 
-    padding: 20px;
+    width: 340px;
+    max-width: calc(100vw - 36px);
 
-    background: rgba(17, 24, 39, .55);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-
-    z-index: 10050;
+    z-index: 10060;
 }
 
 .popup-overlay.show {
     display: flex;
+    animation: toastMasuk 0.25s ease;
+}
+
+.popup-overlay.hilang {
+    animation: toastKeluar 0.25s ease forwards;
 }
 
 .popup-box {
-    width: 380px;
-    max-width: 100%;
+    position: relative;
+    overflow: hidden;
 
-    padding: 28px 26px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    width: 100%;
+    padding: 14px 16px;
 
     background: #ffffff;
-    border-radius: 14px;
+    border-left: 4px solid #28885a;
+    border-radius: 10px;
 
-    text-align: center;
+    text-align: left;
 
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 
-    animation: modalMasuk 0.2s ease;
+    cursor: pointer;
+}
+
+.popup-box:has(.popup-icon.info) {
+    border-left-color: #2875ad;
+}
+
+.popup-box:has(.popup-icon.peringatan) {
+    border-left-color: #d97706;
 }
 
 .popup-icon {
-    width: 56px;
-    height: 56px;
+    flex: 0 0 auto;
 
-    margin: 0 auto 14px;
+    width: 34px;
+    height: 34px;
 
     display: flex;
     align-items: center;
@@ -1884,7 +1911,7 @@ body.sidebar-collapsed .main {
     background: #e4f5eb;
     color: #28885a;
 
-    font-size: 28px;
+    font-size: 18px;
 }
 
 .popup-icon.info {
@@ -1897,28 +1924,25 @@ body.sidebar-collapsed .main {
     color: #c77700;
 }
 
-.popup-ok.peringatan {
-    background: #d97706;
-}
-
-.popup-ok.peringatan:hover {
-    background: #b45f04;
+.popup-teks {
+    flex: 1;
+    min-width: 0;
 }
 
 .popup-box h3 {
-    margin: 0 0 6px;
+    margin: 0 0 2px;
 
-    font-size: 17px;
+    font-size: 13px;
     font-weight: 600;
 
     color: #111827;
 }
 
 .popup-box p {
-    margin: 0 0 20px;
+    margin: 0;
 
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.45;
 
     color: #607d8b;
 }
@@ -1927,27 +1951,30 @@ body.sidebar-collapsed .main {
     color: #111827;
 }
 
-.popup-ok {
-    height: 40px;
-    min-width: 110px;
+/* Garis waktu 3 detik di bagian bawah popup */
+.popup-timer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
 
-    padding: 0 22px;
+    height: 3px;
+    width: 100%;
 
-    border: none;
-    border-radius: 8px;
+    background: #28885a;
 
-    background: #0f766e;
-    color: #ffffff;
-
-    font-family: 'Poppins', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-
-    cursor: pointer;
+    transform-origin: left;
 }
 
-.popup-ok:hover {
-    background: #0b5f59;
+.popup-box:has(.popup-icon.info) .popup-timer { background: #2875ad; }
+.popup-box:has(.popup-icon.peringatan) .popup-timer { background: #d97706; }
+
+.popup-overlay.show .popup-timer {
+    animation: timerPopup 3s linear forwards;
+}
+
+@keyframes timerPopup {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
 }
 
 @media (max-width: 700px) {
@@ -2529,7 +2556,6 @@ body.sidebar-collapsed .main {
                                             data-nik="{{ $p->nik }}"
                                             data-jk="{{ $p->jenis_kelamin }}"
                                             data-lahir="{{ $p->lahir_text }}"
-                                            data-golongan=""
                                             data-umur="{{ $p->tanggal_lahir->age }} th"
                                             data-telepon="{{ $p->no_telepon }}"
                                             data-alamat="{{ $p->alamat }}"
@@ -2756,11 +2782,6 @@ body.sidebar-collapsed .main {
                 </div>
 
                 <div class="detail-item">
-                    <span>GOLONGAN DARAH</span>
-                    <strong id="detailGolongan">-</strong>
-                </div>
-
-                <div class="detail-item">
                     <span>TELEPON</span>
                     <strong id="detailTelepon">-</strong>
                 </div>
@@ -2835,12 +2856,15 @@ body.sidebar-collapsed .main {
 
                         <div class="form-group">
                             <label for="baruTitle">Title</label>
-                            <input
-                                type="text"
-                                id="baruTitle"
-                                placeholder="Contoh: Tn./Ny./Sdr."
-                                autocomplete="off"
-                            >
+                            <select id="baruTitle">
+                                <option value="" selected>Pilih title</option>
+                                <option value="Tn.">Tn.</option>
+                                <option value="Ny.">Ny.</option>
+                                <option value="Nn.">Nn.</option>
+                                <option value="Sdr.">Sdr.</option>
+                                <option value="An.">An.</option>
+                                <option value="By.">By.</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -3793,17 +3817,6 @@ body.sidebar-collapsed .main {
                 </div>
 
                 <div class="form-group">
-                    <label for="editGolongan">Golongan Darah</label>
-                    <select id="editGolongan">
-                        <option value="" selected>Pilih golongan darah</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="AB">AB</option>
-                        <option value="O">O</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
                     <label for="editJk">Jenis Kelamin<span class="wajib">*</span></label>
                     <select id="editJk">
                         <option value="" selected>Pilih jenis kelamin</option>
@@ -3880,23 +3893,23 @@ body.sidebar-collapsed .main {
 
 {{-- =========================
      POPUP DATA BERHASIL DISIMPAN
+     (muncul di pojok kanan atas, hilang otomatis dalam 3 detik)
 ========================== --}}
 
-<div id="popupSimpan" class="popup-overlay" role="alertdialog" aria-modal="true" aria-labelledby="popupSimpanJudul">
+<div id="popupSimpan" class="popup-overlay" role="status" aria-live="polite">
 
-    <div class="popup-box">
+    <div class="popup-box" onclick="tutupPopupSimpan()" title="Klik untuk menutup">
 
         <div class="popup-icon" id="popupSimpanIkon">
             <i class="bi bi-check-lg"></i>
         </div>
 
-        <h3 id="popupSimpanJudul">Data berhasil disimpan</h3>
+        <div class="popup-teks">
+            <h3 id="popupSimpanJudul">Data berhasil disimpan</h3>
+            <p id="popupSimpanPesan"></p>
+        </div>
 
-        <p id="popupSimpanPesan"></p>
-
-        <button type="button" class="popup-ok" id="popupSimpanOk" onclick="tutupPopupSimpan()">
-            OK
-        </button>
+        <div class="popup-timer"></div>
 
     </div>
 
@@ -3904,23 +3917,23 @@ body.sidebar-collapsed .main {
 
 {{-- =========================
      POPUP PERINGATAN NOMOR BPJS (KUNJUNGAN)
+     (muncul di pojok kanan atas, hilang otomatis dalam 3 detik)
 ========================== --}}
 
-<div id="popupPeringatan" class="popup-overlay" role="alertdialog" aria-modal="true" aria-labelledby="popupPeringatanJudul">
+<div id="popupPeringatan" class="popup-overlay" role="alert" aria-live="assertive">
 
-    <div class="popup-box">
+    <div class="popup-box" onclick="tutupPopupPeringatan()" title="Klik untuk menutup">
 
         <div class="popup-icon peringatan">
             <i class="bi bi-exclamation-triangle-fill"></i>
         </div>
 
-        <h3 id="popupPeringatanJudul">Nomor BPJS tidak valid</h3>
+        <div class="popup-teks">
+            <h3 id="popupPeringatanJudul">Nomor BPJS tidak valid</h3>
+            <p id="popupPeringatanPesan"></p>
+        </div>
 
-        <p id="popupPeringatanPesan"></p>
-
-        <button type="button" class="popup-ok peringatan" id="popupPeringatanOk" onclick="tutupPopupPeringatan()">
-            Perbaiki
-        </button>
+        <div class="popup-timer"></div>
 
     </div>
 
@@ -4210,9 +4223,6 @@ function bukaDetailPasien(button) {
 
     document.getElementById('detailLahir').textContent =
         button.dataset.lahir || '-';
-
-    document.getElementById('detailGolongan').textContent =
-        button.dataset.golongan || '-';
 
     document.getElementById('detailTelepon').textContent =
         button.dataset.telepon || '-';
@@ -5227,7 +5237,6 @@ async function simpanPasienBaru() {
     const dataBaru = {
         nama:     nilai('baruNama'),
         nik:      nilai('baruNik'),
-        golongan: '',
         jk:       jkAsli,
         tempat:   nilai('baruTempat'),
         tglLahir: nilai('baruTglLahir'),
@@ -5376,7 +5385,6 @@ function tambahBarisPasienBaru(d) {
     tombolDetail.dataset.nik = d.nik;
     tombolDetail.dataset.jk = d.jk;
     tombolDetail.dataset.lahir = lahir;
-    tombolDetail.dataset.golongan = d.golongan;
     tombolDetail.dataset.umur = hitungUmur(d.tglLahir);
     tombolDetail.dataset.telepon = d.telepon;
     tombolDetail.dataset.alamat = d.alamat;
@@ -5649,7 +5657,7 @@ document.getElementById('baruPembayaran')
 const NAMA_BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
 const FIELD_EDIT = [
-    'editNama', 'editNik', 'editGolongan', 'editJk',
+    'editNama', 'editNik', 'editJk',
     'editTempat', 'editTglLahir', 'editAlamat', 'editTelepon'
 ];
 
@@ -5765,7 +5773,6 @@ function ambilDataPasien(tr) {
         rm: tr.querySelector('.rm-number').textContent.trim(),
         nama: tr.querySelector('.patient-name').textContent.trim(),
         nik: s.nik || '',
-        golongan: s.golongan || '',
         jk: s.jk || (selJk ? selJk.textContent.trim() : ''),
         tempat: tempat,
         tglLahir: tglLahir,
@@ -5837,7 +5844,6 @@ function bukaModalEdit(tombol) {
     document.getElementById('editAlamat').value = d.alamat;
     document.getElementById('editTelepon').value = d.telepon;
 
-    isiSelect('editGolongan', d.golongan);
     isiSelect('editJk', d.jk);
 
     // Tanggal lahir tidak boleh melewati hari ini
@@ -5881,7 +5887,6 @@ async function simpanEdit() {
         rm: dataAwalEdit.rm,
         nama: document.getElementById('editNama').value.trim().replace(/\s+/g, ' '),
         nik: document.getElementById('editNik').value.trim(),
-        golongan: document.getElementById('editGolongan').value,
         jk: document.getElementById('editJk').value,
         tempat: document.getElementById('editTempat').value.trim(),
         tglLahir: document.getElementById('editTglLahir').value,
@@ -6008,7 +6013,6 @@ async function simpanEdit() {
     const tombolEdit = tr.querySelector('.btn-edit');
 
     tombolEdit.dataset.nik = d.nik;
-    tombolEdit.dataset.golongan = d.golongan;
     tombolEdit.dataset.jk = d.jk;
     tombolEdit.dataset.tempat = d.tempat;
     tombolEdit.dataset.tglLahir = d.tglLahir;
@@ -6023,7 +6027,6 @@ async function simpanEdit() {
         tombolDetail.dataset.nik = d.nik;
         tombolDetail.dataset.jk = d.jk;
         tombolDetail.dataset.lahir = lahir;
-        tombolDetail.dataset.golongan = d.golongan;
         tombolDetail.dataset.umur = hitungUmur(d.tglLahir);
         tombolDetail.dataset.telepon = d.telepon;
         tombolDetail.dataset.alamat = d.alamat;
@@ -6048,8 +6051,47 @@ async function simpanEdit() {
 
 
 // =========================
-// POPUP BERHASIL DISIMPAN
+// POPUP / TOAST (POJOK ATAS, HILANG DALAM 3 DETIK)
 // =========================
+
+const DURASI_POPUP = 3000;   // 3 detik
+const timerPopup = {};       // id popup -> timer penutup otomatis
+
+
+function munculkanPopup(id) {
+
+    const popup = document.getElementById(id);
+
+    clearTimeout(timerPopup[id]);
+
+    // Reset animasi supaya garis waktu mulai dari awal kalau popup muncul lagi
+    popup.classList.remove('show', 'hilang');
+    void popup.offsetWidth;
+    popup.classList.add('show');
+
+    timerPopup[id] = setTimeout(function() {
+        sembunyikanPopup(id);
+    }, DURASI_POPUP);
+}
+
+
+function sembunyikanPopup(id) {
+
+    const popup = document.getElementById(id);
+
+    clearTimeout(timerPopup[id]);
+
+    if (!popup.classList.contains('show')) {
+        return;
+    }
+
+    popup.classList.add('hilang');
+
+    timerPopup[id] = setTimeout(function() {
+        popup.classList.remove('show', 'hilang');
+    }, 250);
+}
+
 
 function tampilkanPopupSimpan(judul, pesanHtml, nama, netral) {
 
@@ -6065,45 +6107,31 @@ function tampilkanPopupSimpan(judul, pesanHtml, nama, netral) {
         ? '<i class="bi bi-info-lg"></i>'
         : '<i class="bi bi-check-lg"></i>';
 
-    document.getElementById('popupSimpan').classList.add('show');
-    document.getElementById('popupSimpanOk').focus();
+    munculkanPopup('popupSimpan');
 }
 
 
 function tutupPopupSimpan() {
 
-    document.getElementById('popupSimpan').classList.remove('show');
+    sembunyikanPopup('popupSimpan');
 }
 
-
-// =========================
-// POPUP PERINGATAN NOMOR BPJS (KUNJUNGAN)
-// =========================
 
 function tampilkanPopupPeringatan(pesanHtml) {
 
     document.getElementById('popupPeringatanPesan').innerHTML = pesanHtml;
-    document.getElementById('popupPeringatan').classList.add('show');
-    document.getElementById('popupPeringatanOk').focus();
+    munculkanPopup('popupPeringatan');
+
+    // Kursor langsung ke kolom Nomor BPJS supaya bisa segera diperbaiki
+    if (!document.getElementById('grupBpjsKunjungan').hidden) {
+        document.getElementById('noBpjsKunjungan').focus();
+    }
 }
 
 
 function tutupPopupPeringatan() {
 
-    const popup = document.getElementById('popupPeringatan');
-
-    if (!popup.classList.contains('show')) {
-        return;
-    }
-
-    popup.classList.remove('show');
-
-    // Kembalikan kursor ke kolom Nomor BPJS supaya langsung bisa diperbaiki
-    const noBpjs = document.getElementById('noBpjsKunjungan');
-
-    if (!document.getElementById('grupBpjsKunjungan').hidden) {
-        noBpjs.focus();
-    }
+    sembunyikanPopup('popupPeringatan');
 }
 
 
@@ -6126,24 +6154,6 @@ document.getElementById('modalEditPasien')
         if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
             event.preventDefault();
             simpanEdit();
-        }
-
-    });
-
-document.getElementById('popupSimpan')
-    .addEventListener('click', function(event) {
-
-        if (event.target === this) {
-            tutupPopupSimpan();
-        }
-
-    });
-
-document.getElementById('popupPeringatan')
-    .addEventListener('click', function(event) {
-
-        if (event.target === this) {
-            tutupPopupPeringatan();
         }
 
     });
@@ -6171,10 +6181,7 @@ document.addEventListener('keydown', function(event) {
 
     if (event.key === 'Escape') {
 
-        if (document.getElementById('popupPeringatan').classList.contains('show')) {
-            tutupPopupPeringatan();
-            return;
-        }
+        tutupPopupPeringatan();
 
         if (document.getElementById('modalDataLain').classList.contains('show')) {
             batalDataLain();
