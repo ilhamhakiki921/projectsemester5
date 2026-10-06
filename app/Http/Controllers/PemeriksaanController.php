@@ -159,16 +159,6 @@ class PemeriksaanController extends Controller
     {
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
 
-        if (! $kunjungan->rekamMedis || ! $kunjungan->rekamMedis->keluhan_utama) {
-            session()->flash('popup', [
-                'type'    => 'warning',
-                'title'   => 'Asesmen Belum Diisi',
-                'message' => 'Lengkapi dan simpan Asesmen Pemeriksaan terlebih dahulu sebelum membuka SOAP.',
-            ]);
-
-            return redirect()->route('pemeriksaan.asesmen', [$poli, $no_rm]);
-        }
-
         return view('pemeriksaan.soap', [
             'poli'      => $poli,
             'namaPoli'  => $this->daftarPoli[$poli],
@@ -282,16 +272,6 @@ class PemeriksaanController extends Controller
     {
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
 
-        if (! $kunjungan->rekamMedis || ! $kunjungan->rekamMedis->subjective) {
-            session()->flash('popup', [
-                'type'    => 'warning',
-                'title'   => 'SOAP Belum Diisi',
-                'message' => 'Lengkapi dan simpan SOAP terlebih dahulu sebelum membuka Diagnosa.',
-            ]);
-
-            return redirect()->route('pemeriksaan.soap', [$poli, $no_rm]);
-        }
-
         return view('pemeriksaan.diagnosa', [
             'poli'      => $poli,
             'namaPoli'  => $this->daftarPoli[$poli],
@@ -352,16 +332,6 @@ class PemeriksaanController extends Controller
     public function resep($poli, $no_rm)
     {
         $kunjungan = $this->carikanKunjungan($poli, $no_rm);
-
-        if (! $kunjungan->rekamMedis || ! $kunjungan->rekamMedis->diagnosis_utama) {
-            session()->flash('popup', [
-                'type'    => 'warning',
-                'title'   => 'Diagnosa Belum Diisi',
-                'message' => 'Lengkapi dan simpan Diagnosa terlebih dahulu sebelum membuka Resep.',
-            ]);
-
-            return redirect()->route('pemeriksaan.diagnosa', [$poli, $no_rm]);
-        }
 
         $kunjungan->load(['resep.obat']);
 

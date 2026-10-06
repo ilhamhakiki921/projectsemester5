@@ -53,6 +53,30 @@ class PenunjangController extends Controller
         return response()->json($this->format(DB::table('permintaan_penunjang')->find($id), $poli), 201);
     }
 
+    public function update(Request $request, $poli, $no_rm, $id)
+    {
+        $data = $request->validate([
+            'pemeriksaan'   => 'required|array|min:1',
+            'pemeriksaan.*' => 'string|max:100',
+            'keterangan'    => 'nullable|string|max:1000',
+        ], [
+            'pemeriksaan.required' => 'Pilih minimal satu pemeriksaan.',
+        ]);
+
+        $q = DB::table('permintaan_penunjang')
+            ->where('no_rm', $no_rm)->where('id', $id)->where('status', 'Menunggu');
+
+        abort_unless($q->exists(), 422, 'Permintaan sudah diproses, tidak bisa diubah.');
+
+        $q->update([
+            'pemeriksaan' => json_encode($data['pemeriksaan']),
+            'keterangan'  => $data['keterangan'] ?? null,
+            'updated_at'  => now(),
+        ]);
+
+        return response()->json($this->format(DB::table('permintaan_penunjang')->find($id), $poli));
+    }
+
     public function destroy($poli, $no_rm, $id)
     {
         $q = DB::table('permintaan_penunjang')
@@ -71,6 +95,8 @@ class PenunjangController extends Controller
             'items'     => json_decode($r->pemeriksaan, true),
             'tanggal'   => Carbon::parse($r->created_at)->format('d-m-Y'),
             'status'    => $r->status,
+            'keterangan' => $r->keterangan,
+            'edit_url'  => route('penunjang.update', [$poli, $r->no_rm, $r->id]),
             'hapus_url' => route('penunjang.destroy', [$poli, $r->no_rm, $r->id]),
         ];
     }

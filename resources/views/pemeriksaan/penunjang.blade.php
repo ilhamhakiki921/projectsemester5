@@ -46,8 +46,29 @@
     .pj-table tbody td.l{text-align:left}
     .pj-table tbody tr.empty td{padding:34px 14px 80px;font-size:12px;font-weight:500;color:#222}
     .pj-badge{display:inline-block;background:#fff3cd;color:#8a6100;border-radius:10px;padding:2px 10px;font-size:11px;font-weight:500}
-    .pj-del{border:1px solid #a11a1e;color:#a11a1e;background:#fff;border-radius:6px;padding:2px 12px;font:inherit;font-size:11px;cursor:pointer}
-    .pj-del:hover{background:#a11a1e;color:#fff}
+    .pj-act-cell{display:flex;align-items:center;justify-content:center;gap:8px}
+    .pj-ab{height:26px;min-width:34px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;border-radius:5px;border:1px solid transparent;font:inherit;font-size:10px;font-weight:600;cursor:pointer}
+    .pj-ab:hover{filter:brightness(.92)}
+    .pj-ab.detail{background:#f4f4f5;border-color:#6b7280;color:#111}
+    .pj-ab.edit{background:#fff;border-color:#a11a1e;color:#a11a1e}
+    .pj-ab.hapus{background:#c40000;color:#fff}
+    .pj-ab:disabled{opacity:.4;cursor:not-allowed;filter:none}
+    .pj-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .pj-head .pj-h{margin:0}
+    .pj-add{border:0;border-radius:6px;padding:8px 14px;font:inherit;font-size:10px;font-weight:600;color:#fff;background:#ed1111;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+    .pj-add:hover{background:#c40d0d}
+    .pj-mode{display:none;margin:0 0 14px;padding:9px 14px;border-radius:8px;background:#fff3cd;color:#8a6100;font-size:11px;font-weight:500;align-items:center;justify-content:space-between}
+    .pj-mode.show{display:flex}
+    .pj-mode button{border:0;background:transparent;color:#8a6100;font:inherit;font-size:11px;font-weight:700;text-decoration:underline;cursor:pointer}
+    .pj-ov{position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(17,24,39,.55)}
+    .pj-ov.show{display:flex}
+    .pj-md{width:100%;max-width:460px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:14px;padding:22px}
+    .pj-md h4{margin:0 0 14px;font-size:14px;color:#ed1111}
+    .pj-md dl{margin:0;font-size:12px}
+    .pj-md dt{font-size:10px;color:#6b7280;margin-top:10px}
+    .pj-md dd{margin:2px 0 0;color:#111;text-align:left;white-space:pre-line}
+    .pj-md ul{margin:2px 0 0 16px;padding:0}
+    .pj-md .pj-close{margin-top:18px;width:100%;border:1px solid #6b6b6b;background:#fff;border-radius:6px;padding:8px;font:inherit;font-size:11px;font-weight:600;cursor:pointer}
 
     .pj-ftitle{margin:34px 0 14px;font-size:15px;font-weight:700;color:#ed1111}
     .pj-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
@@ -77,8 +98,8 @@
 
     .pj-ket{margin-top:26px}
     .pj-ket label{display:block;font-size:15px;font-weight:700;color:#ed1111;margin:0 0 8px}
-    .pj-ket textarea{display:block;width:100%;height:68px;border:1px solid #bdbdbd;border-radius:8px;padding:10px 14px;font:inherit;font-size:10px;resize:vertical;text-align:center}
-    .pj-ket textarea::placeholder{color:#777;font-size:9px;text-align:center}
+    .pj-ket textarea{display:block;width:100%;height:68px;border:1px solid #bdbdbd;border-radius:8px;padding:10px 14px;font:inherit;font-size:10px;resize:vertical;text-align:left}
+    .pj-ket textarea::placeholder{color:#777;font-size:9px;text-align:left}
     .pj-ket textarea:focus{outline:2px solid #a11a1e;outline-offset:1px}
 
     .pj-act{margin-top:24px;display:flex;justify-content:flex-end}
@@ -97,7 +118,10 @@
 
 @section('konten')
 <section class="pj-card">
-    <h3 class="pj-h">Pemeriksaan Penunjang — Permintaan Laboratorium</h3>
+    <div class="pj-head">
+        <h3 class="pj-h">Pemeriksaan Penunjang — Permintaan Laboratorium</h3>
+        <button type="button" class="pj-add" id="pjAdd"><i class="bi bi-plus-lg"></i> Tambah</button>
+    </div>
 
     <table class="pj-table">
         <thead>
@@ -106,13 +130,18 @@
                 <th>Pemeriksaan Diminta</th>
                 <th style="width:150px">Tanggal</th>
                 <th style="width:130px">Status</th>
-                <th style="width:120px">Action</th>
+                <th style="width:230px">Action</th>
             </tr>
         </thead>
         <tbody id="pjRows"></tbody>
     </table>
 
     <h3 class="pj-ftitle">Formulir Permintaan Pemeriksaan Laboratorium</h3>
+
+    <div class="pj-mode" id="pjMode">
+        <span>Mode ubah: perbarui pilihan pemeriksaan lalu klik "Simpan Perubahan".</span>
+        <button type="button" id="pjBatal">Batal</button>
+    </div>
 
     <form id="pjForm" autocomplete="off">
         <div class="pj-grid">
@@ -162,6 +191,14 @@
         </div>
     </form>
 </section>
+
+<div class="pj-ov" id="pjOv">
+    <div class="pj-md" role="dialog" aria-modal="true">
+        <h4>Detail Permintaan Penunjang</h4>
+        <dl id="pjDetail"></dl>
+        <button type="button" class="pj-close" id="pjClose">Tutup</button>
+    </div>
+</div>
 
 <div class="pj-toast" id="pjToast"></div>
 @endsection
@@ -214,22 +251,77 @@
                 <td class="l">${esc(r.items.join(', '))}</td>
                 <td>${esc(r.tanggal)}</td>
                 <td><span class="pj-badge">${esc(r.status || 'Menunggu')}</span></td>
-                <td><button type="button" class="pj-del" data-i="${i}">Hapus</button></td>
+                <td>
+                    <div class="pj-act-cell">
+                        <button type="button" class="pj-ab detail" data-a="detail" data-i="${i}" title="Detail"><i class="bi bi-eye-fill"></i> Detail</button>
+                        <button type="button" class="pj-ab edit" data-a="edit" data-i="${i}" title="Edit"${r.status && r.status !== 'Menunggu' ? ' disabled' : ''}><i class="bi bi-pencil-square"></i> Edit</button>
+                        <button type="button" class="pj-ab hapus" data-a="hapus" data-i="${i}" title="Hapus"${r.status && r.status !== 'Menunggu' ? ' disabled' : ''}><i class="bi bi-trash-fill"></i></button>
+                    </div>
+                </td>
             </tr>`).join('');
     }
 
+    // ---- Mode tambah / edit
+    const modeEl = document.getElementById('pjMode');
+    const ketEl  = document.getElementById('pjKet');
+    let editIdx  = null;
+
+    function mulaiTambah(scroll) {
+        editIdx = null;
+        form.reset();
+        boxes.forEach(box => { hitung(box); aturBuka(box, false); });
+        modeEl.classList.remove('show');
+        btn.textContent = '+ Buat Permintaan Laboratorium';
+        if (scroll) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function mulaiEdit(i) {
+        const r = data[i];
+        editIdx = i;
+        form.reset();
+        form.querySelectorAll('input[type=checkbox]').forEach(cb => { cb.checked = r.items.includes(cb.value); });
+        ketEl.value = r.keterangan || '';
+        boxes.forEach(box => {
+            hitung(box);
+            aturBuka(box, box.querySelectorAll('input[type=checkbox]:checked').length > 0);
+        });
+        modeEl.classList.add('show');
+        btn.textContent = 'Simpan Perubahan';
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.getElementById('pjAdd').addEventListener('click', () => mulaiTambah(true));
+    document.getElementById('pjBatal').addEventListener('click', () => mulaiTambah(false));
+
+    // ---- Modal detail
+    const ov = document.getElementById('pjOv');
+    function tampilDetail(r) {
+        document.getElementById('pjDetail').innerHTML = `
+            <dt>Tanggal</dt><dd>${esc(r.tanggal)}</dd>
+            <dt>Status</dt><dd>${esc(r.status || 'Menunggu')}</dd>
+            <dt>Pemeriksaan Diminta</dt><dd><ul>${r.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></dd>
+            <dt>Keterangan Klinik</dt><dd>${r.keterangan ? esc(r.keterangan) : '-'}</dd>`;
+        ov.classList.add('show');
+    }
+    document.getElementById('pjClose').addEventListener('click', () => ov.classList.remove('show'));
+    ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+
     rows.addEventListener('click', async e => {
-        const b = e.target.closest('.pj-del');
-        if (!b) return;
+        const b = e.target.closest('.pj-ab');
+        if (!b || b.disabled) return;
+        const i = +b.dataset.i;
+        const r = data[i];
+
+        if (b.dataset.a === 'detail') return tampilDetail(r);
+        if (b.dataset.a === 'edit')   return mulaiEdit(i);
+
         if (!confirm('Hapus permintaan ini?')) return;
-        const r = data[+b.dataset.i];
         try {
             const res = await fetch(r.hapus_url, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }
             });
             if (!res.ok) throw new Error();
-            data.splice(+b.dataset.i, 1);
+            data.splice(i, 1);
+            if (editIdx !== null) mulaiTambah(false);
             render();
             toast('Permintaan dihapus');
         } catch (_) {
@@ -244,18 +336,21 @@
             return toast('Pilih minimal satu pemeriksaan', true);
         }
         btn.disabled = true;
+        const sedangEdit = editIdx !== null;
         try {
-            const res = await fetch(storeUrl, {
+            let url = storeUrl;
+            if (sedangEdit) { url = data[editIdx].edit_url; fd.append('_method', 'PUT'); }
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
                 body: fd
             });
             if (!res.ok) throw new Error();
-            data.push(await res.json());
+            const hasil = await res.json();
+            if (sedangEdit) data[editIdx] = hasil; else data.push(hasil);
             render();
-            form.reset();
-            boxes.forEach(box => { hitung(box); aturBuka(box, false); });
-            toast('Permintaan laboratorium berhasil dibuat');
+            mulaiTambah(false);
+            toast(sedangEdit ? 'Permintaan berhasil diperbarui' : 'Permintaan laboratorium berhasil dibuat');
         } catch (_) {
             toast('Gagal menyimpan, coba lagi', true);
         } finally {

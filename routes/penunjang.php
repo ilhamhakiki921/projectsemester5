@@ -9,6 +9,7 @@ Route::prefix('pemeriksaan/{poli}/{no_rm}')->group(function () {
     // Penunjang
     Route::get('penunjang', [PenunjangController::class, 'index'])->name('penunjang.index');
     Route::post('penunjang', [PenunjangController::class, 'store'])->name('penunjang.store');
+    Route::put('penunjang/{id}', [PenunjangController::class, 'update'])->name('penunjang.update');
     Route::delete('penunjang/{id}', [PenunjangController::class, 'destroy'])->name('penunjang.destroy');
 
     // Rujukan (ditaruh di file ini supaya routes/web.php tidak perlu diubah)

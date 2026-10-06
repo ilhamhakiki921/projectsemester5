@@ -449,7 +449,8 @@
                         </div>
                     </div>
 
-                    <div class="field-row">
+                    {{-- Diagnosis Sekunder & Tindakan: masing-masing satu baris penuh (tersusun ke bawah, seperti Diagnosis Utama) --}}
+                    <div class="field-group">
                         <div class="field" data-dx-section>
                             <label>Diagnosis Sekunder (opsional)</label>
 
@@ -478,7 +479,9 @@
                                 ])
                             </template>
                         </div>
+                    </div>
 
+                    <div class="field-group">
                         <div class="field" data-dx-section>
                             <label>Tindakan (opsional)</label>
 
