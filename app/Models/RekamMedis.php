@@ -39,6 +39,7 @@ class RekamMedis extends Model
         'kode_icd10',
         'diagnosis_sekunder',
         'tindakan',
+        'status_koding',
     ];
 
     protected $casts = [

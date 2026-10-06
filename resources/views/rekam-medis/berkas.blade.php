@@ -1,0 +1,1548 @@
+@extends('layouts.app')
+
+@section('title', 'Berkas Rekam Medis — ' . $pasien->nama)
+
+@section('style')
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #ffffff;
+        color: #222;
+    }
+
+    .main {
+        width: calc(100% - 230px);
+        min-height: 100vh;
+        margin-left: 230px;
+        background: #ffffff;
+    }
+
+    .content {
+        width: 100%;
+        padding: 26px 24px;
+    }
+
+    /* =================================
+       BAR IDENTITAS RINGKAS
+    ================================== */
+
+    .berkas-bar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 18px 48px;
+
+        padding: 20px 34px;
+        margin-bottom: 26px;
+
+        border-radius: 10px;
+        background: linear-gradient(100deg, #a81d21 0%, #7d0c10 50%, #520609 100%);
+        color: #ffffff;
+        box-shadow: 0 3px 8px rgba(80, 0, 0, 0.3);
+    }
+
+    .berkas-bar .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .berkas-bar .item .lbl {
+        font-size: 11px;
+        font-weight: 400;
+        opacity: 0.92;
+    }
+
+    .berkas-bar .item .val {
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* =================================
+       KARTU + TAB
+    ================================== */
+
+    .berkas-card {
+        border: 1px solid #9b9b9b;
+        border-radius: 8px;
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .berkas-tabs {
+        display: flex;
+        gap: 34px;
+
+        padding: 0 18px;
+        overflow-x: auto;
+
+        border-bottom: 1px solid #9b9b9b;
+        scrollbar-width: none;
+    }
+
+    .berkas-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .berkas-tab {
+        position: relative;
+        flex-shrink: 0;
+
+        height: 34px;
+        padding: 0 3px;
+
+        border: none;
+        background: transparent;
+        cursor: pointer;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 11.5px;
+        font-weight: 400;
+        color: #222;
+        white-space: nowrap;
+    }
+
+    .berkas-tab:hover {
+        color: #a30000;
+    }
+
+    .berkas-tab.active::after {
+        content: '';
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 5px;
+
+        height: 1.5px;
+        background: #d00000;
+    }
+
+    .berkas-panel {
+        display: none;
+        padding: 20px 18px 26px;
+    }
+
+    .berkas-panel.active {
+        display: block;
+    }
+
+    /* =================================
+       IDENTITAS (label : nilai)
+    ================================== */
+
+    .kv-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .kv-row {
+        display: flex;
+        font-size: 12px;
+        color: #111;
+    }
+
+    .kv-row .k {
+        width: 161px;
+        flex-shrink: 0;
+    }
+
+    .kv-row .v {
+        flex: 1;
+        word-break: break-word;
+    }
+
+    /* =================================
+       TABEL RIWAYAT
+    ================================== */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .rw-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .rw-table th {
+        padding: 9px 10px;
+
+        font-size: 10px;
+        font-weight: 600;
+        text-align: left;
+        white-space: nowrap;
+        color: #ffffff;
+
+        background: linear-gradient(90deg, #b01c20 0%, #7a0a0a 55%, #4a0000 100%);
+    }
+
+    .rw-table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+    .rw-table th:last-child  { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+    .rw-table td {
+        padding: 11px 10px;
+
+        font-size: 11px;
+        color: #222;
+        vertical-align: top;
+
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .rw-table tbody tr:hover td {
+        background: #fafafa;
+    }
+
+    .empty-note {
+        padding: 18px 0;
+
+        font-size: 11.5px;
+        color: #888;
+        font-style: italic;
+    }
+
+    /* Badge */
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 9.5px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-menunggu { background: #fff4e5; color: #b06a00; }
+    .badge-sedang-diperiksa { background: #e8f0fe; color: #1967d2; }
+    .badge-selesai { background: #e6f4ea; color: #1a7f37; }
+    .badge-sudah { background: #c6e8c0; color: #1c5a14; border-radius: 5px; }
+    .badge-belum { background: #e6e8b4; color: #6d6a00; border-radius: 5px; }
+
+    .btn-detail {
+        display: inline-flex;
+        align-items: center;
+        height: 22px;
+        padding: 0 10px;
+
+        border: 1px solid #555;
+        border-radius: 4px;
+        background: #ffffff;
+
+        color: #222;
+        text-decoration: none;
+        font-size: 9px;
+        font-weight: 500;
+    }
+
+    .btn-detail:hover {
+        background: #a30000;
+        border-color: #a30000;
+        color: #ffffff;
+    }
+
+    /* =================================
+       RIWAYAT PEMERIKSAAN & SOAP
+    ================================== */
+
+    .periksa-item {
+        margin-bottom: 14px;
+
+        border: 1px solid #e2e2e2;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .periksa-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+
+        padding: 10px 14px;
+
+        background: #f7f1f1;
+        cursor: pointer;
+
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #5a0000;
+    }
+
+    .periksa-head .sub {
+        font-weight: 400;
+        color: #666;
+        font-size: 10.5px;
+    }
+
+    .periksa-head i {
+        transition: transform 0.2s ease;
+    }
+
+    .periksa-item.open .periksa-head i {
+        transform: rotate(180deg);
+    }
+
+    .periksa-body {
+        display: none;
+        padding: 14px;
+    }
+
+    .periksa-item.open .periksa-body {
+        display: block;
+    }
+
+    .sub-title {
+        margin: 14px 0 8px;
+
+        font-size: 11px;
+        font-weight: 700;
+        color: #a30000;
+    }
+
+    .sub-title:first-child {
+        margin-top: 0;
+    }
+
+    .kv-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px 20px;
+    }
+
+    .kv-item {
+        font-size: 11px;
+        color: #222;
+    }
+
+    .kv-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .kv-item strong {
+        display: block;
+        margin-bottom: 2px;
+
+        font-size: 9.5px;
+        font-weight: 600;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .chip {
+        display: inline-block;
+        margin: 0 4px 4px 0;
+        padding: 2px 9px;
+
+        border-radius: 12px;
+        background: #f3e3e3;
+        color: #6e0000;
+
+        font-size: 10px;
+    }
+
+    /* =================================
+       RIWAYAT KUNJUNGAN
+    ================================== */
+
+    .berkas-panel#panel-kunjungan {
+        padding-top: 24px;
+    }
+
+    .kj-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .kj-table th {
+        padding: 7px 8px;
+
+        background: #9c1a1d;
+        color: #ffffff;
+
+        font-size: 9.5px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .kj-table th:first-child { border-top-left-radius: 3px; border-bottom-left-radius: 3px; }
+    .kj-table th:last-child  { border-top-right-radius: 3px; border-bottom-right-radius: 3px; }
+
+    .kj-table td {
+        padding: 9px 8px;
+
+        font-size: 10px;
+        color: #111;
+        text-align: center;
+
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+    .kj-table .kiri {
+        padding-left: 8px;
+        text-align: left;
+    }
+
+    .kj-row {
+        cursor: pointer;
+    }
+
+    .kj-row:hover td {
+        background: #fbf3f3;
+    }
+
+    /* =================================
+       RIWAYAT PEMERIKSAAN & SOAP
+    ================================== */
+
+    .rp-card {
+        margin-bottom: 18px;
+
+        border: 1px solid #9b9b9b;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .rp-head {
+        padding: 12px 14px;
+
+        border-bottom: 1px solid #9b9b9b;
+
+        font-size: 12px;
+        font-weight: 700;
+        color: #111;
+    }
+
+    .rp-body {
+        padding: 14px 18px 20px;
+    }
+
+    .vital-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .vital-table th {
+        height: 76px;
+        padding: 6px;
+
+        border: 1px solid #888;
+        background: #e9e9e9;
+
+        font-size: 12px;
+        font-weight: 400;
+        color: #111;
+        text-align: center;
+    }
+
+    .vital-table td {
+        height: 76px;
+        padding: 6px;
+
+        border: 1px solid #888;
+
+        font-size: 12px;
+        color: #111;
+        text-align: center;
+    }
+
+    .soap-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 40px;
+
+        margin: 24px 0 26px;
+    }
+
+    .soap-item .lbl {
+        display: block;
+        margin-bottom: 4px;
+
+        font-size: 12px;
+        color: #8a8a8a;
+    }
+
+    .soap-item .isi {
+        display: block;
+
+        font-size: 12px;
+        color: #111;
+        line-height: 1.55;
+        white-space: pre-line;
+    }
+
+    .dx-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dx-row {
+        display: flex;
+        align-items: center;
+
+        font-size: 12px;
+    }
+
+    .dx-row .k {
+        width: 172px;
+        flex-shrink: 0;
+
+        color: #8a8a8a;
+    }
+
+    .dx-row .v {
+        flex: 1;
+        color: #111;
+    }
+
+    .koding-aksi {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .pill-koding {
+        display: inline-block;
+        min-width: 106px;
+        padding: 4px 14px;
+
+        border: 1px solid #9b9b9b;
+        border-radius: 14px;
+
+        font-size: 10px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .pill-koding.ok    { background: #84ee84; border-color: #5fd05f; color: #0f4a0f; }
+    .pill-koding.sudah { background: #e6e8b4; border-color: #cfd27d; color: #6d6a00; }
+    .pill-koding.belum { background: #ececec; border-color: #cfcfcf; color: #666; }
+
+    .btn-koding {
+        min-width: 82px;
+        height: 25px;
+        padding: 0 14px;
+
+        border: 1px solid #777;
+        border-radius: 4px;
+        background: #ffffff;
+        cursor: pointer;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 9.5px;
+        color: #111;
+    }
+
+    .btn-koding:hover {
+        background: #a30000;
+        border-color: #a30000;
+        color: #ffffff;
+    }
+
+    @media (max-width: 800px) {
+        .soap-grid { grid-template-columns: 1fr; }
+    }
+
+    /* =================================
+       HASIL LABORATORIUM (kosong)
+    ================================== */
+
+    .kosong-penunjang {
+        padding: 56px 20px 64px;
+        text-align: center;
+    }
+
+    .kosong-penunjang .judul {
+        margin-bottom: 8px;
+
+        font-size: 14px;
+        font-weight: 600;
+        color: #37474f;
+    }
+
+    .kosong-penunjang .sub {
+        font-size: 14px;
+        color: #78909c;
+    }
+
+    /* =================================
+       GENERAL CONSENT
+    ================================== */
+
+    .gc-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .gc-top .kv-list {
+        gap: 17px;
+    }
+
+    .gc-top .kv-row .k {
+        width: 200px;
+    }
+
+    .gc-actions {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .btn-outline,
+    .btn-biru {
+        height: 24px;
+        padding: 0 18px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 9.5px;
+        font-weight: 500;
+    }
+
+    .btn-outline {
+        border: 1px solid #555;
+        background: #ffffff;
+        color: #222;
+    }
+
+    .btn-outline:hover {
+        background: #f3f3f3;
+    }
+
+    .btn-biru {
+        border: none;
+        background: #2000c8;
+        color: #ffffff;
+    }
+
+    .btn-biru:hover {
+        background: #17009a;
+        color: #ffffff;
+    }
+
+    .gc-tabel-wrap {
+        margin-top: 30px;
+    }
+
+    .gc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .gc-table th {
+        padding: 8px 12px;
+
+        background: #9c1a1d;
+        color: #ffffff;
+
+        font-size: 9.5px;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .gc-table th:first-child { border-top-left-radius: 3px; }
+    .gc-table th:last-child  { border-top-right-radius: 3px; text-align: center; }
+
+    .gc-table td {
+        padding: 12px;
+
+        font-size: 10.5px;
+        color: #111;
+        vertical-align: top;
+
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .gc-table .c-no { width: 50px; }
+    .gc-table .c-sifat { width: 110px; }
+    .gc-table .c-putusan { width: 120px; text-align: center; }
+
+    .gc-table .judul {
+        display: block;
+        font-weight: 600;
+    }
+
+    .gc-table .isi {
+        display: block;
+        margin-top: 2px;
+        color: #555;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .keputusan {
+        display: inline-block;
+        min-width: 54px;
+        padding: 3px 12px;
+
+        border-radius: 12px;
+
+        font-size: 9.5px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .keputusan.setuju { background: #1fe81f; color: #063a06; }
+    .keputusan.belum  { background: #e6e8b4; color: #6d6a00; }
+
+    .flash-ok {
+        margin-bottom: 14px;
+        padding: 9px 14px;
+
+        border-radius: 6px;
+        background: #e6f4ea;
+        color: #1a7f37;
+
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    /* =================================
+       MODAL PERBARUI GENERAL CONSENT
+       (gaya kolom sama dengan form Pendaftaran)
+    ================================== */
+
+    .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
+
+        background: rgba(17, 24, 39, .55);
+        backdrop-filter: blur(2px);
+    }
+
+    .modal-bg.show {
+        display: flex;
+    }
+
+    .modal-box {
+        width: 900px;
+        max-width: 100%;
+        max-height: calc(100vh - 40px);
+
+        display: flex;
+        flex-direction: column;
+
+        border-radius: 14px;
+        background: #ffffff;
+        overflow: hidden;
+
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-head {
+        padding: 22px 34px;
+        border-bottom: 1px solid #c9c9c9;
+    }
+
+    .modal-head h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .modal-main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 22px 34px 8px;
+    }
+
+    .alert-merah {
+        margin-bottom: 24px;
+        padding: 16px 28px;
+
+        border-radius: 10px;
+        background: #ff8f8f;
+        color: #222;
+
+        font-size: 12.5px;
+        line-height: 1.6;
+    }
+
+    .f-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px 52px;
+
+        margin-bottom: 26px;
+    }
+
+    .f-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .f-group.lebar {
+        grid-column: span 2;
+        padding-right: 52px;
+    }
+
+    .f-group label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #222;
+    }
+
+    .f-group .wajib {
+        color: #dc2626;
+    }
+
+    .f-group input,
+    .f-group select {
+        width: 100%;
+        height: 40px;
+        padding: 0 14px;
+
+        border: 1px solid #9b9b9b;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #222;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+
+        outline: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .f-group input::placeholder {
+        color: #9aa5a5;
+    }
+
+    /* Hint pada pilihan yang belum dipilih */
+    .f-group select:invalid {
+        color: #9aa5a5;
+    }
+
+    .f-group select option {
+        color: #222;
+    }
+
+    /* Kolom aktif (diklik) = merah, sama seperti Pendaftaran & Pemeriksaan */
+    .f-group input:focus,
+    .f-group select:focus {
+        border-color: #b40000;
+        box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
+    }
+
+    .f-group.salah input,
+    .f-group.salah select {
+        border-color: #dc2626;
+    }
+
+    .f-pesan {
+        font-size: 11px;
+        color: #dc2626;
+    }
+
+    .pernyataan-judul {
+        padding-bottom: 6px;
+        margin-bottom: 12px;
+
+        border-bottom: 1px solid #9b9b9b;
+
+        font-size: 13px;
+        font-weight: 500;
+        color: #222;
+    }
+
+    .f-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+
+        margin-bottom: 10px;
+
+        font-size: 13px;
+        line-height: 1.5;
+        color: #222;
+        cursor: pointer;
+    }
+
+    .f-check input {
+        width: 15px;
+        height: 15px;
+        margin-top: 4px;
+        flex-shrink: 0;
+
+        accent-color: #b40000;
+        cursor: pointer;
+    }
+
+    .f-error {
+        margin-bottom: 16px;
+        padding: 10px 14px;
+
+        border-radius: 8px;
+        background: #fdecec;
+        color: #b00000;
+
+        font-size: 12px;
+    }
+
+    .modal-foot {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+
+        padding: 18px 34px;
+
+        border-top: 1px solid #c9c9c9;
+    }
+
+    .btn-batal,
+    .btn-simpan {
+        height: 38px;
+        padding: 0 26px;
+
+        border-radius: 10px;
+        cursor: pointer;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .btn-batal {
+        border: 1px solid #555;
+        background: #ffffff;
+        color: #222;
+    }
+
+    .btn-batal:hover {
+        background: #f3f3f3;
+    }
+
+    .btn-simpan {
+        border: 1px solid #00d800;
+        background: #00e600;
+        color: #ffffff;
+    }
+
+    .btn-simpan:hover:not(:disabled) {
+        background: #00c400;
+    }
+
+    .btn-simpan:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 800px) {
+        .f-grid { grid-template-columns: 1fr; }
+        .f-group.lebar { grid-column: auto; padding-right: 0; }
+    }
+
+</style>
+
+@endsection
+
+
+@section('content')
+
+@php
+    $umur = $pasien->tanggal_lahir ? $pasien->tanggal_lahir->age . ' tahun' : '-';
+    $tempatLahir = $pasien->tempat_lahir ?? null;
+    $tglLahir = $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : null;
+    $ttl = trim(($tempatLahir ? $tempatLahir . ', ' : '') . ($tglLahir ?? ''));
+    $alamat = trim(($pasien->alamat ?? '') . ($pasien->kecamatan ? ', ' . $pasien->kecamatan : ''));
+    $consent = $pasien->generalConsent;
+    $namaPoliDari = fn ($slug) => $namaPoli[$slug] ?? 'Poli ' . ucfirst($slug);
+    $slugStatus = fn ($s) => str_replace(' ', '-', strtolower($s));
+    $bulanPendek = [1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    $tglIndo = fn ($tgl) => $tgl->format('j') . ' ' . $bulanPendek[(int) $tgl->format('n')] . ' ' . $tgl->format('Y');
+    // Kode antrian: awalan dari nama poli (Poli Umum -> PU) + nomor 3 digit
+    $kodeAntrian = function ($k) use ($namaPoliDari) {
+        $kata = preg_split('/\s+/', trim($namaPoliDari($k->poli)));
+        $awalan = count($kata) >= 2
+            ? mb_substr($kata[0], 0, 1) . mb_substr($kata[1], 0, 1)
+            : mb_substr($kata[0], 0, 2);
+        return strtoupper($awalan) . '-' . str_pad((int) $k->no_antrian, 3, '0', STR_PAD_LEFT);
+    };
+    $namaPembayaran = fn ($v) => strtoupper($v) === 'BPJS' ? 'BPJS Kesehatan' : $v;
+    $idKunjunganPertama = optional($kunjungan->sortBy([['tanggal_kunjungan', 'asc'], ['id', 'asc']])->first())->id;
+@endphp
+
+<div class="dashboard">
+
+    <x-sidebar />
+
+    <main class="main">
+        <x-topbar title="Rekam Medis" icon="house-fill" />
+
+        <section class="content">
+
+            {{-- BAR IDENTITAS RINGKAS --}}
+            <div class="berkas-bar">
+                <div class="item"><span class="lbl">No.RM</span><span class="val">{{ $pasien->no_rm }}</span></div>
+                <div class="item"><span class="lbl">Nama</span><span class="val">{{ $pasien->nama }}</span></div>
+                <div class="item"><span class="lbl">NIK</span><span class="val">{{ $pasien->nik ?: '-' }}</span></div>
+                <div class="item"><span class="lbl">Jenis Kelamin</span><span class="val">{{ $pasien->jenis_kelamin ?: 'Tidak diketahui' }}</span></div>
+                <div class="item"><span class="lbl">Umur</span><span class="val">{{ $umur }}</span></div>
+                <div class="item"><span class="lbl">Total Kunjungan</span><span class="val">{{ $kunjungan->count() }}x</span></div>
+            </div>
+
+
+            <div class="berkas-card">
+
+                <div class="berkas-tabs">
+                    <button type="button" class="berkas-tab active" data-tab="identitas">Identitas</button>
+                    <button type="button" class="berkas-tab" data-tab="consent">General Consent</button>
+                    <button type="button" class="berkas-tab" data-tab="kunjungan">Riwayat Kunjungan</button>
+                    <button type="button" class="berkas-tab" data-tab="soap">Riwayat Pemeriksaan &amp; SOAP</button>
+                    <button type="button" class="berkas-tab" data-tab="lab">Hasil Laboratorium</button>
+                    <button type="button" class="berkas-tab" data-tab="resep">Riwayat Resep &amp; Obat</button>
+                </div>
+
+
+                {{-- ========== IDENTITAS ========== --}}
+                <div class="berkas-panel active" id="panel-identitas">
+                    <div class="kv-list">
+                        <div class="kv-row"><span class="k">No. Rekam Medis</span><span class="v">{{ $pasien->no_rm }}</span></div>
+                        <div class="kv-row"><span class="k">NIK</span><span class="v">{{ $pasien->nik ?: '-' }}</span></div>
+                        <div class="kv-row"><span class="k">Nama</span><span class="v">{{ $pasien->nama }}</span></div>
+                        <div class="kv-row"><span class="k">Tempat/Tgl Lahir</span><span class="v">{{ $ttl ?: '-' }}</span></div>
+                        <div class="kv-row"><span class="k">Jenis Kelamin</span><span class="v">{{ $pasien->jenis_kelamin ?: '-' }}</span></div>
+                        <div class="kv-row"><span class="k">Golongan Darah</span><span class="v">{{ $pasien->golongan_darah ?? '-' }}</span></div>
+                        <div class="kv-row"><span class="k">Alamat</span><span class="v">{{ $alamat ?: '-' }}</span></div>
+                        <div class="kv-row"><span class="k">Telepone</span><span class="v">{{ $pasien->no_telepon ?: '-' }}</span></div>
+                        <div class="kv-row"><span class="k">Email</span><span class="v">{{ $pasien->email ?? '-' }}</span></div>
+                    </div>
+                </div>
+
+
+                {{-- ========== GENERAL CONSENT ========== --}}
+                <div class="berkas-panel" id="panel-consent">
+
+                    @if (session('sukses_consent'))
+                        <div class="flash-ok">{{ session('sukses_consent') }}</div>
+                    @endif
+
+                    @php
+                        $setujuIdx = $consent ? $consent->pernyataanDisetujui() : [];
+                        $pemberiWali = $consent && $consent->pemberi_persetujuan === 'Wali';
+                    @endphp
+
+                    <div class="gc-top">
+                        <div class="kv-list">
+                            <div class="kv-row"><span class="k">Tanggal</span><span class="v">{{ $consent && $consent->disetujui_pada ? $consent->disetujui_pada->format('d-m-Y H:i') : '-' }}</span></div>
+                            <div class="kv-row"><span class="k">Penandatangan</span><span class="v">{{ $consent->nama_penyetuju ?? '-' }}</span></div>
+                            <div class="kv-row"><span class="k">Hubungan dengan pasien</span><span class="v">{{ $consent ? ($pemberiWali ? ($consent->hubungan ?: '-') : 'Pasien sendiri') : '-' }}</span></div>
+                            <div class="kv-row"><span class="k">Keluarga/pendamping</span><span class="v">{{ $consent->pendamping ?? '-' }}</span></div>
+                            <div class="kv-row"><span class="k">Saksi</span><span class="v">{{ $consent->saksi ?? '-' }}</span></div>
+                            <div class="kv-row"><span class="k">Petugas yang mencatat</span><span class="v">{{ $consent->petugas_pencatat ?? '-' }}</span></div>
+                        </div>
+
+                        <div class="gc-actions">
+                            <button type="button" class="btn-outline" id="btnPerbaruiConsent">Perbarui</button>
+                            <a href="{{ route('rekam-medis.consent.cetak', $pasien->id) }}" target="_blank" class="btn-biru">Cetak Formulir</a>
+                        </div>
+                    </div>
+
+                    <div class="gc-tabel-wrap table-wrapper">
+                        <table class="gc-table">
+                            <thead>
+                                <tr>
+                                    <th class="c-no">No</th>
+                                    <th>Pernyataan</th>
+                                    <th class="c-sifat">Sifat</th>
+                                    <th class="c-putusan">Keputusan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (\App\Models\GeneralConsent::PERNYATAAN as $n => $row)
+                                    <tr>
+                                        <td>{{ $n + 1 }}</td>
+                                        <td>
+                                            <span class="judul">{{ $row[0] }}</span>
+                                            <span class="isi">{{ $row[1] }}</span>
+                                        </td>
+                                        <td>Wajib</td>
+                                        <td class="c-putusan">
+                                            @if (in_array($n, $setujuIdx, true))
+                                                <span class="keputusan setuju">Setuju</span>
+                                            @else
+                                                <span class="keputusan belum">Belum</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+
+                {{-- ========== RIWAYAT KUNJUNGAN ========== --}}
+                <div class="berkas-panel" id="panel-kunjungan">
+                    @if ($kunjungan->isEmpty())
+                        <p class="empty-note">Belum ada riwayat kunjungan.</p>
+                    @else
+                        <div class="table-wrapper">
+                            <table class="kj-table">
+                                <thead>
+                                    <tr>
+                                        <th class="kiri">Tanggal</th>
+                                        <th>Poli</th>
+                                        <th>No. Antrian</th>
+                                        <th>Jenis</th>
+                                        <th>Pembayaran</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($kunjungan as $k)
+                                        <tr class="kj-row" data-href="{{ route('rekam-medis.show', $k->id) }}" title="Klik untuk melihat detail kunjungan">
+                                            <td class="kiri">{{ $tglIndo($k->tanggal_kunjungan) }}</td>
+                                            <td>{{ $namaPoliDari($k->poli) }}</td>
+                                            <td>{{ $kodeAntrian($k) }}</td>
+                                            <td>{{ $k->id === $idKunjunganPertama ? 'Baru' : 'Lama' }}</td>
+                                            <td>{{ $namaPembayaran($k->pembayaran) }}</td>
+                                            <td><span class="badge badge-{{ $slugStatus($k->status) }}">{{ $k->status }}</span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+
+
+                {{-- ========== RIWAYAT PEMERIKSAAN & SOAP ========== --}}
+                <div class="berkas-panel" id="panel-soap">
+
+                    @if (session('sukses_koding'))
+                        <div class="flash-ok">{{ session('sukses_koding') }}</div>
+                    @endif
+
+                    @php
+                        $adaPeriksa = $kunjungan->filter(fn ($k) => $k->rekamMedis);
+                        // Nomor kunjungan menurut urutan waktu (kunjungan paling awal = 1)
+                        $noKunjungan = $kunjungan->sortBy([['tanggal_kunjungan', 'asc'], ['id', 'asc']])
+                            ->values()->pluck('id')->flip()->map(fn ($i) => $i + 1);
+                    @endphp
+
+                    @if ($adaPeriksa->isEmpty())
+                        <p class="empty-note">Belum ada riwayat pemeriksaan.</p>
+                    @else
+                        @foreach ($adaPeriksa as $k)
+                            @php
+                                $rm = $k->rekamMedis;
+                                $terverifikasi = ($rm->status_koding ?? null) === 'Terverifikasi';
+                                $sudahKode = ! empty($rm->kode_icd10);
+                            @endphp
+
+                            <div class="rp-card">
+                                <div class="rp-head">Kunjungan {{ $noKunjungan[$k->id] }} — {{ $namaPoliDari($k->poli) }}</div>
+
+                                <div class="rp-body">
+
+                                    <div class="table-wrapper">
+                                        <table class="vital-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>TB</th>
+                                                    <th>BB</th>
+                                                    <th>IMT</th>
+                                                    <th>Suhu</th>
+                                                    <th>TD</th>
+                                                    <th>Denyut<br>Jantung</th>
+                                                    <th>RR</th>
+                                                    <th>Saturasi</th>
+                                                    <th>GCS</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ $rm->tb ?: '' }}</td>
+                                                    <td>{{ $rm->berat_badan ?: '' }}</td>
+                                                    <td>{{ $rm->imt ?: '' }}</td>
+                                                    <td>{{ $rm->suhu_badan ?: '' }}</td>
+                                                    <td>{{ $rm->td ?: '' }}</td>
+                                                    <td>{{ $rm->detak_jantung ?: '' }}</td>
+                                                    <td>{{ $rm->respiratory_rate ?: '' }}</td>
+                                                    <td>{{ $rm->saturasi ?: '' }}</td>
+                                                    <td>{{ $rm->gcs ?: '' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="soap-grid">
+                                        <div class="soap-item"><span class="lbl">S — Subjective</span><span class="isi">{{ $rm->subjective ?: '-' }}</span></div>
+                                        <div class="soap-item"><span class="lbl">O — Objective</span><span class="isi">{{ $rm->objective ?: '-' }}</span></div>
+                                        <div class="soap-item"><span class="lbl">A — Assessment</span><span class="isi">{{ $rm->assessment ?: '-' }}</span></div>
+                                        <div class="soap-item"><span class="lbl">P — Plan</span><span class="isi">{{ $rm->plan ?: '-' }}</span></div>
+                                    </div>
+
+                                    <div class="dx-list">
+                                        <div class="dx-row"><span class="k">Diagnosa Utama</span><span class="v">{{ $rm->diagnosis_utama ?: '-' }}{{ $sudahKode ? ' (' . $rm->kode_icd10 . ')' : '' }}</span></div>
+                                        <div class="dx-row"><span class="k">Diagnosa Sekunder</span><span class="v">{{ $rm->diagnosis_sekunder ? str_replace(' | ', '; ', $rm->diagnosis_sekunder) : '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Tindakan</span><span class="v">{{ $rm->tindakan ?: '-' }}</span></div>
+                                        <div class="dx-row">
+                                            <span class="k">Status Koding</span>
+                                            <span class="v koding-aksi">
+                                                @if ($terverifikasi)
+                                                    <span class="pill-koding ok">Terverifikasi</span>
+                                                @elseif ($sudahKode)
+                                                    <span class="pill-koding sudah">Sudah dikoding</span>
+                                                @else
+                                                    <span class="pill-koding belum">Belum dikoding</span>
+                                                @endif
+
+                                                <button type="button" class="btn-koding"
+                                                        data-action="{{ route('rekam-medis.koding.update', $k->id) }}"
+                                                        data-kode="{{ $rm->kode_icd10 }}"
+                                                        data-diagnosa="{{ $rm->diagnosis_utama }}">Koding</button>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+
+
+                {{-- ========== HASIL LABORATORIUM ========== --}}
+                <div class="berkas-panel" id="panel-lab">
+                    {{-- Ubah jadi true kalau halaman Penunjang sudah jadi, supaya daftar permintaan/hasil ikut tampil --}}
+                    @php $penunjangSiap = false; @endphp
+
+                    @if (! $penunjangSiap || $penunjang->isEmpty())
+                        <div class="kosong-penunjang">
+                            <div class="judul">Belum ada pemeriksaan penunjang</div>
+                            <div class="sub">Permintaan laboratorium untuk pasien ini belum pernah dibuat.</div>
+                        </div>
+                    @else
+                        <div class="table-wrapper">
+                            <table class="rw-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Tanggal</th>
+                                        <th>Pemeriksaan</th>
+                                        <th>Keterangan</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($penunjang as $i => $p)
+                                        <tr>
+                                            <td>{{ $i + 1 }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }}</td>
+                                            <td>
+                                                @foreach ($p->daftar as $nama)
+                                                    <span class="chip">{{ $nama }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $p->keterangan ?: '-' }}</td>
+                                            <td><span class="badge badge-{{ $slugStatus($p->status) }}">{{ $p->status }}</span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+
+
+                {{-- ========== RIWAYAT RESEP & OBAT ========== --}}
+                <div class="berkas-panel" id="panel-resep">
+                    @if ($resep->isEmpty())
+                        <p class="empty-note">Belum ada riwayat resep obat.</p>
+                    @else
+                        <div class="table-wrapper">
+                            <table class="rw-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Tanggal</th>
+                                        <th>Poli</th>
+                                        <th>Nama Obat</th>
+                                        <th>Sediaan</th>
+                                        <th>Jumlah</th>
+                                        <th>Dosis</th>
+                                        <th>Frekuensi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($resep as $i => $r)
+                                        <tr>
+                                            <td>{{ $i + 1 }}</td>
+                                            <td>{{ $r->tanggal_penulisan ? $r->tanggal_penulisan->format('d-m-Y') : $r->kunjungan->tanggal_kunjungan->format('d-m-Y') }}</td>
+                                            <td>{{ $namaPoliDari($r->kunjungan->poli) }}</td>
+                                            <td>{{ optional($r->obat)->nama_obat ?: '-' }}</td>
+                                            <td>{{ optional($r->obat)->sediaan ?: '-' }}</td>
+                                            <td>{{ $r->jumlah_obat }}</td>
+                                            <td>{{ $r->dosis_obat }}</td>
+                                            <td>{{ $r->frekuensi }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+{{-- MODAL KODING (ICD-10) --}}
+<div class="modal-bg" id="modalKoding">
+    <form class="modal-box" style="width: 520px;" method="POST" action="#" id="formKoding" novalidate>
+        @csrf
+        @method('PUT')
+
+        <div class="modal-head">
+            <h3>Koding &amp; Verifikasi</h3>
+        </div>
+
+        <div class="modal-main">
+            <div class="f-group" style="margin-bottom: 16px;">
+                <label>Diagnosa Utama</label>
+                <div id="kdDiagnosa" style="font-size: 13px; color: #111;">-</div>
+            </div>
+
+            <div class="f-group {{ $errors->has('kode_icd10') ? 'salah' : '' }}" style="margin-bottom: 16px;">
+                <label for="kdKode">Kode ICD-10 <span class="wajib">*</span></label>
+                <input type="text" id="kdKode" name="kode_icd10" placeholder="Contoh: J06.9" maxlength="20" autocomplete="off">
+                @error('kode_icd10')
+                    <span class="f-pesan">{{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-batal" id="btnBatalKoding">Batal</button>
+            <button type="submit" class="btn-simpan" id="btnSimpanKoding" disabled>Simpan &amp; Verifikasi</button>
+        </div>
+    </form>
+</div>
+
+{{-- MODAL PERBARUI GENERAL CONSENT --}}
+@php
+    $hubunganTersimpan = $consent ? ($consent->pemberi_persetujuan === 'Wali' ? $consent->hubungan : 'Pasien sendiri') : null;
+    $hubunganPilih = old('hubungan', $hubunganTersimpan);
+    $opsiHubungan = \App\Models\GeneralConsent::HUBUNGAN;
+    if ($hubunganPilih && ! in_array($hubunganPilih, $opsiHubungan, true)) {
+        $opsiHubungan[] = $hubunganPilih;
+    }
+    $tanggalForm = old('disetujui_pada', ($consent && $consent->disetujui_pada ? $consent->disetujui_pada : now())->format('Y-m-d'));
+    $centangLama = old('pernyataan') !== null
+        ? array_map('intval', old('pernyataan'))
+        : ($consent ? $consent->pernyataanDisetujui() : []);
+@endphp
+
+<div class="modal-bg" id="modalConsent">
+    <form class="modal-box" method="POST" action="{{ route('rekam-medis.consent.update', $pasien->id) }}" id="formConsent" novalidate>
+        @csrf
+        @method('PUT')
+
+        <div class="modal-head">
+            <h3>General Consent</h3>
+        </div>
+
+        <div class="modal-main">
+
+            @if ($errors->any())
+                <div class="f-error">
+                    @foreach ($errors->all() as $err) <div>{{ $err }}</div> @endforeach
+                </div>
+            @endif
+
+            <div class="alert-merah">
+                Persetujuan umum berlaku untuk seluruh kunjungan pasien. Penandatangan adalah pasien atau walinya bila pasien belum dewasa/tidak cakap.
+            </div>
+
+            <div class="f-grid">
+                <div class="f-group {{ $errors->has('nama_penyetuju') ? 'salah' : '' }}">
+                    <label for="fNama">Nama penandatangan <span class="wajib">*</span></label>
+                    <input type="text" id="fNama" name="nama_penyetuju" placeholder="Nama pasien atau wali"
+                           value="{{ old('nama_penyetuju', $consent->nama_penyetuju ?? '') }}" autocomplete="off">
+                </div>
+
+                <div class="f-group {{ $errors->has('hubungan') ? 'salah' : '' }}">
+                    <label for="fHubungan">Hubungan dengan pasien <span class="wajib">*</span></label>
+                    <select id="fHubungan" name="hubungan" required>
+                        <option value="" disabled {{ $hubunganPilih ? '' : 'selected' }}>Pilih hubungan</option>
+                        @foreach ($opsiHubungan as $opsi)
+                            <option value="{{ $opsi }}" {{ $hubunganPilih === $opsi ? 'selected' : '' }}>{{ $opsi }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="f-group {{ $errors->has('disetujui_pada') ? 'salah' : '' }}">
+                    <label for="fTanggal">Tanggal <span class="wajib">*</span></label>
+                    <input type="date" id="fTanggal" name="disetujui_pada" value="{{ $tanggalForm }}">
+                </div>
+
+                <div class="f-group">
+                    <label for="fSaksi">Nama Saksi</label>
+                    <input type="text" id="fSaksi" name="saksi" placeholder="Nama saksi (jika ada)"
+                           value="{{ old('saksi', $consent->saksi ?? '') }}" autocomplete="off">
+                </div>
+
+                <div class="f-group lebar">
+                    <label for="fPendamping">Keluarga/pendamping yang boleh menerima informasi</label>
+                    <input type="text" id="fPendamping" name="pendamping" placeholder="Nama keluarga/pendamping (jika ada)"
+                           value="{{ old('pendamping', $consent->pendamping ?? '') }}" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="pernyataan-judul">Pernyataan Persetujuan</div>
+
+            @foreach (\App\Models\GeneralConsent::PERNYATAAN as $n => $row)
+                <label class="f-check">
+                    <input type="checkbox" class="cb-pernyataan" name="pernyataan[]" value="{{ $n }}"
+                           {{ in_array($n, $centangLama, true) ? 'checked' : '' }}>
+                    <span>{{ $row[1] }}</span>
+                </label>
+            @endforeach
+
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-batal" id="btnBatalConsent">Batal</button>
+            <button type="submit" class="btn-simpan" id="btnSimpanConsent">Simpan General Consent</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    (function () {
+        var tabs   = document.querySelectorAll('.berkas-tab');
+        var panels = document.querySelectorAll('.berkas-panel');
+
+        function bukaTab(nama) {
+            tabs.forEach(function (t) { t.classList.toggle('active', t.dataset.tab === nama); });
+            panels.forEach(function (p) { p.classList.toggle('active', p.id === 'panel-' + nama); });
+        }
+
+        tabs.forEach(function (t) {
+            t.addEventListener('click', function () { bukaTab(t.dataset.tab); });
+        });
+
+        // Buka tab sesuai hash URL (mis. setelah menyimpan General Consent)
+        var hash = (location.hash || '').replace('#', '');
+        if (hash && document.getElementById('panel-' + hash)) {
+            bukaTab(hash);
+        }
+
+        // Modal Perbarui General Consent
+        var modal = document.getElementById('modalConsent');
+        var selHubungan = document.getElementById('fHubungan');
+        var fNama       = document.getElementById('fNama');
+        var fTanggal    = document.getElementById('fTanggal');
+        var cbs         = document.querySelectorAll('.cb-pernyataan');
+        var btnSimpan   = document.getElementById('btnSimpanConsent');
+
+        // Tombol simpan aktif kalau nama, hubungan, tanggal terisi dan semua pernyataan dicentang
+        function aturTombol() {
+            var lengkap = fNama.value.trim() !== '' && selHubungan.value !== '' && fTanggal.value !== '';
+            var semua = true;
+            cbs.forEach(function (c) { if (!c.checked) semua = false; });
+            btnSimpan.disabled = !(lengkap && semua);
+        }
+
+        [fNama, selHubungan, fTanggal].forEach(function (el) {
+            el.addEventListener('input', aturTombol);
+            el.addEventListener('change', aturTombol);
+        });
+        cbs.forEach(function (c) { c.addEventListener('change', aturTombol); });
+        aturTombol();
+
+        document.getElementById('btnPerbaruiConsent').addEventListener('click', function () {
+            modal.classList.add('show');
+        });
+        document.getElementById('btnBatalConsent').addEventListener('click', function () {
+            modal.classList.remove('show');
+        });
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) modal.classList.remove('show');
+        });
+
+        @if ($errors->any())
+            bukaTab('consent');
+            modal.classList.add('show');
+        @endif
+
+        // Modal Koding (ICD-10)
+        var modalKoding = document.getElementById('modalKoding');
+        var formKoding  = document.getElementById('formKoding');
+        var kdKode      = document.getElementById('kdKode');
+        var btnSimpanKd = document.getElementById('btnSimpanKoding');
+
+        function aturTombolKoding() {
+            btnSimpanKd.disabled = kdKode.value.trim() === '';
+        }
+        kdKode.addEventListener('input', aturTombolKoding);
+
+        document.querySelectorAll('.btn-koding').forEach(function (b) {
+            b.addEventListener('click', function () {
+                formKoding.action = b.dataset.action;
+                kdKode.value = b.dataset.kode || '';
+                document.getElementById('kdDiagnosa').textContent = b.dataset.diagnosa || '-';
+                aturTombolKoding();
+                modalKoding.classList.add('show');
+                kdKode.focus();
+            });
+        });
+        document.getElementById('btnBatalKoding').addEventListener('click', function () {
+            modalKoding.classList.remove('show');
+        });
+        modalKoding.addEventListener('click', function (e) {
+            if (e.target === modalKoding) modalKoding.classList.remove('show');
+        });
+
+        // Klik baris riwayat kunjungan -> detail kunjungan
+        document.querySelectorAll('.kj-row').forEach(function (tr) {
+            tr.addEventListener('click', function () { location.href = tr.dataset.href; });
+        });
+
+        // Buka/tutup rincian pemeriksaan per kunjungan
+        document.querySelectorAll('.periksa-head').forEach(function (h) {
+            h.addEventListener('click', function () {
+                h.parentElement.classList.toggle('open');
+            });
+        });
+    })();
+</script>
+
+@endsection

@@ -106,6 +106,10 @@ Route::middleware('web')->group(function () {
     // ===========================
 
     Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
+    Route::get('/rekam-medis/pasien/{pasien}', [RekamMedisController::class, 'berkas'])->name('rekam-medis.berkas');
+    Route::put('/rekam-medis/pasien/{pasien}/general-consent', [RekamMedisController::class, 'consentUpdate'])->name('rekam-medis.consent.update');
+    Route::get('/rekam-medis/pasien/{pasien}/general-consent/cetak', [RekamMedisController::class, 'consentCetak'])->name('rekam-medis.consent.cetak');
+    Route::put('/rekam-medis/kunjungan/{kunjungan}/koding', [RekamMedisController::class, 'kodingUpdate'])->name('rekam-medis.koding.update');
     Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
 
     Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');
