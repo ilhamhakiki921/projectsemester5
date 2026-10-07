@@ -126,29 +126,10 @@
 
 @push('scripts')
 @if ($autentikasi)
-@php
-    $dataCetak = [
-        'nama'    => $autentikasi->nama_dokter,
-        'jabatan' => $autentikasi->jabatan,
-        'waktu'   => $autentikasi->waktu_autentikasi->locale('id')->translatedFormat('d M Y, H:i'),
-        'pasien'  => $pasien->nama,
-        'rm'      => $pasien->no_rm,
-        'ttd'     => $autentikasi->tanda_tangan,
-    ];
-@endphp
 <script>
 document.getElementById('auCetak').addEventListener('click', () => {
-    const d = @json($dataCetak);
-    const w = window.open('', '_blank');
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Autentikasi Pemeriksaan</title>
-<style>body{font-family:Arial,sans-serif;padding:32px;color:#111}h2{margin:0 0 4px}table{margin-top:18px;border-collapse:collapse;font-size:14px}td{padding:4px 14px 4px 0}
-.ok{display:inline-block;margin-top:18px;border:2px solid #1f8a4c;color:#1f8a4c;border-radius:10px;padding:8px 22px;font-weight:700}img{margin-top:16px;max-width:260px}</style></head><body>
-<h2>Autentikasi Pemeriksaan</h2><div class="ok">TERAUTENTIKASI</div>
-<table><tr><td>Pasien</td><td>: ${d.pasien} (RM ${d.rm})</td></tr><tr><td>Nama Dokter/Petugas</td><td>: ${d.nama}</td></tr>
-<tr><td>Jabatan</td><td>: ${d.jabatan}</td></tr><tr><td>Tanggal &amp; Waktu</td><td>: ${d.waktu}</td></tr></table>
-<img src="${d.ttd}" alt="Tanda tangan"></body></html>`);
-    w.document.close(); w.focus();
-    setTimeout(() => w.print(), 300);
+    // Lembar cetak (dengan kop surat) dibuat di server, lalu dibuka di tab baru
+    window.open(@json(route('autentikasi.cetak', [$poli, $rm])), '_blank');
 });
 </script>
 @else

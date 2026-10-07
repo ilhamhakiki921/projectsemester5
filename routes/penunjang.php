@@ -21,4 +21,5 @@ Route::prefix('pemeriksaan/{poli}/{no_rm}')->group(function () {
     // Autentikasi
     Route::get('autentikasi', [AutentikasiController::class, 'index'])->name('autentikasi.index');
     Route::post('autentikasi', [AutentikasiController::class, 'store'])->name('autentikasi.store');
+    Route::get('autentikasi/cetak', [AutentikasiController::class, 'cetak'])->name('autentikasi.cetak');
 });

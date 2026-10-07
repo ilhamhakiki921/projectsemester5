@@ -81,6 +81,28 @@ class AutentikasiController extends Controller
         ]);
     }
 
+    /** Lembar autentikasi siap cetak (dengan kop surat klinik). */
+    public function cetak($poli, $no_rm)
+    {
+        [$pasien, $kunjungan] = $this->konteks($poli, $no_rm);
+        $kunjungan->load('rekamMedis');
+
+        $autentikasi = AutentikasiPemeriksaan::where('kunjungan_id', $kunjungan->id)->first();
+
+        abort_unless(
+            $autentikasi && ! $this->bagianKosong($kunjungan) && $kunjungan->status === 'Selesai',
+            404,
+            'Pemeriksaan ini belum diautentikasi.'
+        );
+
+        return view('pemeriksaan.autentikasi-cetak', [
+            'pasien'      => $pasien,
+            'kunjungan'   => $kunjungan,
+            'autentikasi' => $autentikasi,
+            'namaPoli'    => $this->daftarPoli[$poli] ?? ucfirst($poli),
+        ]);
+    }
+
     public function store(Request $request, $poli, $no_rm)
     {
         [$pasien, $kunjungan] = $this->konteks($poli, $no_rm);
