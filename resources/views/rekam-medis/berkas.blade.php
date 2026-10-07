@@ -172,6 +172,68 @@
         word-break: break-word;
     }
 
+    /* Identitas pasien: dikelompokkan per bagian, isi tersusun rapi dalam kolom */
+    .idn-section {
+        margin-bottom: 22px;
+    }
+
+    .idn-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .idn-judul {
+        margin: 0 0 12px;
+        padding: 7px 12px;
+        border-left: 4px solid #a81d21;
+        border-radius: 0 6px 6px 0;
+        background: #fbeeee;
+        font-size: 11.5px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        color: #7a0a0a;
+        text-transform: uppercase;
+    }
+
+    .idn-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px 28px;
+        padding: 0 4px;
+    }
+
+    .idn-item {
+        min-width: 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .idn-item.lebar {
+        grid-column: 1 / -1;
+    }
+
+    .idn-item .k {
+        display: block;
+        margin-bottom: 3px;
+        font-size: 10.5px;
+        color: #777;
+    }
+
+    .idn-item .v {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #111;
+        word-break: break-word;
+    }
+
+    @media (max-width: 1100px) {
+        .idn-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+        .idn-grid { grid-template-columns: 1fr; }
+    }
+
     /* =================================
        TABEL RIWAYAT
     ================================== */
@@ -1050,17 +1112,70 @@
 
                 {{-- ========== IDENTITAS ========== --}}
                 <div class="berkas-panel active" id="panel-identitas">
-                    <div class="kv-list">
-                        <div class="kv-row"><span class="k">No. Rekam Medis</span><span class="v">{{ $pasien->no_rm }}</span></div>
-                        <div class="kv-row"><span class="k">NIK</span><span class="v">{{ $pasien->nik ?: '-' }}</span></div>
-                        <div class="kv-row"><span class="k">Nama</span><span class="v">{{ $pasien->nama }}</span></div>
-                        <div class="kv-row"><span class="k">Tempat/Tgl Lahir</span><span class="v">{{ $ttl ?: '-' }}</span></div>
-                        <div class="kv-row"><span class="k">Jenis Kelamin</span><span class="v">{{ $pasien->jenis_kelamin ?: '-' }}</span></div>
-                        <div class="kv-row"><span class="k">Golongan Darah</span><span class="v">{{ $pasien->golongan_darah ?? '-' }}</span></div>
-                        <div class="kv-row"><span class="k">Alamat</span><span class="v">{{ $alamat ?: '-' }}</span></div>
-                        <div class="kv-row"><span class="k">Telepone</span><span class="v">{{ $pasien->no_telepon ?: '-' }}</span></div>
-                        <div class="kv-row"><span class="k">Email</span><span class="v">{{ $pasien->email ?? '-' }}</span></div>
-                    </div>
+                    @php
+                        // Semua data di bawah ini diambil dari form Pendaftaran
+                        $isi = fn ($v) => ($v !== null && trim((string) $v) !== '') ? $v : '-';
+                        $kelompokIdentitas = [
+                            'Identitas Pasien' => [
+                                ['No. Rekam Medis', $pasien->no_rm],
+                                ['NIK', $pasien->nik],
+                                ['Title', $pasien->title],
+                                ['Nama Lengkap', $pasien->nama],
+                                ['Tempat Lahir', $pasien->tempat_lahir],
+                                ['Tanggal Lahir', $tglLahir],
+                                ['Usia', $umur],
+                                ['Jenis Kelamin', $pasien->jenis_kelamin],
+                                ['Agama', $pasien->agama],
+                                ['Status Pernikahan', $pasien->status_pernikahan],
+                                ['No. Telp Pasien', $pasien->no_telepon],
+                            ],
+                            'Alamat' => [
+                                ['Alamat', $pasien->alamat, 'lebar' => true],
+                                ['Provinsi', $pasien->provinsi],
+                                ['Kabupaten', $pasien->kabupaten],
+                                ['Kecamatan', $pasien->kecamatan],
+                                ['Kelurahan', $pasien->kelurahan],
+                                ['Negara', $pasien->negara],
+                            ],
+                            'Pendidikan & Pekerjaan' => [
+                                ['Pendidikan', $pasien->pendidikan],
+                                ['Pekerjaan', $pasien->pekerjaan],
+                            ],
+                            'Data Lain Pasien' => [
+                                ['No. KK', $pasien->no_kk],
+                                ['Domisili', $pasien->domisili],
+                                ['NIP', $pasien->nip],
+                                ['Jabatan', $pasien->jabatan],
+                                ['Divisi', $pasien->divisi],
+                                ['Departemen', $pasien->departemen],
+                                ['Sub Departemen', $pasien->sub_departemen],
+                                ['Perusahaan', $pasien->perusahaan],
+                                ['Suku', $pasien->suku],
+                                ['Bahasa', $pasien->bahasa],
+                                ['Kewarganegaraan', $pasien->kewarganegaraan],
+                            ],
+                            'Keluarga/Kerabat yang Bisa Dihubungi' => [
+                                ['Nama Lengkap', $pasien->keluarga_nama],
+                                ['Jenis Kelamin', $pasien->keluarga_jk],
+                                ['Hubungan', $pasien->keluarga_hubungan],
+                                ['No. Telp', $pasien->keluarga_telepon],
+                            ],
+                        ];
+                    @endphp
+
+                    @foreach ($kelompokIdentitas as $judulKelompok => $baris)
+                        <div class="idn-section">
+                            <h3 class="idn-judul">{{ $judulKelompok }}</h3>
+                            <div class="idn-grid">
+                                @foreach ($baris as $b)
+                                    <div class="idn-item {{ ! empty($b['lebar']) ? 'lebar' : '' }}">
+                                        <span class="k">{{ $b[0] }}</span>
+                                        <span class="v">{{ $isi($b[1]) }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
 

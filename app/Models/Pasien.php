@@ -17,6 +17,11 @@ class Pasien extends Model
         'no_telepon',
         'alamat',
         'kecamatan',
+        'title', 'tempat_lahir', 'agama', 'status_pernikahan',
+        'provinsi', 'kabupaten', 'kelurahan', 'negara', 'pendidikan', 'pekerjaan',
+        'no_kk', 'domisili', 'nip', 'jabatan', 'divisi', 'departemen', 'sub_departemen',
+        'perusahaan', 'suku', 'bahasa', 'kewarganegaraan',
+        'keluarga_nama', 'keluarga_jk', 'keluarga_hubungan', 'keluarga_telepon',
     ];
 
     protected $casts = [

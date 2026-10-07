@@ -5273,6 +5273,22 @@ async function simpanPasienBaru() {
                 no_telepon:         dataBaru.telepon,
                 alamat:             dataBaru.alamat,
                 kecamatan:          dataBaru.kecamatan,
+                title:              nilai('baruTitle'),
+                tempat_lahir:       dataBaru.tempat,
+                agama:              nilai('baruAgama') === 'Lain-lain' ? nilai('baruAgamaLain') : nilai('baruAgama'),
+                status_pernikahan:  nilai('baruStatusNikah'),
+                provinsi:           nilai('baruProvinsi'),
+                kabupaten:          nilai('baruKabupaten'),
+                kelurahan:          nilai('baruKelurahan'),
+                negara:             nilai('baruNegara'),
+                pendidikan:         nilai('baruPendidikan'),
+                pekerjaan:          nilai('baruPekerjaan') === 'Lain-lain' ? nilai('baruPekerjaanLain') : nilai('baruPekerjaan'),
+                keluarga: {
+                    nama:     nilai('keluargaNama'),
+                    jk:       nilai('keluargaJk'),
+                    hubungan: nilai('keluargaHubungan'),
+                    telepon:  nilai('keluargaTelepon')
+                },
                 tanggal_kunjungan:  dataBaru.tglKunjungan,
                 general_consent:    generalConsentData,
                 data_lain: {
