@@ -3474,14 +3474,14 @@ body.sidebar-collapsed .main {
             <p class="gc-intro">Dengan ini saya menyatakan telah menerima penjelasan dan menyetujui hal-hal berikut:</p>
 
             <ol class="gc-list">
-                <li><b>Persetujuan pelayanan kesehatan.</b> Saya setuju untuk diperiksa dan memperoleh pelayanan kesehatan sesuai kebutuhan medis di fasilitas ini, termasuk pemeriksaan, pengobatan, dan pemeriksaan penunjang.</li>
-                <li><b>Hak dan kewajiban pasien.</b> Saya telah mendapat informasi tentang hak dan kewajiban pasien dan memahaminya.</li>
-                <li><b>Tata tertib.</b> Saya bersedia mematuhi tata tertib dan peraturan yang berlaku di fasilitas ini.</li>
-                <li><b>Kerahasiaan informasi medis.</b> Saya memahami bahwa data dan rekam medis saya dijaga kerahasiaannya dan hanya dibuka untuk kepentingan pelayanan, sesuai peraturan perundang-undangan.</li>
-                <li><b>Pelepasan informasi.</b> Saya mengizinkan informasi yang diperlukan dibuka kepada pihak penjamin pembayaran (BPJS/asuransi) untuk keperluan klaim, serta kepada tenaga kesehatan yang terlibat dalam perawatan saya.</li>
-                <li><b>Informasi biaya.</b> Saya telah mendapat informasi tentang biaya pelayanan dan bersedia menyelesaikan pembayaran sesuai cara pembayaran yang dipilih.</li>
-                <li><b>Barang berharga.</b> Saya memahami bahwa barang berharga yang dibawa menjadi tanggung jawab saya sendiri.</li>
-                <li><b>Tindakan khusus.</b> Saya memahami bahwa tindakan tertentu yang berisiko memerlukan persetujuan tindakan (informed consent) tersendiri.</li>
+                <li>Saya menyetujui pemeriksaan, perawatan, dan pengobatan di klinik ini sesuai indikasi medis oleh dokter dan tenaga kesehatan yang bertugas.</li>
+                <li>Saya telah mendapat penjelasan mengenai hak dan kewajiban saya sebagai pasien.</li>
+                <li>Saya bersedia mematuhi tata tertib dan peraturan yang berlaku di klinik.</li>
+                <li>Saya telah mendapat informasi tentang tarif dan sistem pembayaran pelayanan (umum, BPJS Kesehatan, atau asuransi lain).</li>
+                <li>Saya memahami bahwa informasi medis saya bersifat rahasia dan hanya dibuka sesuai ketentuan peraturan perundang-undangan.</li>
+                <li>Saya menyetujui informasi medis saya diberikan kepada penjamin pembiayaan (BPJS Kesehatan/asuransi) untuk keperluan klaim. <em style="color:#8a8a8a;font-style:normal;font-size:11px;">(Opsional)</em></li>
+                <li>Saya menyetujui data saya dimanfaatkan untuk pendidikan, penelitian, dan pelaporan dengan identitas dirahasiakan. <em style="color:#8a8a8a;font-style:normal;font-size:11px;">(Opsional)</em></li>
+                <li>Saya menyetujui informasi kondisi saya disampaikan kepada keluarga/pendamping yang saya tunjuk di bawah ini. <em style="color:#8a8a8a;font-style:normal;font-size:11px;">(Opsional)</em></li>
             </ol>
 
             {{-- Siapa yang memberikan persetujuan --}}

@@ -32,7 +32,7 @@
     table.pernyataan th,table.pernyataan td{border:1px solid #000;padding:5px 8px;vertical-align:top;line-height:1.45}
     table.pernyataan th{background:#eee;text-align:left}
     .c-no{width:34px;text-align:center}
-    .c-sifat{width:62px}
+    .c-sifat{width:66px}
     .c-putusan{width:76px;text-align:center}
     .judul{font-weight:bold}
 
@@ -100,9 +100,9 @@
             @foreach (\App\Models\GeneralConsent::PERNYATAAN as $n => $row)
                 <tr>
                     <td class="c-no">{{ $n + 1 }}</td>
-                    <td><span class="judul">{{ $row[0] }}.</span> {{ $row[1] }}</td>
-                    <td>Wajib</td>
-                    <td class="c-putusan">{{ $consent ? (in_array($n, $setujuIdx, true) ? 'Setuju' : 'Belum') : '' }}</td>
+                    <td>{{ $row[0] }}</td>
+                    <td>{{ $row[1] }}</td>
+                    <td class="c-putusan">{{ $consent ? (in_array($n, $setujuIdx, true) ? 'Setuju' : ($row[1] === 'Opsional' ? 'Tidak' : 'Belum')) : '' }}</td>
                 </tr>
             @endforeach
         </tbody>

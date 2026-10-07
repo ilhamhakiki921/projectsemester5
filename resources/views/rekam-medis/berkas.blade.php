@@ -86,11 +86,21 @@
         overflow-x: auto;
 
         border-bottom: 1px solid #9b9b9b;
-        scrollbar-width: none;
+        scrollbar-width: thin;
+        scrollbar-color: #9b9b9b #f1f1f1;
     }
 
     .berkas-tabs::-webkit-scrollbar {
-        display: none;
+        height: 8px;
+    }
+
+    .berkas-tabs::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background: #9b9b9b;
+    }
+
+    .berkas-tabs::-webkit-scrollbar-track {
+        background: #f1f1f1;
     }
 
     .berkas-tab {
@@ -898,6 +908,16 @@
         cursor: pointer;
     }
 
+    .tag-sifat {
+        font-style: normal;
+        font-size: 11px;
+        color: #8a8a8a;
+    }
+
+    .tag-sifat.wajib {
+        color: #b40000;
+    }
+
     .f-error {
         margin-bottom: 16px;
         padding: 10px 14px;
@@ -1021,6 +1041,10 @@
                     <button type="button" class="berkas-tab" data-tab="soap">Riwayat Pemeriksaan &amp; SOAP</button>
                     <button type="button" class="berkas-tab" data-tab="lab">Hasil Laboratorium</button>
                     <button type="button" class="berkas-tab" data-tab="resep">Riwayat Resep &amp; Obat</button>
+                    <button type="button" class="berkas-tab" data-tab="rujukan">Rujukan</button>
+                    <button type="button" class="berkas-tab" data-tab="informed-consent">Informed Consent Gigi</button>
+                    <button type="button" class="berkas-tab" data-tab="resume">Resume Medis</button>
+                    <button type="button" class="berkas-tab" data-tab="autentikasi">Autentikasi</button>
                 </div>
 
 
@@ -1082,16 +1106,13 @@
                                 @foreach (\App\Models\GeneralConsent::PERNYATAAN as $n => $row)
                                     <tr>
                                         <td>{{ $n + 1 }}</td>
-                                        <td>
-                                            <span class="judul">{{ $row[0] }}</span>
-                                            <span class="isi">{{ $row[1] }}</span>
-                                        </td>
-                                        <td>Wajib</td>
+                                        <td>{{ $row[0] }}</td>
+                                        <td>{{ $row[1] }}</td>
                                         <td class="c-putusan">
                                             @if (in_array($n, $setujuIdx, true))
                                                 <span class="keputusan setuju">Setuju</span>
                                             @else
-                                                <span class="keputusan belum">Belum</span>
+                                                <span class="keputusan belum">{{ $row[1] === 'Opsional' && $consent ? 'Tidak' : 'Belum' }}</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -1316,6 +1337,46 @@
                     @endif
                 </div>
 
+
+                {{-- ========== RUJUKAN ========== --}}
+                <div class="berkas-panel" id="panel-rujukan">
+                    {{-- TODO: tampilan Rujukan (data: tabel surat_rujukan lewat model SuratRujukan) --}}
+                    <div class="kosong-penunjang">
+                        <div class="judul">Rujukan</div>
+                        <div class="sub">Tampilan ini belum dibuat.</div>
+                    </div>
+                </div>
+
+
+                {{-- ========== INFORMED CONSENT GIGI ========== --}}
+                <div class="berkas-panel" id="panel-informed-consent">
+                    {{-- TODO: tampilan Informed Consent Gigi --}}
+                    <div class="kosong-penunjang">
+                        <div class="judul">Informed Consent Gigi</div>
+                        <div class="sub">Tampilan ini belum dibuat.</div>
+                    </div>
+                </div>
+
+
+                {{-- ========== RESUME MEDIS ========== --}}
+                <div class="berkas-panel" id="panel-resume">
+                    {{-- TODO: tampilan Resume Medis --}}
+                    <div class="kosong-penunjang">
+                        <div class="judul">Resume Medis</div>
+                        <div class="sub">Tampilan ini belum dibuat.</div>
+                    </div>
+                </div>
+
+
+                {{-- ========== AUTENTIKASI ========== --}}
+                <div class="berkas-panel" id="panel-autentikasi">
+                    {{-- TODO: tampilan Autentikasi (data: model AutentikasiPemeriksaan, tabel autentikasi_kunjungan) --}}
+                    <div class="kosong-penunjang">
+                        <div class="judul">Autentikasi</div>
+                        <div class="sub">Tampilan ini belum dibuat.</div>
+                    </div>
+                </div>
+
             </div>
 
         </section>
@@ -1430,9 +1491,9 @@
 
             @foreach (\App\Models\GeneralConsent::PERNYATAAN as $n => $row)
                 <label class="f-check">
-                    <input type="checkbox" class="cb-pernyataan" name="pernyataan[]" value="{{ $n }}"
+                    <input type="checkbox" class="cb-pernyataan {{ $row[1] === 'Wajib' ? 'cb-wajib' : '' }}" name="pernyataan[]" value="{{ $n }}"
                            {{ in_array($n, $centangLama, true) ? 'checked' : '' }}>
-                    <span>{{ $row[1] }}</span>
+                    <span>{{ $row[0] }} <em class="tag-sifat {{ $row[1] === 'Wajib' ? 'wajib' : '' }}">({{ $row[1] }})</em></span>
                 </label>
             @endforeach
 
@@ -1470,10 +1531,10 @@
         var selHubungan = document.getElementById('fHubungan');
         var fNama       = document.getElementById('fNama');
         var fTanggal    = document.getElementById('fTanggal');
-        var cbs         = document.querySelectorAll('.cb-pernyataan');
+        var cbs         = document.querySelectorAll('.cb-wajib');
         var btnSimpan   = document.getElementById('btnSimpanConsent');
 
-        // Tombol simpan aktif kalau nama, hubungan, tanggal terisi dan semua pernyataan dicentang
+        // Tombol simpan aktif kalau nama, hubungan, tanggal terisi dan semua pernyataan Wajib dicentang
         function aturTombol() {
             var lengkap = fNama.value.trim() !== '' && selHubungan.value !== '' && fTanggal.value !== '';
             var semua = true;

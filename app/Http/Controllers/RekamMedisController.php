@@ -95,15 +95,22 @@ class RekamMedisController extends Controller
             'disetujui_pada'   => 'required|date',
             'saksi'            => 'nullable|string|max:255',
             'pendamping'       => 'nullable|string|max:255',
-            'pernyataan'       => 'required|array|size:' . $jumlahPernyataan,
+            'pernyataan'       => 'nullable|array',
             'pernyataan.*'     => 'integer|between:0,' . ($jumlahPernyataan - 1),
         ], [
             'nama_penyetuju.required' => 'Nama penandatangan wajib diisi.',
             'hubungan.required'       => 'Hubungan dengan pasien wajib dipilih.',
             'disetujui_pada.required' => 'Tanggal wajib diisi.',
-            'pernyataan.required'     => 'Semua pernyataan persetujuan wajib dicentang.',
-            'pernyataan.size'         => 'Semua pernyataan persetujuan wajib dicentang.',
         ]);
+
+        $dipilih = array_values(array_unique(array_map('intval', $data['pernyataan'] ?? [])));
+
+        // Pernyataan bersifat Wajib harus dicentang semua; yang Opsional boleh tidak
+        if (array_diff(GeneralConsent::indeksWajib(), $dipilih)) {
+            return back()
+                ->withInput()
+                ->withErrors(['pernyataan' => 'Pernyataan yang bersifat Wajib harus dicentang semua.']);
+        }
 
         $pasienSendiri = $data['hubungan'] === 'Pasien sendiri';
 
@@ -122,7 +129,7 @@ class RekamMedisController extends Controller
         $tambahan = [
             'pendamping'        => $data['pendamping'] ?? null,
             'saksi'             => $data['saksi'] ?? null,
-            'pernyataan_setuju' => array_values(array_unique(array_map('intval', $data['pernyataan']))),
+            'pernyataan_setuju' => $dipilih,
             'petugas_pencatat'  => Auth::check()
                                         ? (Auth::user()->nama_lengkap ?? Auth::user()->name ?? null)
                                         : null,

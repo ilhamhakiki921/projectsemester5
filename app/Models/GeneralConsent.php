@@ -30,17 +30,33 @@ class GeneralConsent extends Model
     /** Kolom tambahan (perlu migrasi 2026_10_08) */
     public const KOLOM_TAMBAHAN = ['pendamping', 'saksi', 'petugas_pencatat', 'pernyataan_setuju'];
 
-    /** Isi pernyataan General Consent (sama dengan yang tampil saat pendaftaran). */
+    /**
+     * Isi pernyataan General Consent: [teks, sifat].
+     * Sifat "Wajib" harus disetujui; "Opsional" boleh tidak disetujui.
+     */
     public const PERNYATAAN = [
-        ['Persetujuan pelayanan kesehatan', 'Saya menyetujui pemeriksaan, perawatan, dan pengobatan di klinik ini sesuai indikasi medis oleh dokter dan tenaga kesehatan yang bertugas.'],
-        ['Hak dan kewajiban pasien', 'Saya telah mendapat penjelasan mengenai hak dan kewajiban saya sebagai pasien.'],
-        ['Tata tertib', 'Saya bersedia mematuhi tata tertib dan peraturan yang berlaku di klinik.'],
-        ['Kerahasiaan informasi medis', 'Saya memahami bahwa data dan rekam medis saya dijaga kerahasiaannya dan hanya dibuka untuk kepentingan pelayanan, sesuai peraturan perundang-undangan.'],
-        ['Pelepasan informasi', 'Saya mengizinkan informasi yang diperlukan dibuka kepada pihak penjamin pembayaran (BPJS/asuransi) untuk keperluan klaim, serta kepada tenaga kesehatan yang terlibat dalam perawatan saya.'],
-        ['Informasi biaya', 'Saya telah mendapat informasi tentang biaya pelayanan dan bersedia menyelesaikan pembayaran sesuai cara pembayaran yang dipilih.'],
-        ['Barang berharga', 'Saya memahami bahwa barang berharga yang dibawa menjadi tanggung jawab saya sendiri.'],
-        ['Tindakan khusus', 'Saya memahami bahwa tindakan tertentu yang berisiko memerlukan persetujuan tindakan (informed consent) tersendiri.'],
+        ['Saya menyetujui pemeriksaan, perawatan, dan pengobatan di klinik ini sesuai indikasi medis oleh dokter dan tenaga kesehatan yang bertugas.', 'Wajib'],
+        ['Saya telah mendapat penjelasan mengenai hak dan kewajiban saya sebagai pasien.', 'Wajib'],
+        ['Saya bersedia mematuhi tata tertib dan peraturan yang berlaku di klinik.', 'Wajib'],
+        ['Saya telah mendapat informasi tentang tarif dan sistem pembayaran pelayanan (umum, BPJS Kesehatan, atau asuransi lain).', 'Wajib'],
+        ['Saya memahami bahwa informasi medis saya bersifat rahasia dan hanya dibuka sesuai ketentuan peraturan perundang-undangan.', 'Wajib'],
+        ['Saya menyetujui informasi medis saya diberikan kepada penjamin pembiayaan (BPJS Kesehatan/asuransi) untuk keperluan klaim.', 'Opsional'],
+        ['Saya menyetujui data saya dimanfaatkan untuk pendidikan, penelitian, dan pelaporan dengan identitas dirahasiakan.', 'Opsional'],
+        ['Saya menyetujui informasi kondisi saya disampaikan kepada keluarga/pendamping yang saya tunjuk di bawah ini.', 'Opsional'],
     ];
+
+    /** Nomor urut pernyataan yang sifatnya Wajib. */
+    public static function indeksWajib(): array
+    {
+        $hasil = [];
+        foreach (self::PERNYATAAN as $i => $row) {
+            if ($row[1] === 'Wajib') {
+                $hasil[] = $i;
+            }
+        }
+
+        return $hasil;
+    }
 
     /** Pilihan hubungan penandatangan dengan pasien. */
     public const HUBUNGAN = [
