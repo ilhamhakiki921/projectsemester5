@@ -13,6 +13,7 @@ use App\Http\Controllers\Icd10Controller;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PoliController;
 use App\Http\Controllers\DiagnosaController;
+use App\Http\Controllers\TindakanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DataPasienController;
 
@@ -147,6 +148,16 @@ Route::middleware('web')->group(function () {
     Route::post('/data-diagnosa/import', [DiagnosaController::class, 'import'])->name('diagnosa.import');
     Route::put('/data-diagnosa/{icd10}', [DiagnosaController::class, 'update'])->name('diagnosa.update');
     Route::delete('/data-diagnosa/{icd10}', [DiagnosaController::class, 'destroy'])->name('diagnosa.destroy');
+
+    // ===========================
+    // DATA MASTER > DATA TINDAKAN (ICD-9)
+    // ===========================
+
+    Route::get('/data-tindakan', [TindakanController::class, 'index'])->name('tindakan.index');
+    Route::post('/data-tindakan', [TindakanController::class, 'store'])->name('tindakan.store');
+    Route::post('/data-tindakan/import', [TindakanController::class, 'import'])->name('tindakan.import');
+    Route::put('/data-tindakan/{tindakan}', [TindakanController::class, 'update'])->name('tindakan.update');
+    Route::delete('/data-tindakan/{tindakan}', [TindakanController::class, 'destroy'])->name('tindakan.destroy');
 
     // ===========================
     // DATA MASTER > DATA OBAT

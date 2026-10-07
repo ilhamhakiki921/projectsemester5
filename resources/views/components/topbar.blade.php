@@ -27,6 +27,7 @@
         <a href="{{ route('user.index') }}" class="dropdown-item">Data User</a>
         <a href="{{ route('poli.index') }}" class="dropdown-item">Data Poli</a>
         <a href="{{ route('diagnosa.index') }}" class="dropdown-item">Data Diagnosa/Penyakit</a>
+        <a href="{{ route('tindakan.index') }}" class="dropdown-item">Data Tindakan</a>
         <a href="{{ route('obat.index') }}" class="dropdown-item">Data Obat</a>
         <a href="{{ route('data-pasien.index') }}" class="dropdown-item">Data Pasien</a>
 
