@@ -45,9 +45,12 @@ class TindakanController extends Controller
             'nama' => ['required', 'string', 'max:500'],
         ], $this->pesan());
 
-        Tindakan::create($data);
+        $baru = Tindakan::create($data);
 
-        return $this->kembali('Tindakan baru berhasil ditambahkan.');
+        // Data diurutkan menurut kode -> buka halaman tempat data baru ini berada
+        $halaman = intdiv(Tindakan::where('kode', '<', $baru->kode)->count(), 10) + 1;
+
+        return $this->kembali('Tindakan baru berhasil ditambahkan.', 'success', ['page' => $halaman]);
     }
 
     public function update(Request $request, Tindakan $tindakan)
@@ -61,7 +64,9 @@ class TindakanController extends Controller
 
         $tindakan->update($data);
 
-        return $this->kembali('Data tindakan berhasil diperbarui.');
+        $halaman = intdiv(Tindakan::where('kode', '<', $tindakan->kode)->count(), 10) + 1;
+
+        return $this->kembali('Data tindakan berhasil diperbarui.', 'success', ['page' => $halaman]);
     }
 
     public function destroy(Tindakan $tindakan)
@@ -172,9 +177,9 @@ class TindakanController extends Controller
         ]);
     }
 
-    private function kembali(string $pesan, string $type = 'success')
+    private function kembali(string $pesan, string $type = 'success', array $query = [])
     {
-        return redirect()->route('tindakan.index')->with('popup', [
+        return redirect()->route('tindakan.index', $query)->with('popup', [
             'type'    => $type,
             'title'   => $type === 'success' ? 'Berhasil' : 'Perhatian',
             'message' => $pesan,

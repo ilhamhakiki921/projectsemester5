@@ -213,21 +213,27 @@
     .btn-m-danger:hover { background: #a80000; }
 
     /* modal form tambah/edit & import */
-    #modalForm .m-box, #modalImport .m-box { max-width: 760px; border-radius: 24px; }
+    #modalForm .m-box, #modalImport .m-box { max-width: 630px; border-radius: 24px; }
     #modalImport .m-box { max-width: 620px; }
 
     #modalForm .m-head, #modalImport .m-head {
-        padding: 22px 32px 18px;
+        padding: 26px 30px 24px;
         background: linear-gradient(90deg, #b81f1f 0%, #6e0f0f 55%, #470000 100%);
         color: #fff;
         border-radius: 24px 24px 0 0;
     }
     .m-head h3 { font-size: 19px; font-weight: 600; line-height: 1.2; }
     .m-head p  { margin-top: 3px; font-size: 10px; font-weight: 500; opacity: .95; }
+    #modalForm .m-head p { display: none; }   /* form tambah/edit: judul saja */
 
-    #modalForm .m-body, #modalImport .m-body { padding: 30px 40px 4px; }
-    #modalForm .f-grid { display: grid; grid-template-columns: 1fr 2fr; column-gap: 40px; row-gap: 16px; }
-    #modalForm .m-foot, #modalImport .m-foot { gap: 22px; padding: 30px 40px 28px; }
+    #modalForm .m-body, #modalImport .m-body { padding: 34px 40px 4px; }
+    #modalForm .f-grid { display: grid; grid-template-columns: 1fr; row-gap: 26px; }
+    #modalForm .f-group label { margin-bottom: 10px; font-size: 13px; font-weight: 600; color: #111; }
+    #modalForm .f-input { height: 46px; border-radius: 12px; border-color: #8a8a8a; font-size: 13px; }
+    #modalForm .f-input:focus { border-color: #b40000; }
+    #modalForm .m-foot, #modalImport .m-foot { gap: 22px; padding: 34px 40px 30px; }
+    #modalForm .btn-m { min-width: 128px; height: 30px; border-radius: 6px; font-size: 11.5px; }
+    #modalForm .btn-m-cancel { border-color: #6b6b6b; }
 
     /* import */
     .imp-info {
@@ -266,7 +272,7 @@
         .content { padding: 18px 14px; }
         .u-search { max-width: none; }
         .u-tools { margin-bottom: 0; }
-        #modalForm .f-grid { grid-template-columns: 1fr; row-gap: 12px; }
+        #modalForm .f-grid { row-gap: 18px; }
         #modalForm .m-body, #modalImport .m-body { padding: 22px 20px 4px; }
         #modalForm .m-foot, #modalImport .m-foot { padding: 22px 20px; gap: 12px; }
     }
@@ -452,7 +458,7 @@
                     </div>
 
                     <div class="f-group">
-                        <label for="fNama">Nama Tindakan</label>
+                        <label for="fNama">Tindakan</label>
                         <input type="text" name="nama" id="fNama" class="f-input @error('nama') is-invalid @enderror"
                                value="{{ old('nama') }}" maxlength="500" placeholder="Contoh: Pemeriksaan fisik umum">
                         @error('nama') <div class="f-error">{{ $message }}</div> @enderror
@@ -464,7 +470,7 @@
 
             <div class="m-foot">
                 <button type="button" class="btn-m btn-m-cancel" data-tutup>Batal</button>
-                <button type="submit" class="btn-m btn-m-save">Simpan Tindakan</button>
+                <button type="submit" class="btn-m btn-m-save">Simpan</button>
             </div>
         </form>
     </div>
