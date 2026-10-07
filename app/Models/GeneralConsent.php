@@ -19,9 +19,14 @@ class GeneralConsent extends Model
         'saksi',
         'petugas_pencatat',
         'pernyataan_setuju',
+        'data_form',
+        'ttd_petugas',
+        'ttd_penanggung_jawab',
+        'ttd_saksi',
     ];
 
     protected $casts = [
+        'data_form'      => 'array',
         'setuju'         => 'boolean',
         'disetujui_pada' => 'datetime',
         'pernyataan_setuju' => 'array',

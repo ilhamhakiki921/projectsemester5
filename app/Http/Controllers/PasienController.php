@@ -110,6 +110,19 @@ public function create()
             'general_consent.nama'      => 'nullable|string|max:255',
             'general_consent.hubungan'  => 'nullable|string|max:100',
             'general_consent.waktu'     => 'nullable|date',
+            'general_consent.alamat'              => 'nullable|string|max:500',
+            'general_consent.telepon'             => 'nullable|string|max:50',
+            'general_consent.alergi'              => 'nullable|string|max:1000',
+            'general_consent.riwayat_penyakit'    => 'nullable|string|max:1000',
+            'general_consent.kerabat'             => 'nullable|array|max:3',
+            'general_consent.kerabat.*.nama'      => 'nullable|string|max:255',
+            'general_consent.kerabat.*.hubungan'  => 'nullable|string|max:100',
+            'general_consent.izin_kunjungan'      => 'nullable|in:Mengizinkan,Tidak mengizinkan',
+            'general_consent.privasi_khusus'      => 'nullable|in:Menginginkan privasi khusus,Tidak menginginkan',
+            'general_consent.keterangan_privasi'  => 'nullable|string|max:1000',
+            'general_consent.ttd_petugas'         => 'nullable|string|max:700000',
+            'general_consent.ttd_penanggung_jawab'=> 'nullable|string|max:700000',
+            'general_consent.ttd_saksi'           => 'nullable|string|max:700000',
         ]);
 
         $noRm = $request->filled('no_rm') ? $request->no_rm : $this->noRmBerikutnya();
@@ -163,14 +176,43 @@ public function create()
             $gc = $request->input('general_consent');
 
             if (is_array($gc) && ! empty($gc['nama']) && Schema::hasTable('general_consent')) {
-                GeneralConsent::create([
+                $dataConsent = [
                     'pasien_id'           => $pasien->id,
                     'pemberi_persetujuan' => $gc['pemberi'] ?? 'Pasien',
                     'nama_penyetuju'      => $gc['nama'],
                     'hubungan'            => $gc['hubungan'] ?? null,
                     'setuju'              => true,
                     'disetujui_pada'      => ! empty($gc['waktu']) ? \Carbon\Carbon::parse($gc['waktu']) : now(),
-                ]);
+                ];
+
+                // Kolom desain General Consent lengkap (perlu migrasi 2026_10_12)
+                if (Schema::hasColumn('general_consent', 'data_form')) {
+                    $dataConsent['data_form'] = [
+                        'alamat_penanda_tangan' => $gc['alamat'] ?? null,
+                        'telepon_penanda_tangan'=> $gc['telepon'] ?? null,
+                        'riwayat_alergi'        => $gc['alergi'] ?? null,
+                        'riwayat_penyakit'      => $gc['riwayat_penyakit'] ?? null,
+                        'kerabat'               => array_values(array_filter(
+                            $gc['kerabat'] ?? [],
+                            fn ($k) => ! empty($k['nama'])
+                        )),
+                        'izin_kunjungan'        => $gc['izin_kunjungan'] ?? null,
+                        'privasi_khusus'        => $gc['privasi_khusus'] ?? null,
+                        'keterangan_privasi'    => $gc['keterangan_privasi'] ?? null,
+                        'setuju_perawatan'      => true,  // A
+                        'setuju_hak_kewajiban'  => true,  // C
+                        'setuju_biaya'          => true,  // D
+                    ];
+                    $dataConsent['ttd_petugas']          = $gc['ttd_petugas'] ?? null;
+                    $dataConsent['ttd_penanggung_jawab'] = $gc['ttd_penanggung_jawab'] ?? null;
+                    $dataConsent['ttd_saksi']            = $gc['ttd_saksi'] ?? null;
+                }
+
+                if (Schema::hasColumn('general_consent', 'petugas_pencatat')) {
+                    $dataConsent['petugas_pencatat'] = optional(auth()->user())->name;
+                }
+
+                GeneralConsent::create($dataConsent);
             }
 
             $kunjungan = Kunjungan::create([

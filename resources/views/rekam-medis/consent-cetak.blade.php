@@ -38,7 +38,8 @@
 
     .ttd{display:flex;justify-content:space-between;margin-top:26px;font-size:13px}
     .ttd > div{width:30%;text-align:center}
-    .ttd .garis{height:64px}
+    .ttd .garis{height:64px;display:flex;align-items:center;justify-content:center}
+    .ttd .garis img{max-height:60px;max-width:100%}
     .ttd .nm{font-weight:bold;text-decoration:underline;min-height:18px}
 
     .bar{position:fixed;top:10px;right:14px;display:flex;gap:8px}
@@ -83,6 +84,20 @@
         <tr><td>Penandatangan</td><td>:</td><td>{{ $consent->nama_penyetuju ?? '' }}</td></tr>
         <tr><td>Hubungan dengan pasien</td><td>:</td><td>{{ $consent ? ($pemberiWali ? $consent->hubungan : 'Pasien sendiri') : '' }}</td></tr>
         <tr><td>Keluarga/pendamping</td><td>:</td><td>{{ $consent->pendamping ?? '' }}</td></tr>
+        @php $df = $consent->data_form ?? []; @endphp
+        @if (! empty($df))
+            <tr><td>Riwayat alergi</td><td>:</td><td>{{ $df['riwayat_alergi'] ?? '' ?: '-' }}</td></tr>
+            <tr><td>Riwayat penyakit dahulu</td><td>:</td><td>{{ $df['riwayat_penyakit'] ?? '' ?: '-' }}</td></tr>
+            <tr><td>Kerabat penerima informasi</td><td>:</td><td>
+                @forelse (($df['kerabat'] ?? []) as $k)
+                    {{ $k['nama'] }}@if (! empty($k['hubungan'])) ({{ $k['hubungan'] }})@endif{{ ! $loop->last ? ', ' : '' }}
+                @empty
+                    -
+                @endforelse
+            </td></tr>
+            <tr><td>Izin kunjungan</td><td>:</td><td>{{ $df['izin_kunjungan'] ?? '-' }}</td></tr>
+            <tr><td>Privasi khusus</td><td>:</td><td>{{ $df['privasi_khusus'] ?? '-' }}@if (! empty($df['keterangan_privasi'])) - {{ $df['keterangan_privasi'] }}@endif</td></tr>
+        @endif
     </table>
 
     <p>Dengan ini saya menyatakan telah menerima penjelasan dan menyetujui hal-hal berikut:</p>
@@ -113,17 +128,17 @@
     <div class="ttd">
         <div>
             Penandatangan
-            <div class="garis"></div>
+            <div class="garis">@if ($consent && $consent->ttd_penanggung_jawab)<img src="{{ $consent->ttd_penanggung_jawab }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $consent->nama_penyetuju ?? '' }}</div>
         </div>
         <div>
             Saksi
-            <div class="garis"></div>
+            <div class="garis">@if ($consent && $consent->ttd_saksi)<img src="{{ $consent->ttd_saksi }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $consent->saksi ?? '' }}</div>
         </div>
         <div>
             Ngawi, {{ ($tglConsent ?? now())->locale('id')->translatedFormat('j F Y') }}<br>Petugas yang mencatat,
-            <div class="garis"></div>
+            <div class="garis">@if ($consent && $consent->ttd_petugas)<img src="{{ $consent->ttd_petugas }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $consent->petugas_pencatat ?? '' }}</div>
         </div>
     </div>

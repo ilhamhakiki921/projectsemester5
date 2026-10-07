@@ -2043,7 +2043,7 @@ body.sidebar-collapsed .main {
 
 /* =========================
    MODAL GENERAL CONSENT (PASIEN BARU)
-   Ukurannya dulu - konten/desain persetujuannya menyusul.
+   Desain: form lengkap 2 kolom (Identitas, Penanda Tangan, A-D, Tanda Tangan)
 ========================= */
 
 #modalGeneralConsent {
@@ -2051,180 +2051,472 @@ body.sidebar-collapsed .main {
 }
 
 .modal-general-consent {
-    width: 650px;
+    --gc-merah: #c40000;
+    --gc-merah-tua: #a30000;
+    --gc-pink: #f8d7da;
+    --gc-garis: #5f5f5f;
+    --gc-input: #efefef;
+
+    width: 1180px;
     max-width: 100%;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 30px);
 
     display: flex;
     flex-direction: column;
 
     background: #ffffff;
-
     border-radius: 14px;
-
     overflow: hidden;
 
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     animation: modalMasuk 0.2s ease;
+
+    font-family: 'Poppins', sans-serif;
 }
 
-#modalGeneralConsent .modal-body {
+.gc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.gc-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gc-merah);
+}
+
+.gc-header .modal-close {
+    color: #78909c;
+}
+
+.gc-body {
+    flex: 1;
     overflow-y: auto;
+    padding: 22px 28px 26px;
+    background: #ffffff;
 }
 
-/* Kotak kosong pengganti sementara, sebelum kontennya diisi */
-.consent-placeholder {
-    min-height: 220px;
+.gc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.gc-kolom {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.gc-kartu {
+    border: 1px solid var(--gc-garis);
+    border-radius: 14px;
+    padding: 16px 18px 18px;
+    background: #ffffff;
+}
+
+.gc-kartu-judul {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.gc-badge {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    padding: 24px;
-
-    border: 1px dashed #d5dddd;
-    border-radius: 10px;
-
-    background: #f8faf9;
-
-    color: #90a4ae;
-
-    font-size: 13px;
-    text-align: center;
+    border-radius: 6px;
+    background: var(--gc-merah);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
 }
 
-.consent-agree {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-
-    margin-top: 18px;
-
-    font-size: 12px;
-    color: #455a64;
-
-    cursor: pointer;
-}
-
-.consent-agree input[type="checkbox"] {
-    margin-top: 2px;
-}
-
-/* Isi General Consent */
-.gc-identitas {
-    display: grid;
-    grid-template-columns: 1.4fr 1.2fr 1fr;
-    gap: 12px;
-
-    padding: 12px 14px;
-    margin-bottom: 14px;
-
-    border: 1px solid #d5dddd;
-    border-radius: 10px;
-    background: #f8faf9;
-}
-
-.gc-identitas span {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 11px;
-    color: #78909c;
-}
-
-.gc-identitas strong {
-    font-size: 13px;
+.gc-kartu-judul h3 {
+    margin: 0;
+    font-size: 14px;
     font-weight: 600;
-    color: #1c2b33;
+    color: var(--gc-merah);
 }
 
-.gc-intro {
-    margin: 0 0 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1c2b33;
-}
-
-.gc-list {
-    margin: 0 0 16px;
-    padding: 12px 16px 12px 34px;
-
-    max-height: 260px;
-    overflow-y: auto;
-
-    border: 1px solid #d5dddd;
-    border-radius: 10px;
-
-    font-size: 12px;
-    line-height: 1.6;
-    color: #37474f;
-}
-
-.gc-list li {
-    margin-bottom: 8px;
-}
-
-.gc-list li:last-child {
-    margin-bottom: 0;
-}
-
-.gc-list b {
-    color: #1c2b33;
-}
-
-.gc-judul {
-    margin: 0 0 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1c2b33;
-}
-
-.gc-pilihan {
-    display: flex;
-    gap: 22px;
+.gc-field {
     margin-bottom: 10px;
 }
 
-.gc-pilihan label {
+.gc-field label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+}
+
+.gc-field input[type="text"],
+.gc-field select,
+.gc-field textarea {
+    width: 100%;
+    height: 32px;
+    padding: 0 10px;
+
+    border: 1px solid #cfcfcf;
+    border-radius: 6px;
+    background: #ffffff;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: #222;
+
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gc-field textarea {
+    height: 96px;
+    padding: 8px 10px;
+    resize: vertical;
+}
+
+.gc-field input::placeholder,
+.gc-field textarea::placeholder {
+    color: #9a9a9a;
+}
+
+/* Kolom aktif: border merah */
+.gc-field input[type="text"]:focus,
+.gc-field select:focus,
+.gc-field textarea:focus {
+    outline: none;
+    border-color: var(--gc-merah);
+    box-shadow: 0 0 0 3px rgba(196, 0, 0, 0.15);
+    background: #ffffff;
+}
+
+/* Data pasien dari pendaftaran: abu-abu, tidak bisa diklik / diubah */
+.gc-field input[readonly] {
+    background: var(--gc-input);
+    color: #555;
+    cursor: default;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Kotak pink berisi teks persetujuan */
+.gc-catatan {
+    margin: 0 0 16px;
+    padding: 14px 16px;
+
+    background: var(--gc-pink);
+    border-left: 4px solid var(--gc-merah);
+    border-radius: 6px 14px 14px 6px;
+
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.55;
+    color: #2b2b2b;
+}
+
+/* Pill checkbox / radio */
+.gc-pill {
     display: inline-flex;
     align-items: center;
     gap: 7px;
 
-    font-size: 12px;
-    color: #455a64;
+    padding: 5px 12px;
+
+    border: 1px solid #555;
+    border-radius: 999px;
+    background: #ffffff;
+
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #222;
+
     cursor: pointer;
 }
 
-.gc-wali {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+.gc-pill input {
+    margin: 0;
+    accent-color: var(--gc-merah);
 }
 
-.gc-wali label {
-    display: block;
+.gc-pill-lebar {
+    display: flex;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.gc-pilihan-baris {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.gc-sublabel {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+}
+
+.gc-kerabat {
+    margin-bottom: 8px;
+}
+
+.gc-kerabat .gc-sublabel {
     margin-bottom: 4px;
+}
+
+.gc-kerabat input {
+    height: 28px !important;
+    margin-bottom: 5px;
+    font-size: 10px !important;
+}
+
+/* Tanda tangan */
+.gc-ttd-wadah {
+    margin-top: 18px;
+}
+
+.gc-ttd-kartu {
+    margin-bottom: 14px;
+    border: 1px solid var(--gc-garis);
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.gc-ttd-kotak {
+    height: 74px;
+    margin: 14px 28px 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #b04a52;
+    border-radius: 12px;
+    background: #f4c9cd;
+
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #444;
+}
+
+.gc-ttd-kotak.sudah {
+    background: #ffffff;
+    border-color: #2e7d32;
+}
+
+.gc-ttd-kotak img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.gc-ttd-aksi {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+
+.gc-btn-ttd {
+    height: 26px;
+    padding: 0 26px;
+
+    border: 1px solid var(--gc-merah);
+    border-radius: 999px;
+    background: #ffffff;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #333;
+
+    cursor: pointer;
+}
+
+.gc-btn-ttd:hover {
+    background: #fdecee;
+}
+
+.gc-ttd-label {
+    padding: 9px 12px;
+    border-top: 1px solid #bdbdbd;
+    text-align: center;
     font-size: 11px;
     font-weight: 600;
-    color: #455a64;
+    color: #444;
 }
 
-.gc-wali input {
-    width: 100%;
-    height: 40px;
+/* Footer */
+.gc-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
 
-    padding: 0 12px;
+    padding: 14px 28px;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+}
 
-    border: 1px solid #d5dddd;
+.gc-pesan {
+    margin-right: auto;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gc-merah);
+}
+
+.gc-btn {
+    height: 38px;
+    padding: 0 22px;
+
     border-radius: 8px;
 
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
 }
 
-.gc-wali input:focus {
-    outline: 2px solid #0f766e;
+.gc-btn-draft {
+    border: 1px solid #555;
+    background: #ffffff;
+    color: #222;
+}
+
+.gc-btn-draft:hover {
+    background: #f3f3f3;
+}
+
+.gc-btn-simpan {
+    border: 1px solid var(--gc-merah);
+    background: #ffffff;
+    color: var(--gc-merah);
+}
+
+.gc-btn-simpan:hover {
+    background: var(--gc-merah);
+    color: #ffffff;
+}
+
+.gc-btn-hijau {
+    border: 1px solid #16a34a;
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.gc-btn-hijau:hover {
+    background: #128a3e;
+    border-color: #128a3e;
+    color: #ffffff;
+}
+
+/* Kolom yang belum diisi */
+.gc-error {
+    outline: 2px solid var(--gc-merah) !important;
     outline-offset: 1px;
+}
+
+/* Popup tanda tangan */
+#modalTtdGC {
+    z-index: 10003;
+}
+
+.gc-ttd-modal {
+    width: 560px;
+    max-width: 100%;
+
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    font-family: 'Poppins', sans-serif;
+}
+
+.gc-ttd-modal-head {
+    padding: 16px 22px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gc-merah, #c40000);
+}
+
+.gc-ttd-modal-body {
+    padding: 18px 22px;
+}
+
+.gc-ttd-modal-body p {
+    margin: 0 0 8px;
+    font-size: 11.5px;
+    color: #607d8b;
+}
+
+#ttdGcCanvas {
+    display: block;
+    width: 100%;
+    height: 200px;
+
+    border: 1px dashed #9e9e9e;
+    border-radius: 10px;
+    background: #fafafa;
+
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.gc-ttd-modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Notifikasi kecil */
+.gc-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+
+    padding: 11px 20px;
+
+    border-radius: 10px;
+    background: #1f2937;
+    color: #ffffff;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 12.5px;
+
+    z-index: 10010;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.gc-toast.show {
+    opacity: 1;
+}
+
+@media (max-width: 900px) {
+    .gc-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Penanda di Step 2 bahwa General Consent sudah disetujui */
@@ -3442,18 +3734,11 @@ body.sidebar-collapsed .main {
     <div class="modal-general-consent">
 
         {{-- HEADER --}}
-        <div class="modal-header">
+        <div class="gc-header">
 
-            <div>
-                <h2>General Consent</h2>
-                <p>Persetujuan umum tindakan medis pasien</p>
-            </div>
+            <h2>General Consent (Persetujuan Umum)</h2>
 
-            <button
-                type="button"
-                class="modal-close"
-                onclick="tutupModalGeneralConsent()"
-            >
+            <button type="button" class="modal-close" onclick="tutupModalGeneralConsent()" title="Tutup (isian tetap tersimpan sementara)">
                 <i class="bi bi-x-lg"></i>
             </button>
 
@@ -3461,89 +3746,238 @@ body.sidebar-collapsed .main {
 
 
         {{-- BODY --}}
-        <div class="modal-body">
+        <div class="gc-body">
 
-            {{-- Identitas pasien terisi otomatis dari Step 1 --}}
-            <div class="gc-identitas">
-                <div><span>Nama Pasien</span><strong id="gcNama">-</strong></div>
-                <div><span>NIK</span><strong id="gcNik">-</strong></div>
-                <div><span>Tanggal Lahir</span><strong id="gcLahir">-</strong></div>
-            </div>
+            <div class="gc-grid">
 
-            {{-- Isi persetujuan: draf standar, sesuaikan dengan ketentuan fasilitas --}}
-            <p class="gc-intro">Dengan ini saya menyatakan telah menerima penjelasan dan menyetujui hal-hal berikut:</p>
+                {{-- ================= KOLOM KIRI ================= --}}
+                <div class="gc-kolom">
 
-            <ol class="gc-list">
-                <li>Saya menyetujui pemeriksaan, perawatan, dan pengobatan di klinik ini sesuai indikasi medis oleh dokter dan tenaga kesehatan yang bertugas.</li>
-                <li>Saya telah mendapat penjelasan mengenai hak dan kewajiban saya sebagai pasien.</li>
-                <li>Saya bersedia mematuhi tata tertib dan peraturan yang berlaku di klinik.</li>
-                <li>Saya telah mendapat informasi tentang tarif dan sistem pembayaran pelayanan (umum, BPJS Kesehatan, atau asuransi lain).</li>
-                <li>Saya memahami bahwa informasi medis saya bersifat rahasia dan hanya dibuka sesuai ketentuan peraturan perundang-undangan.</li>
-                <li>Saya menyetujui informasi medis saya diberikan kepada penjamin pembiayaan (BPJS Kesehatan/asuransi) untuk keperluan klaim. <em style="color:#8a8a8a;font-style:normal;font-size:11px;">(Opsional)</em></li>
-                <li>Saya menyetujui data saya dimanfaatkan untuk pendidikan, penelitian, dan pelaporan dengan identitas dirahasiakan. <em style="color:#8a8a8a;font-style:normal;font-size:11px;">(Opsional)</em></li>
-                <li>Saya menyetujui informasi kondisi saya disampaikan kepada keluarga/pendamping yang saya tunjuk di bawah ini. <em style="color:#8a8a8a;font-style:normal;font-size:11px;">(Opsional)</em></li>
-            </ol>
+                    {{-- 1. Identitas Pasien --}}
+                    <div class="gc-kartu">
+                        <div class="gc-kartu-judul">
+                            <span class="gc-badge">1.</span>
+                            <h3>Identitas Pasien</h3>
+                        </div>
 
-            {{-- Siapa yang memberikan persetujuan --}}
-            <div class="gc-judul">Yang memberikan persetujuan</div>
+                        <div class="gc-field">
+                            <label for="gcRm">No. RM</label>
+                            <input type="text" id="gcRm" readonly tabindex="-1">
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcNamaPasien">Nama Pasien</label>
+                            <input type="text" id="gcNamaPasien" readonly tabindex="-1">
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcJk">Jenis Kelamin</label>
+                            <input type="text" id="gcJk" readonly tabindex="-1">
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcTglLahir">Tanggal Lahir</label>
+                            <input type="text" id="gcTglLahir" readonly tabindex="-1">
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcAlamatPasien">Alamat</label>
+                            <input type="text" id="gcAlamatPasien" readonly tabindex="-1">
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcAlergi">Riwayat Alergi</label>
+                            <input type="text" id="gcAlergi" maxlength="1000" autocomplete="off" placeholder="Contoh: alergi obat penisilin, seafood (kosongkan bila tidak ada)">
+                        </div>
+                        <div class="gc-field" style="margin-bottom:0;">
+                            <label for="gcRiwayat">Riwayat Penyakit Dahulu</label>
+                            <input type="text" id="gcRiwayat" maxlength="1000" autocomplete="off" placeholder="Contoh: hipertensi, diabetes (kosongkan bila tidak ada)">
+                        </div>
+                    </div>
 
-            <div class="gc-pilihan">
-                <label><input type="radio" name="gcPemberi" value="Pasien" checked onchange="aturPemberiGeneralConsent()"> Pasien sendiri</label>
-                <label><input type="radio" name="gcPemberi" value="Wali" onchange="aturPemberiGeneralConsent()"> Keluarga/wali pasien</label>
-            </div>
 
-            <div class="gc-wali" id="gcWaliBox" hidden>
-                <div>
-                    <label for="gcWaliNama">Nama Keluarga/Wali<span class="wajib">*</span></label>
-                    <input type="text" id="gcWaliNama" placeholder="Nama yang menyetujui" oninput="aturTombolGeneralConsent()">
+                    {{-- A. Perawatan dan Pengobatan --}}
+                    <div class="gc-kartu">
+                        <div class="gc-kartu-judul">
+                            <span class="gc-badge">A</span>
+                            <h3>Perawatan dan Pengobatan</h3>
+                        </div>
+
+                        <div class="gc-catatan">
+                            Pasien/wali menyetujui perawatan di Klinik Merah Putih sesuai kebutuhan medis, memahami hubungan dokter-pasien bersifat profesional berdasar UU Praktek Kedokteran No. 29/2004, UU Kesehatan No. 36/2009, dan UU Rumah Sakit No. 44/2009, serta memahami risiko tindakan medis dari ringan hingga berat
+                        </div>
+
+                        <label class="gc-pill" id="gcWrapA">
+                            <input type="checkbox" id="gcCbA"> Saya menyetujui dan memahami perawatan dan pengobatan di atas
+                        </label>
+                    </div>
+
+
+                    {{-- C. Hak dan Tanggung Jawab Pasien --}}
+                    <div class="gc-kartu">
+                        <div class="gc-kartu-judul">
+                            <span class="gc-badge">C</span>
+                            <h3>Hak dan Tanggung Jawab Pasien</h3>
+                        </div>
+
+                        <div class="gc-catatan">
+                            Pasien berhak mengambil bagian dalam keputusan pengelolaan penyakitnya, telah menerima informasi hak &amp; kewajiban melalui leaflet/banner. Rumah Sakit tidak bertanggung jawab atas kehilangan barang pribadi. Pasien &amp; keluarga bersedia mematuhi tata tertib, jam berkunjung, dan kawasan dilarang merokok.
+                        </div>
+
+                        <label class="gc-pill" id="gcWrapC">
+                            <input type="checkbox" id="gcCbC"> Saya memahami dan menyanggupi hak dan tanggung jawab pasien
+                        </label>
+                    </div>
+
                 </div>
-                <div>
-                    <label for="gcWaliHubungan">Hubungan dengan Pasien<span class="wajib">*</span></label>
-                    <input type="text" id="gcWaliHubungan" placeholder="Contoh: Suami, Anak" oninput="aturTombolGeneralConsent()">
+
+
+                {{-- ================= KOLOM KANAN ================= --}}
+                <div class="gc-kolom">
+
+                    {{-- 2. Data Penanda Tangan & Hubungan dengan pasien --}}
+                    <div class="gc-kartu">
+                        <div class="gc-kartu-judul">
+                            <span class="gc-badge">2.</span>
+                            <h3>Data Penanda Tangan &amp; Hubungan dengan pasien</h3>
+                        </div>
+
+                        <div class="gc-field">
+                            <label for="gcPtNama">Nama Penanda Tangan<span class="wajib">*</span></label>
+                            <input type="text" id="gcPtNama" maxlength="255" autocomplete="off" placeholder="Nama lengkap yang menandatangani">
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcPtHubungan">Hubungan dengan Pasien<span class="wajib">*</span></label>
+                            <select id="gcPtHubungan" onchange="aturHubunganGeneralConsent()">
+                                <option value="">Pilih hubungan</option>
+                                <option value="Pasien sendiri">Pasien sendiri</option>
+                                <option value="Suami">Suami</option>
+                                <option value="Istri">Istri</option>
+                                <option value="Orang Tua">Orang Tua</option>
+                                <option value="Anak">Anak</option>
+                                <option value="Saudara Kandung">Saudara Kandung</option>
+                                <option value="Wali">Wali</option>
+                                <option value="Lain-lain">Lain-lain</option>
+                            </select>
+                        </div>
+                        <div class="gc-field">
+                            <label for="gcPtAlamat">Alamat</label>
+                            <input type="text" id="gcPtAlamat" maxlength="500" autocomplete="off" placeholder="Alamat penanda tangan">
+                        </div>
+                        <div class="gc-field" style="margin-bottom:0;">
+                            <label for="gcPtTelp">No Telepon</label>
+                            <input type="text" id="gcPtTelp" maxlength="50" inputmode="tel" autocomplete="off" placeholder="Contoh: 081234567890">
+                        </div>
+                    </div>
+
+
+                    {{-- B. Perawatan dan Pengobatan (informasi & kerabat) --}}
+                    <div class="gc-kartu">
+                        <div class="gc-kartu-judul">
+                            <span class="gc-badge">B</span>
+                            <h3>Perawatan dan Pengobatan</h3>
+                        </div>
+
+                        <div class="gc-catatan">
+                            Informasi diagnosis, hasil tes, dan hasil laboratorium dijaga kerahasiaannya. Pihak rumah sakit diberi wewenang membagikan informasi untuk keperluan klaim asuransi, penegakan hukum, atau kepada kerabat yang tercantum dibawah.
+                        </div>
+
+                        @for ($i = 1; $i <= 3; $i++)
+                            <div class="gc-kerabat">
+                                <div class="gc-sublabel">Kerabat yang diizinkan menerima informasi<br>{{ $i }}</div>
+                                <div class="gc-field" style="margin-bottom:0;">
+                                    <input type="text" id="gcKerabatNama{{ $i }}" placeholder="Nama kerabat (opsional)" maxlength="255" autocomplete="off">
+                                    <input type="text" id="gcKerabatHub{{ $i }}" placeholder="Hubungan, mis. Suami / Anak / Saudara" maxlength="100" autocomplete="off">
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
+
+
+                    {{-- D. Privasi dan Informasi Biaya --}}
+                    <div class="gc-kartu">
+                        <div class="gc-kartu-judul">
+                            <span class="gc-badge">D</span>
+                            <h3>Privasi dan Informasi Biaya</h3>
+                        </div>
+
+                        <div class="gc-sublabel">Izin kunjungan keluarga/orang lain</div>
+                        <div class="gc-pilihan-baris" id="gcWrapIzin">
+                            <label class="gc-pill"><input type="radio" name="gcIzin" value="Mengizinkan"> Mengizinkan</label>
+                            <label class="gc-pill"><input type="radio" name="gcIzin" value="Tidak mengizinkan"> Tidak mengizinkan</label>
+                        </div>
+
+                        <div class="gc-sublabel">Privasi Khusus</div>
+                        <div class="gc-pilihan-baris" id="gcWrapPrivasi">
+                            <label class="gc-pill"><input type="radio" name="gcPrivasi" value="Menginginkan privasi khusus"> Menginginkan privasi khusus</label>
+                            <label class="gc-pill"><input type="radio" name="gcPrivasi" value="Tidak menginginkan"> Tidak menginginkan</label>
+                        </div>
+
+                        <div class="gc-field">
+                            <label for="gcKetPrivasi">Keterangan privasi khusus (jika ada)</label>
+                            <textarea id="gcKetPrivasi" maxlength="1000" placeholder="Tuliskan permintaan privasi khusus, mis. tidak boleh dijenguk orang tertentu (kosongkan bila tidak ada)"></textarea>
+                        </div>
+
+                        <label class="gc-pill gc-pill-lebar" id="gcWrapD">
+                            <input type="checkbox" id="gcCbD"> Saya memahami informasi biaya pengobatan, perawatan, dan tindakan medis yang dijelaskan
+                        </label>
+                    </div>
+
                 </div>
+
             </div>
 
-            <label class="consent-agree">
 
-                <input
-                    type="checkbox"
-                    id="cbGeneralConsent"
-                    onchange="aturTombolGeneralConsent()"
-                >
+            {{-- ================= TANDA TANGAN PERSETUJUAN ================= --}}
+            <div class="gc-kartu gc-ttd-wadah">
 
-                Saya telah membaca, memahami, dan menyetujui isi General Consent di atas
+                <div class="gc-kartu-judul">
+                    <span class="gc-badge"><i class="bi bi-check-lg"></i></span>
+                    <h3>Tanda Tangan Persetujuan</h3>
+                </div>
 
-            </label>
+                @foreach (['petugas' => 'Petugas Rawat Inap', 'penanggung' => 'Penanggung jawab/pasien', 'saksi' => 'Saksi pasien'] as $kunci => $label)
+                    <div class="gc-ttd-kartu">
+                        <div class="gc-ttd-kotak" id="gcTtdKotak_{{ $kunci }}">Belum ditandatangani</div>
+                        <div class="gc-ttd-aksi">
+                            <button type="button" class="gc-btn-ttd" id="gcTtdTombol_{{ $kunci }}" onclick="bukaTtdGeneralConsent('{{ $kunci }}')">Bubuhkan tanda tangan</button>
+                        </div>
+                        <div class="gc-ttd-label">{{ $label }}</div>
+                    </div>
+                @endforeach
+
+            </div>
 
         </div>
 
 
         {{-- FOOTER --}}
-        <div class="modal-footer">
+        <div class="gc-footer">
 
-            <button
-                type="button"
-                class="btn-batal"
-                onclick="tutupModalGeneralConsent()"
-            >
-                Batal
-            </button>
+            <span class="gc-pesan" id="gcPesan"></span>
 
-            <button
-                type="button"
-                id="btnSetujuGeneralConsent"
-                class="btn-daftarkan"
-                onclick="setujuiGeneralConsent()"
-                disabled
-            >
-                Setuju & Lanjutkan
-            </button>
+            <button type="button" class="gc-btn gc-btn-draft" onclick="simpanDraftGeneralConsent()">Simpan Draft</button>
+            <button type="button" class="gc-btn gc-btn-simpan" id="btnSetujuGeneralConsent" onclick="setujuiGeneralConsent()">Simpan ke Rekam Medis</button>
 
         </div>
 
     </div>
 
 </div>
+
+
+{{-- Popup untuk membubuhkan tanda tangan --}}
+<div id="modalTtdGC" class="modal-overlay">
+    <div class="gc-ttd-modal">
+        <div class="gc-ttd-modal-head" id="ttdGcJudul">Tanda Tangan</div>
+        <div class="gc-ttd-modal-body">
+            <p>Tanda tangan di dalam kotak di bawah ini menggunakan mouse, jari, atau stylus.</p>
+            <canvas id="ttdGcCanvas"></canvas>
+        </div>
+        <div class="gc-ttd-modal-foot">
+            <button type="button" class="gc-btn gc-btn-draft" onclick="hapusTtdGeneralConsent()">Hapus</button>
+            <button type="button" class="gc-btn gc-btn-draft" onclick="tutupTtdGeneralConsent()">Batal</button>
+            <button type="button" class="gc-btn gc-btn-hijau" onclick="simpanTtdGeneralConsent()">Simpan Tanda Tangan</button>
+        </div>
+    </div>
+</div>
+
+<div class="gc-toast" id="gcToast"></div>
 
 
 {{-- =========================
@@ -4465,6 +4899,7 @@ function resetGeneralConsent() {
     generalConsentDisetujui = false;
     generalConsentData = null;
     document.getElementById('gcStatus').hidden = true;
+    resetFormGeneralConsent();
 }
 
 function bukaModalPasienBaru() {
@@ -4931,101 +5366,389 @@ function simpanDataLain() {
 // sebelum lanjut ke Informasi Kunjungan dan sebelum pasien disimpan.
 // =========================
 
+// Nilai yang sudah diisi dipertahankan selama modal ditutup (mis. Simpan Draft / tombol X),
+// dan baru dikosongkan oleh resetGeneralConsent() saat pasien baru dimulai / selesai disimpan.
+const GC_TTD = { petugas: null, penanggung: null, saksi: null };
+const GC_TTD_LABEL = {
+    petugas:    'Petugas Rawat Inap',
+    penanggung: 'Penanggung jawab/pasien',
+    saksi:      'Saksi pasien'
+};
+
+let gcTtdAktif = null;
+let gcSedangMenggambar = false;
+let gcAdaGoresan = false;
+
+function gcEl(id) {
+    return document.getElementById(id);
+}
+
+function gcNilai(id) {
+    return gcEl(id).value.trim();
+}
+
+function resetFormGeneralConsent() {
+
+    ['gcAlergi', 'gcRiwayat', 'gcPtNama', 'gcPtAlamat', 'gcPtTelp', 'gcKetPrivasi'].forEach(function(id) {
+        gcEl(id).value = '';
+    });
+
+    gcEl('gcPtHubungan').value = '';
+
+    for (let i = 1; i <= 3; i++) {
+        gcEl('gcKerabatNama' + i).value = '';
+        gcEl('gcKerabatHub' + i).value = '';
+    }
+
+    ['gcCbA', 'gcCbC', 'gcCbD'].forEach(function(id) {
+        gcEl(id).checked = false;
+    });
+
+    document.querySelectorAll('input[name="gcIzin"], input[name="gcPrivasi"]').forEach(function(r) {
+        r.checked = false;
+    });
+
+    Object.keys(GC_TTD).forEach(function(k) {
+        GC_TTD[k] = null;
+        tampilkanTtdGeneralConsent(k);
+    });
+
+    bersihkanErrorGeneralConsent();
+}
+
+
+function bersihkanErrorGeneralConsent() {
+
+    document.querySelectorAll('#modalGeneralConsent .gc-error').forEach(function(el) {
+        el.classList.remove('gc-error');
+    });
+
+    gcEl('gcPesan').textContent = '';
+}
+
+
+function tampilToastGeneralConsent(teks) {
+
+    const t = gcEl('gcToast');
+
+    t.textContent = teks;
+    t.classList.add('show');
+
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() {
+        t.classList.remove('show');
+    }, 3200);
+}
+
+
 function bukaModalGeneralConsent() {
 
-    const nilai = function(id) {
-        return document.getElementById(id).value.trim();
-    };
+    // Identitas pasien terisi otomatis dari Step 1 (hanya baca)
+    gcEl('gcRm').value          = 'Dibuat otomatis saat disimpan';
+    gcEl('gcNamaPasien').value  = gcNilai('baruNama');
+    gcEl('gcJk').value          = gcNilai('baruJk');
+    gcEl('gcTglLahir').value    = isoKeTeks(gcNilai('baruTglLahir'));
+    gcEl('gcAlamatPasien').value = gcNilai('baruAlamat');
 
-    // Identitas pasien terisi otomatis dari Step 1
-    document.getElementById('gcNama').textContent  = nilai('baruNama') || '-';
-    document.getElementById('gcNik').textContent   = nilai('baruNik') || '-';
-    document.getElementById('gcLahir').textContent = isoKeTeks(nilai('baruTglLahir')) || '-';
+    // Data penanda tangan: default dari data wali/keluarga yang diisi di pendaftaran
+    // (hanya bila belum diisi, supaya ketikan manual tidak tertimpa)
+    if (!gcNilai('gcPtNama') && !gcEl('gcPtHubungan').value) {
 
-    // Mulai dari kondisi bersih
-    document.querySelector('input[name="gcPemberi"][value="Pasien"]').checked = true;
-    document.getElementById('gcWaliNama').value = '';
-    document.getElementById('gcWaliHubungan').value = '';
-    document.getElementById('gcWaliBox').hidden = true;
-    document.getElementById('cbGeneralConsent').checked = false;
-    document.getElementById('btnSetujuGeneralConsent').disabled = true;
+        gcEl('gcPtNama').value  = gcNilai('keluargaNama');
+        gcEl('gcPtTelp').value  = gcNilai('keluargaTelepon');
 
-    document.getElementById('modalGeneralConsent')
-        .classList.add('show');
+        const hubWali = gcNilai('keluargaHubungan');
+
+        if (hubWali) {
+            gcEl('gcPtHubungan').value = hubWali;
+        }
+    }
+
+    bersihkanErrorGeneralConsent();
+
+    gcEl('modalGeneralConsent').classList.add('show');
 }
 
 
 function tutupModalGeneralConsent() {
 
-    document.getElementById('modalGeneralConsent')
-        .classList.remove('show');
+    gcEl('modalGeneralConsent').classList.remove('show');
 }
 
 
-function pemberiGeneralConsent() {
+// Pilih hubungan -> nama/alamat/telepon penanda tangan terisi otomatis dari data pasien / keluarga di Step 1
+function aturHubunganGeneralConsent() {
 
-    return document.querySelector('input[name="gcPemberi"]:checked').value;
+    const hub    = gcEl('gcPtHubungan').value;
+    const nama   = gcEl('gcPtNama');
+    const alamat = gcEl('gcPtAlamat');
+    const telp   = gcEl('gcPtTelp');
+
+    const pasienNama = gcNilai('baruNama');
+    const pasienTelp = gcNilai('baruTelepon');
+    const pasienAlmt = gcNilai('baruAlamat');
+
+    const kelNama = gcNilai('keluargaNama');
+    const kelTelp = gcNilai('keluargaTelepon');
+
+    if (hub === 'Pasien sendiri') {
+
+        // Penanda tangan = pasien sendiri -> pakai data pasien
+        nama.value   = pasienNama;
+        alamat.value = pasienAlmt;
+        telp.value   = pasienTelp;
+
+    } else if (hub) {
+
+        // Penanda tangan = wali -> pakai data wali dari pendaftaran.
+        // Isian yang masih berupa data pasien diganti; ketikan manual tidak ditimpa.
+        if (!nama.value.trim() || nama.value.trim() === pasienNama) {
+            nama.value = kelNama;
+        }
+        if (!telp.value.trim() || telp.value.trim() === pasienTelp) {
+            telp.value = kelTelp;
+        }
+        if (alamat.value.trim() === pasienAlmt) {
+            alamat.value = '';
+        }
+    }
 }
 
 
-// Pilih "Keluarga/wali" -> kolom nama & hubungan muncul (terisi dari data keluarga di Step 1)
-function aturPemberiGeneralConsent() {
+// =========================
+// TANDA TANGAN (canvas)
+// =========================
 
-    const wali = pemberiGeneralConsent() === 'Wali';
+function tampilkanTtdGeneralConsent(kunci) {
 
-    document.getElementById('gcWaliBox').hidden = !wali;
+    const kotak  = gcEl('gcTtdKotak_' + kunci);
+    const tombol = gcEl('gcTtdTombol_' + kunci);
 
-    if (wali) {
+    kotak.textContent = '';
 
-        const nama = document.getElementById('gcWaliNama');
-        const hub  = document.getElementById('gcWaliHubungan');
+    if (GC_TTD[kunci]) {
 
-        if (!nama.value.trim()) {
-            nama.value = document.getElementById('keluargaNama').value.trim();
-        }
+        const img = document.createElement('img');
+        img.src = GC_TTD[kunci];
+        img.alt = 'Tanda tangan ' + GC_TTD_LABEL[kunci];
 
-        if (!hub.value.trim()) {
-            hub.value = document.getElementById('keluargaHubungan').value || '';
-        }
+        kotak.appendChild(img);
+        kotak.classList.add('sudah');
+        tombol.textContent = 'Ulangi tanda tangan';
 
-        nama.focus();
+    } else {
+
+        kotak.textContent = 'Belum ditandatangani';
+        kotak.classList.remove('sudah');
+        tombol.textContent = 'Bubuhkan tanda tangan';
+    }
+}
+
+
+function siapkanKanvasTtd() {
+
+    const c   = gcEl('ttdGcCanvas');
+    const r   = c.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    c.width  = Math.round(r.width * dpr);
+    c.height = Math.round(r.height * dpr);
+
+    const ctx = c.getContext('2d');
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth   = 2.2;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.strokeStyle = '#111111';
+}
+
+
+function bukaTtdGeneralConsent(kunci) {
+
+    gcTtdAktif = kunci;
+    gcAdaGoresan = false;
+
+    gcEl('ttdGcJudul').textContent = 'Tanda Tangan - ' + GC_TTD_LABEL[kunci];
+    gcEl('modalTtdGC').classList.add('show');
+
+    siapkanKanvasTtd();
+}
+
+
+function tutupTtdGeneralConsent() {
+
+    gcEl('modalTtdGC').classList.remove('show');
+    gcTtdAktif = null;
+}
+
+
+function hapusTtdGeneralConsent() {
+
+    siapkanKanvasTtd();
+    gcAdaGoresan = false;
+}
+
+
+function simpanTtdGeneralConsent() {
+
+    if (!gcAdaGoresan) {
+        alert('Silakan bubuhkan tanda tangan terlebih dahulu.');
+        return;
     }
 
-    aturTombolGeneralConsent();
+    const asal = gcEl('ttdGcCanvas');
+
+    // Perkecil supaya ukuran data yang dikirim ke server tetap ringan
+    const lebar  = 500;
+    const tinggi = Math.round(lebar * asal.height / asal.width);
+
+    const kecil = document.createElement('canvas');
+    kecil.width  = lebar;
+    kecil.height = tinggi;
+
+    kecil.getContext('2d').drawImage(asal, 0, 0, lebar, tinggi);
+
+    GC_TTD[gcTtdAktif] = kecil.toDataURL('image/png');
+
+    tampilkanTtdGeneralConsent(gcTtdAktif);
+
+    tutupTtdGeneralConsent();
 }
 
 
-// Tombol "Setuju & Lanjutkan" aktif kalau sudah dicentang dan data penyetuju lengkap
-function aturTombolGeneralConsent() {
+(function pasangEventTtd() {
 
-    const dicentang = document.getElementById('cbGeneralConsent').checked;
+    const c = gcEl('ttdGcCanvas');
 
-    let lengkap = true;
-
-    if (pemberiGeneralConsent() === 'Wali') {
-        lengkap = document.getElementById('gcWaliNama').value.trim() !== ''
-               && document.getElementById('gcWaliHubungan').value.trim() !== '';
+    function posisi(e) {
+        const r = c.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
     }
 
-    document.getElementById('btnSetujuGeneralConsent').disabled = !(dicentang && lengkap);
+    c.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        c.setPointerCapture(e.pointerId);
+
+        const p   = posisi(e);
+        const ctx = c.getContext('2d');
+
+        gcSedangMenggambar = true;
+
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        // titik tunggal (klik tanpa geser) tetap tergambar
+        ctx.lineTo(p.x + 0.01, p.y + 0.01);
+        ctx.stroke();
+
+        gcAdaGoresan = true;
+    });
+
+    c.addEventListener('pointermove', function(e) {
+
+        if (!gcSedangMenggambar) {
+            return;
+        }
+
+        e.preventDefault();
+
+        const p   = posisi(e);
+        const ctx = c.getContext('2d');
+
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+    });
+
+    function selesai() {
+        gcSedangMenggambar = false;
+    }
+
+    c.addEventListener('pointerup', selesai);
+    c.addEventListener('pointercancel', selesai);
+    c.addEventListener('pointerleave', selesai);
+
+})();
+
+
+// =========================
+// SIMPAN
+// =========================
+
+// Simpan Draft: isian tetap dipertahankan, modal ditutup, belum lanjut ke Informasi Kunjungan.
+function simpanDraftGeneralConsent() {
+
+    tutupModalGeneralConsent();
+
+    tampilToastGeneralConsent('Draft General Consent tersimpan sementara. Klik "Lanjut" lagi untuk melanjutkannya.');
 }
 
 
 function setujuiGeneralConsent() {
 
-    if (document.getElementById('btnSetujuGeneralConsent').disabled) {
+    bersihkanErrorGeneralConsent();
+
+    const salah = [];
+
+    function tandai(idElemen, pesan) {
+        const el = gcEl(idElemen);
+        if (el) {
+            el.classList.add('gc-error');
+        }
+        salah.push({ id: idElemen, pesan: pesan });
+    }
+
+    if (!gcNilai('gcPtNama'))   { tandai('gcPtNama', 'Nama penanda tangan wajib diisi.'); }
+    if (!gcEl('gcPtHubungan').value) { tandai('gcPtHubungan', 'Hubungan dengan pasien wajib dipilih.'); }
+
+    if (!gcEl('gcCbA').checked) { tandai('gcWrapA', 'Persetujuan perawatan dan pengobatan (A) belum dicentang.'); }
+    if (!gcEl('gcCbC').checked) { tandai('gcWrapC', 'Hak dan tanggung jawab pasien (C) belum dicentang.'); }
+
+    if (!document.querySelector('input[name="gcIzin"]:checked'))    { tandai('gcWrapIzin', 'Izin kunjungan (D) belum dipilih.'); }
+    if (!document.querySelector('input[name="gcPrivasi"]:checked')) { tandai('gcWrapPrivasi', 'Privasi khusus (D) belum dipilih.'); }
+
+    if (!gcEl('gcCbD').checked) { tandai('gcWrapD', 'Informasi biaya (D) belum dicentang.'); }
+
+    if (!GC_TTD.penanggung) { tandai('gcTtdKotak_penanggung', 'Tanda tangan penanggung jawab/pasien belum dibubuhkan.'); }
+    if (!GC_TTD.petugas)    { tandai('gcTtdKotak_petugas', 'Tanda tangan petugas rawat inap belum dibubuhkan.'); }
+
+    if (salah.length) {
+
+        gcEl('gcPesan').textContent = salah[0].pesan +
+            (salah.length > 1 ? ' (+' + (salah.length - 1) + ' lainnya)' : '');
+
+        gcEl(salah[0].id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+
         return;
     }
 
-    const wali = pemberiGeneralConsent() === 'Wali';
+    const hubungan = gcEl('gcPtHubungan').value;
+    const wali     = hubungan !== 'Pasien sendiri';
+
+    const kerabat = [];
+
+    for (let i = 1; i <= 3; i++) {
+        const nama = gcNilai('gcKerabatNama' + i);
+        if (nama) {
+            kerabat.push({ nama: nama, hubungan: gcNilai('gcKerabatHub' + i) });
+        }
+    }
 
     generalConsentData = {
-        pemberi:   wali ? 'Wali' : 'Pasien',
-        nama:      wali
-                    ? document.getElementById('gcWaliNama').value.trim()
-                    : document.getElementById('baruNama').value.trim(),
-        hubungan:  wali ? document.getElementById('gcWaliHubungan').value.trim() : 'Pasien sendiri',
-        waktu:     new Date().toISOString()
+        pemberi:            wali ? 'Wali' : 'Pasien',
+        nama:               gcNilai('gcPtNama'),
+        hubungan:           hubungan,
+        waktu:              new Date().toISOString(),
+        alamat:             gcNilai('gcPtAlamat'),
+        telepon:            gcNilai('gcPtTelp'),
+        alergi:             gcNilai('gcAlergi'),
+        riwayat_penyakit:   gcNilai('gcRiwayat'),
+        kerabat:            kerabat,
+        izin_kunjungan:     document.querySelector('input[name="gcIzin"]:checked').value,
+        privasi_khusus:     document.querySelector('input[name="gcPrivasi"]:checked').value,
+        keterangan_privasi: gcNilai('gcKetPrivasi'),
+        ttd_petugas:          GC_TTD.petugas,
+        ttd_penanggung_jawab: GC_TTD.penanggung,
+        ttd_saksi:            GC_TTD.saksi
     };
 
     generalConsentDisetujui = true;
@@ -5034,7 +5757,7 @@ function setujuiGeneralConsent() {
 
     // Masih di Step 1 -> lanjut ke Informasi Kunjungan.
     // Sudah di Step 2 (pengaman) -> lanjutkan proses simpan yang tadi berhenti.
-    if (!document.getElementById('pasienBaruStep1').hidden) {
+    if (!gcEl('pasienBaruStep1').hidden) {
         tampilkanStep2();
     } else {
         simpanPasienBaru();
@@ -6179,14 +6902,7 @@ document.getElementById('modalEditPasien')
 // KLIK DI LUAR MODAL
 // =========================
 
-document.getElementById('modalGeneralConsent')
-    .addEventListener('click', function(event) {
-
-        if (event.target === this) {
-            tutupModalGeneralConsent();
-        }
-
-    });
+// Klik di luar modal General Consent sengaja tidak menutup form (isian panjang, cegah hilang tak sengaja).
 
 
 // =========================
