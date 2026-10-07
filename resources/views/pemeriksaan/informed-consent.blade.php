@@ -113,12 +113,24 @@
     .ic-ok{margin:0 0 14px;padding:10px 14px;border-radius:6px;background:#e8f7ea;color:#14602a;font-size:11px;font-weight:500}
     [hidden]{display:none!important}
 
+    /* Kop surat: hanya tampil saat dicetak, sama dengan Formulir General Consent */
+    .ic-kop{display:none}
+
     /* ===== CETAK ===== */
     @media print{
-        @page{size:A4;margin:12mm}
+        .ic-kop{display:flex;align-items:center;gap:14px;border-bottom:4px double #000;padding-bottom:10px;margin-bottom:18px;font-family:'Times New Roman',serif;break-inside:avoid;page-break-inside:avoid}
+        .ic-kop .logo{width:92px;flex-shrink:0}
+        .ic-kop .logo img,.ic-kop .logo svg{display:block;width:100%;height:auto}
+        .ic-kop .teks{flex:1;text-align:center;padding-right:92px}
+        .ic-kop h1{margin:0 0 3px;font-size:22px;letter-spacing:.5px;color:#d0121b;font-weight:700}
+        .ic-kop p{margin:1px 0 0;font-size:11px;color:#1a1a3a}
+        /* margin 0 = tanggal/jam & URL bawaan browser tidak ikut tercetak; jarak tepi diganti padding di bawah */
+        @page{size:A4;margin:0}
         html,body{background:#fff!important}
+        body{padding:12mm 14mm!important}
         .sidebar,.topbar,.identity-bar,.tabs,.flash,.toast-alert,.ic-banner-info,.ic-foot,.ic-ttd-clear,#icMsg{display:none!important}
-        .main{margin:0!important;width:100%!important;min-height:0!important;background:#fff!important}
+        /* sidebar mengatur margin-left .main dengan !important & spesifisitas tinggi, jadi harus ditimpa dengan selector yang lebih kuat */
+        html body:not(.sidebar-collapsed) .main,html body.sidebar-collapsed .main,.main{margin:0!important;width:100%!important;max-width:100%!important;min-height:0!important;background:#fff!important}
         .content{padding:0!important}
         .ic-wrap{border:0!important;border-radius:0!important;padding:0!important;margin:0!important}
         .ic-title{color:#000;font-size:18px;text-align:center;margin-bottom:10px}
@@ -149,6 +161,26 @@
 @section('konten')
 <form class="ic-wrap" id="formIc" novalidate>
     @csrf
+    {{-- Kop surat (hanya tampil saat cetak) --}}
+    <div class="ic-kop">
+        <div class="logo">
+            @if (file_exists(public_path('images/logo-klinik.png')))
+                <img src="{{ asset('images/logo-klinik.png') }}" alt="Logo Klinik">
+            @else
+                <svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#d0121b" d="M2 62 L14 4 L34 4 L38 34 L58 4 L78 4 L66 62 L50 62 L58 20 L38 54 L30 54 L26 20 L18 62 Z"/>
+                    <path fill="#d0121b" d="M70 62 L82 4 L106 4 C118 4 120 14 117 26 C113 40 102 44 90 44 L86 44 L83 62 Z M93 18 L90 32 C98 32 103 30 105 24 C107 18 103 18 99 18 Z"/>
+                </svg>
+            @endif
+        </div>
+        <div class="teks">
+            <h1>KLINIK UTAMA MERAH PUTIH</h1>
+            <p>Jl. Ronggowarsito No. 98 A Ngawi</p>
+            <p>Telp. (0351) 748186 / 081313142833 Email : merahputihklinik@gmail.com</p>
+            <p>Izin operasional : 12230024425350001</p>
+        </div>
+    </div>
+
     <h2 class="ic-title">Informed Consent</h2>
 
     <div class="ic-banner ic-banner-info">
