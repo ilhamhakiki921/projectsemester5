@@ -327,11 +327,11 @@
             </div>
             <div>
                 <label class="ic-lbl" for="ttpTempat">Tempat, Tanggal</label>
-                <input type="text" class="ic-in" id="ttpTempat" name="tempat_tanggal" required>
+                <input type="text" class="ic-in" id="ttpTempat" name="tempat_tanggal" value="Ngawi, {{ now()->locale('id')->translatedFormat('j F Y') }}" readonly>
             </div>
             <div>
                 <label class="ic-lbl" for="ttpPukul">Pukul</label>
-                <input type="time" class="ic-in" id="ttpPukul" name="pukul" required>
+                <input type="time" class="ic-in" id="ttpPukul" name="pukul" value="{{ now()->format('H:i') }}" readonly>
             </div>
             <div>
                 <label class="ic-lbl" for="ttpSaksi">Nama Saksi</label>
@@ -418,6 +418,16 @@
     }
     document.querySelectorAll('canvas[data-ttd]').forEach(siapkanTtd);
 
+    // ---------- Tanggal & jam otomatis (mengikuti waktu perangkat saat ini) ----------
+    var bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    function isiWaktu() {
+        var d = new Date();
+        form.tempat_tanggal.value = 'Ngawi, ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
+        form.pukul.value = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    }
+    isiWaktu();
+    window.addEventListener('beforeprint', isiWaktu);
+
     // ---------- Cetak ----------
     document.getElementById('icCetak').addEventListener('click', function () {
         // nilai kolom & tanda tangan di layar ikut tercetak apa adanya
@@ -434,6 +444,7 @@
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
+        isiWaktu();
 
         var kurang = [];
         if (! form.penerima_informasi.value.trim()) kurang.push('Penerima Informasi');
@@ -448,8 +459,6 @@
         if (! form.ttp_alamat.value.trim()) kurang.push('Alamat');
         if (! form.querySelector('input[name="ttp_hubungan"]:checked')) kurang.push('Hubungan dengan pasien');
         if (! form.querySelector('input[name="keputusan"]:checked')) kurang.push('Keputusan');
-        if (! form.tempat_tanggal.value.trim()) kurang.push('Tempat, Tanggal');
-        if (! form.pukul.value) kurang.push('Pukul');
         if (! form.nama_saksi.value.trim()) kurang.push('Nama Saksi');
 
         if (kurang.length) {

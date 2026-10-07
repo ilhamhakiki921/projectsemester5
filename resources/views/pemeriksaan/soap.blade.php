@@ -310,8 +310,14 @@
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Anamnesa</a>
                 <span class="tab-item active">SOAP</span>
                 @if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
+                @php
+                    // Pilihan terakhir (Ya/Tidak) dipertahankan saat halaman SOAP dibuka lagi
+                    $icYa = old('butuh_informed_consent') !== null
+                        ? old('butuh_informed_consent') === 'ya'
+                        : \App\Models\RekamMedis::butuhInformedConsent($poli, $pasien->no_rm);
+                @endphp
                 <a href="{{ route('pemeriksaan.informed-consent', [$poli, $pasien->no_rm]) }}" class="tab-item" id="tabInformedConsent"
-                   @unless (old('butuh_informed_consent') === 'ya') hidden @endunless>Informed Consent</a>
+                   @unless ($icYa) hidden @endunless>Informed Consent</a>
                 @endif
                 <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien->no_rm]) }}" class="tab-item">Diagnosa</a>
                 <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
@@ -367,7 +373,7 @@
 
                     @if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
                     @php
-                        $icAwal = old('butuh_informed_consent', 'tidak');
+                        $icAwal = $icYa ? 'ya' : 'tidak';
                     @endphp
                     <div class="field-group">
                         <div class="field">

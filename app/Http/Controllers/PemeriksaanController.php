@@ -180,7 +180,7 @@ class PemeriksaanController extends Controller
             'butuh_informed_consent' => 'nullable|in:ya,tidak',
         ], $this->pesanValidasi());
 
-        // Informed Consent hanya ada di Poli Gigi
+        // Informed Consent hanya ada di poli yang terdaftar di RekamMedis::POLI_INFORMED_CONSENT (Gigi & Umum)
         $butuhIc = RekamMedis::poliPunyaInformedConsent($poli)
             && ($data['butuh_informed_consent'] ?? 'tidak') === 'ya';
         $data['butuh_informed_consent'] = $butuhIc;
@@ -245,7 +245,7 @@ class PemeriksaanController extends Controller
 
     public function informedConsent($poli, $no_rm)
     {
-        // Informed Consent baru ada di Poli Gigi; poli lain kembali ke SOAP
+        // Informed Consent baru ada di Poli Gigi & Poli Umum; poli lain kembali ke SOAP
         if (! RekamMedis::poliPunyaInformedConsent($poli)) {
             return redirect()->route('pemeriksaan.soap', [$poli, $no_rm]);
         }
@@ -254,7 +254,10 @@ class PemeriksaanController extends Controller
 
         // Tab Informed Consent hanya tampil kalau di SOAP dipilih "Ya", jadi halaman ini
         // selalu boleh dibuka dari tab tersebut (tidak lagi bergantung pada isi database).
-        return view('pemeriksaan.informed-consent', [
+        // Tiap poli punya formulir sendiri: Poli Umum memakai tampilan khusus (isi informasi diketik dokter)
+        $tampilan = $poli === 'umum' ? 'pemeriksaan.informed-consent-umum' : 'pemeriksaan.informed-consent';
+
+        return view($tampilan, [
             'poli'      => $poli,
             'rm'        => $no_rm,
             'namaPoli'  => $this->daftarPoli[$poli],

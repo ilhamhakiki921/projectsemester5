@@ -55,7 +55,7 @@ class RekamMedis extends Model
      * Status hanya berlaku untuk kunjungan tersebut, jadi kunjungan baru selalu mulai dari "tidak".
      */
     /** Informed Consent baru tersedia untuk poli tertentu (poli lain belum dibuat). */
-    public const POLI_INFORMED_CONSENT = ['gigi'];
+    public const POLI_INFORMED_CONSENT = ['gigi', 'umum'];
 
     public static function poliPunyaInformedConsent(?string $poli): bool
     {

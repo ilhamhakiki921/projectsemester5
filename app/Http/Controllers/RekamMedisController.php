@@ -92,7 +92,6 @@ class RekamMedisController extends Controller
         $data = $request->validate([
             'nama_penyetuju'   => 'required|string|max:255',
             'hubungan'         => 'required|string|max:100',
-            'disetujui_pada'   => 'required|date',
             'saksi'            => 'nullable|string|max:255',
             'pendamping'       => 'nullable|string|max:255',
             'pernyataan'       => 'nullable|array',
@@ -100,7 +99,6 @@ class RekamMedisController extends Controller
         ], [
             'nama_penyetuju.required' => 'Nama penandatangan wajib diisi.',
             'hubungan.required'       => 'Hubungan dengan pasien wajib dipilih.',
-            'disetujui_pada.required' => 'Tanggal wajib diisi.',
         ]);
 
         $dipilih = array_values(array_unique(array_map('intval', $data['pernyataan'] ?? [])));
@@ -114,8 +112,8 @@ class RekamMedisController extends Controller
 
         $pasienSendiri = $data['hubungan'] === 'Pasien sendiri';
 
-        // Tanggal dari form tidak berjam: pakai jam saat ini supaya tetap tercatat waktunya
-        $waktu = \Carbon\Carbon::parse($data['disetujui_pada'])->setTimeFrom(now());
+        // Tanggal & jam persetujuan otomatis = saat formulir disimpan
+        $waktu = now();
 
         $isi = [
             'pemberi_persetujuan' => $pasienSendiri ? 'Pasien' : 'Wali',

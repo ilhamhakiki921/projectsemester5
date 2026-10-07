@@ -1540,7 +1540,8 @@
     if ($hubunganPilih && ! in_array($hubunganPilih, $opsiHubungan, true)) {
         $opsiHubungan[] = $hubunganPilih;
     }
-    $tanggalForm = old('disetujui_pada', ($consent && $consent->disetujui_pada ? $consent->disetujui_pada : now())->format('Y-m-d'));
+    // Tanggal & jam persetujuan otomatis (saat disimpan), tidak diisi manual
+    $tanggalForm = now()->format('d-m-Y H:i');
     $centangLama = old('pernyataan') !== null
         ? array_map('intval', old('pernyataan'))
         : ($consent ? $consent->pernyataanDisetujui() : []);
@@ -1584,9 +1585,9 @@
                     </select>
                 </div>
 
-                <div class="f-group {{ $errors->has('disetujui_pada') ? 'salah' : '' }}">
-                    <label for="fTanggal">Tanggal <span class="wajib">*</span></label>
-                    <input type="date" id="fTanggal" name="disetujui_pada" value="{{ $tanggalForm }}">
+                <div class="f-group">
+                    <label for="fTanggal">Tanggal &amp; Jam (otomatis)</label>
+                    <input type="text" id="fTanggal" value="{{ $tanggalForm }}" readonly tabindex="-1" style="background:#f4f4f4;color:#444;cursor:default">
                 </div>
 
                 <div class="f-group">
