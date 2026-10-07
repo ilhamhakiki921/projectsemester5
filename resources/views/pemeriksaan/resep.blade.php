@@ -502,6 +502,7 @@
                 <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
                 <a href="{{ route('penunjang.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Penunjang</a>
                 <a href="{{ route('rujukan.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Rujukan</a>
+                <a href="{{ route('surat-medis.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Surat Medis</a>
                 <a href="{{ route('autentikasi.index', [$poli, $pasien->no_rm]) }}" class="tab-item">Autentikasi</a>
             </div>
 

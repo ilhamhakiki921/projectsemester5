@@ -1106,6 +1106,7 @@
                     <button type="button" class="berkas-tab" data-tab="rujukan">Rujukan</button>
                     <button type="button" class="berkas-tab" data-tab="informed-consent">Informed Consent Gigi</button>
                     <button type="button" class="berkas-tab" data-tab="resume">Resume Medis</button>
+                    <button type="button" class="berkas-tab" data-tab="surat-medis">Surat Medis</button>
                     <button type="button" class="berkas-tab" data-tab="autentikasi">Autentikasi</button>
                 </div>
 
@@ -1478,6 +1479,16 @@
                     {{-- TODO: tampilan Resume Medis --}}
                     <div class="kosong-penunjang">
                         <div class="judul">Resume Medis</div>
+                        <div class="sub">Tampilan ini belum dibuat.</div>
+                    </div>
+                </div>
+
+
+                {{-- ========== SURAT MEDIS ========== --}}
+                <div class="berkas-panel" id="panel-surat-medis">
+                    {{-- TODO: tampilan Surat Medis (desain menyusul) --}}
+                    <div class="kosong-penunjang">
+                        <div class="judul">Surat Medis</div>
                         <div class="sub">Tampilan ini belum dibuat.</div>
                     </div>
                 </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AutentikasiController;
 use App\Http\Controllers\PenunjangController;
 use App\Http\Controllers\RujukanController;
+use App\Http\Controllers\SuratMedisController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('pemeriksaan/{poli}/{no_rm}')->group(function () {
@@ -17,6 +18,9 @@ Route::prefix('pemeriksaan/{poli}/{no_rm}')->group(function () {
     Route::post('rujukan', [RujukanController::class, 'store'])->name('rujukan.store');
     Route::get('rujukan/{id}/cetak', [RujukanController::class, 'cetak'])->name('rujukan.cetak');
     Route::delete('rujukan/{id}', [RujukanController::class, 'destroy'])->name('rujukan.destroy');
+
+    // Surat Medis (tab setelah Rujukan, sebelum Autentikasi)
+    Route::get('surat-medis', [SuratMedisController::class, 'index'])->name('surat-medis.index');
 
     // Autentikasi
     Route::get('autentikasi', [AutentikasiController::class, 'index'])->name('autentikasi.index');

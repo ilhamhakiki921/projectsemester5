@@ -14,6 +14,7 @@
         ['Clinical Pathway', route('pemeriksaan.clinical-pathway', [$poli, $noRm])],
         ['Penunjang', route('penunjang.index', [$poli, $noRm])],
         ['Rujukan', route('rujukan.index', [$poli, $noRm])],
+        ['Surat Medis', route('surat-medis.index', [$poli, $noRm])],
         ['Autentikasi', route('autentikasi.index', [$poli, $noRm])],
     ];
 
