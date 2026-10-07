@@ -155,6 +155,7 @@ Route::middleware('web')->group(function () {
 
     Route::get('/data-tindakan', [TindakanController::class, 'index'])->name('tindakan.index');
     Route::post('/data-tindakan', [TindakanController::class, 'store'])->name('tindakan.store');
+    Route::get('/data-tindakan/template', [TindakanController::class, 'template'])->name('tindakan.template');
     Route::post('/data-tindakan/import', [TindakanController::class, 'import'])->name('tindakan.import');
     Route::put('/data-tindakan/{tindakan}', [TindakanController::class, 'update'])->name('tindakan.update');
     Route::delete('/data-tindakan/{tindakan}', [TindakanController::class, 'destroy'])->name('tindakan.destroy');

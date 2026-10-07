@@ -50,7 +50,8 @@ class TindakanController extends Controller
         // Data diurutkan menurut kode -> buka halaman tempat data baru ini berada
         $halaman = intdiv(Tindakan::where('kode', '<', $baru->kode)->count(), 10) + 1;
 
-        return $this->kembali('Tindakan baru berhasil ditambahkan.', 'success', ['page' => $halaman]);
+        return $this->kembali('Tindakan baru berhasil ditambahkan.', 'success', ['page' => $halaman])
+            ->with('sorot', [$baru->kode]);
     }
 
     public function update(Request $request, Tindakan $tindakan)
@@ -66,7 +67,8 @@ class TindakanController extends Controller
 
         $halaman = intdiv(Tindakan::where('kode', '<', $tindakan->kode)->count(), 10) + 1;
 
-        return $this->kembali('Data tindakan berhasil diperbarui.', 'success', ['page' => $halaman]);
+        return $this->kembali('Data tindakan berhasil diperbarui.', 'success', ['page' => $halaman])
+            ->with('sorot', [$tindakan->kode]);
     }
 
     public function destroy(Tindakan $tindakan)
@@ -77,9 +79,27 @@ class TindakanController extends Controller
     }
 
     /**
+     * Unduh contoh template (CSV, pemisah titik koma supaya langsung rapi di Excel Indonesia).
+     */
+    public function template()
+    {
+        $isi = "\xEF\xBB\xBF"
+             . "Kode ICD;Nama Tindakan\r\n"
+             . "89.7;Pemeriksaan fisik umum\r\n"
+             . "99.21;Injeksi antibiotik\r\n"
+             . "86.59;Penjahitan luka kulit\r\n";
+
+        return response($isi, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="template-data-tindakan.csv"',
+        ]);
+    }
+
+    /**
      * Import dari Excel (.xlsx) atau CSV.
-     * Kolom A = Kode ICD-9, kolom B = Nama Tindakan. Baris judul boleh ada.
+     * Kolom A = Kode ICD-9, kolom B = Nama Tindakan. Baris pertama (header) dilewati.
      * Kode yang sudah ada diperbarui namanya, yang belum ada ditambahkan.
+     * Hasilnya ditampilkan rapi di popup "Hasil Import".
      */
     public function import(Request $request)
     {
@@ -103,39 +123,49 @@ class TindakanController extends Controller
         }
 
         $valid = [];      // kode => nama (kode kembar di file: yang terakhir dipakai)
-        $dilewati = 0;
+        $lewat = [];      // baris yang dilewati + alasannya
         $pertama = true;
+        $no = 0;
 
         foreach ($rows as $r) {
-            $kode = strtoupper(trim($r[0] ?? ''));
-            $nama = trim($r[1] ?? '');
+            $no++;
+            $kodeAsli = trim((string) ($r[0] ?? ''));
+            $namaAsli = trim((string) ($r[1] ?? ''));
 
-            if ($kode === '' && $nama === '') {
+            if ($kodeAsli === '' && $namaAsli === '') {
                 continue;
             }
 
-            // Baris judul (mis. "Kode ICD")
+            // Baris pertama = header (mis. "Kode ICD")
             if ($pertama) {
                 $pertama = false;
-                if (preg_match('/^kode/i', $kode)) {
+                if (preg_match('/^kode/i', $kodeAsli)) {
                     continue;
                 }
             }
 
-            if (! preg_match(self::POLA_KODE, $kode) || $nama === '') {
-                $dilewati++;
+            $kode = $this->rapikanKode($kodeAsli);
+            $nama = $this->rapikanNama($namaAsli);
+
+            if (! preg_match(self::POLA_KODE, $kode)) {
+                $lewat[] = ['no' => $no, 'kode' => $kodeAsli, 'nama' => $namaAsli, 'alasan' => 'Format kode tidak valid'];
+                continue;
+            }
+
+            if ($nama === '') {
+                $lewat[] = ['no' => $no, 'kode' => $kodeAsli, 'nama' => $namaAsli, 'alasan' => 'Nama tindakan kosong'];
                 continue;
             }
 
             $valid[$kode] = mb_substr($nama, 0, 500);
         }
 
-        $baru = 0;
-        $diperbarui = 0;
+        $status = [];     // kode => 'Baru' | 'Diperbarui'
         $now = now();
 
         foreach (array_chunk($valid, 500, true) as $chunk) {
             $ada = Tindakan::whereIn('kode', array_map('strval', array_keys($chunk)))->pluck('kode')->all();
+            $ada = array_flip($ada);
 
             $data = [];
             foreach ($chunk as $kode => $nama) {
@@ -145,27 +175,58 @@ class TindakanController extends Controller
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
+                $status[(string) $kode] = isset($ada[(string) $kode]) ? 'Diperbarui' : 'Baru';
             }
 
             Tindakan::upsert($data, ['kode'], ['nama', 'updated_at']);
-
-            $diperbarui += count($ada);
-            $baru += count($chunk) - count($ada);
         }
 
-        if ($baru + $diperbarui === 0) {
+        if (! $valid) {
             return $this->kembali(
                 'Tidak ada data yang diimpor. Pastikan kolom A berisi kode ICD-9 (mis. 89.7) dan kolom B berisi nama tindakan.',
                 'warning'
             );
         }
 
-        $pesan = "Import selesai: {$baru} tindakan baru, {$diperbarui} diperbarui";
-        if ($dilewati > 0) {
-            $pesan .= ", {$dilewati} baris dilewati (kode/nama tidak valid)";
+        // Daftar hasil import (urut kode) untuk ditampilkan; dibatasi supaya session tetap ringan
+        $hasil = [];
+        foreach ($valid as $kode => $nama) {
+            $hasil[] = ['kode' => (string) $kode, 'nama' => $nama, 'status' => $status[(string) $kode]];
+        }
+        usort($hasil, fn ($a, $b) => strcmp($a['kode'], $b['kode']));
+
+        $jumlahBaru = count(array_filter($status, fn ($s) => $s === 'Baru'));
+
+        return redirect()->route('tindakan.index')->with('hasil_import', [
+            'baru'        => $jumlahBaru,
+            'diperbarui'  => count($status) - $jumlahBaru,
+            'dilewati'    => count($lewat),
+            'rows'        => array_slice($hasil, 0, 300),
+            'total_rows'  => count($hasil),
+            'lewat'       => array_slice($lewat, 0, 50),
+            'file'        => $file->getClientOriginalName(),
+        ]);
+    }
+
+    /**
+     * Rapikan kode dari Excel: koma -> titik, huruf besar, dan angka depan dipadatkan
+     * jadi 2 digit (Excel sering mengubah "03.09" menjadi angka 3.09).
+     */
+    private function rapikanKode(string $kode): string
+    {
+        $kode = strtoupper(str_replace(',', '.', preg_replace('/\s+/', '', $kode)));
+
+        if (preg_match('/^(\d{1,2})(\.\d{1,2})?$/', $kode, $m)) {
+            $kode = str_pad($m[1], 2, '0', STR_PAD_LEFT) . ($m[2] ?? '');
         }
 
-        return $this->kembali($pesan . '.');
+        return $kode;
+    }
+
+    /** Spasi ganda/tab/enter di nama dirapikan jadi satu spasi. */
+    private function rapikanNama(string $nama): string
+    {
+        return trim((string) preg_replace('/\s+/u', ' ', $nama));
     }
 
     /** Kode disimpan tanpa spasi. */

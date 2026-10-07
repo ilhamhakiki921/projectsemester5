@@ -256,6 +256,79 @@
     .imp-file span { font-size: 12px; color: #374151; word-break: break-all; }
     .imp-file input { display: none; }
 
+    /* ===== Modal Import (sesuai desain) ===== */
+    #modalImport .m-box { max-width: 860px; }
+    #modalImport .m-head { padding: 28px 40px 24px; }
+    #modalImport .m-head h3 { font-size: 22px; font-weight: 600; }
+    #modalImport .m-head p { margin-top: 6px; font-size: 13px; font-weight: 600; opacity: 1; }
+    #modalImport .m-body { padding: 18px 40px 4px; }
+    .imp-hint { margin-bottom: 18px; font-size: 12px; font-weight: 600; color: #8a8a8a; line-height: 1.6; }
+    .imp-hint a { color: #1d4ed8; text-decoration: underline; }
+    .imp-label { display: block; margin-bottom: 12px; font-size: 15px; font-weight: 600; color: #111; }
+    .imp-box {
+        display: flex; align-items: center; gap: 18px;
+        padding: 16px 28px; border: 1px solid #8a8a8a; border-radius: 14px;
+    }
+    .imp-box.is-invalid { border-color: #d10000; }
+    .imp-pilih {
+        display: inline-flex; align-items: center; justify-content: center;
+        height: 34px; padding: 0 34px; border: 1px solid #555; border-radius: 10px;
+        background: #d9d9d9; color: #111; font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: background .15s;
+    }
+    .imp-pilih:hover { background: #cbcbcb; }
+    .imp-box .imp-nama { font-size: 13px; font-weight: 600; color: #111; word-break: break-all; }
+    #modalImport .m-foot { padding: 46px 40px 34px; }
+    #modalImport .btn-m { min-width: 128px; height: 30px; border-radius: 6px; font-size: 11.5px; }
+    #modalImport .btn-m-cancel { border-color: #6b6b6b; }
+
+    /* ===== Modal Edit (sesuai desain) ===== */
+    #modalForm.is-edit .m-head { padding: 20px 32px 16px; }
+    #modalForm.is-edit .m-head p { display: block; font-size: 10px; font-weight: 600; }
+    #modalForm.is-edit .m-body { padding: 36px 40px 70px; }
+    #modalForm.is-edit .f-grid { row-gap: 18px; }
+    #modalForm.is-edit .f-input { height: 38px; }
+    #modalForm.is-edit .f-group label { margin-bottom: 8px; }
+
+    /* ===== Baris yang baru disimpan ===== */
+    @keyframes sorotBaris { 0%, 60% { background: #dff5e6; } 100% { background: transparent; } }
+    .u-table tbody tr.baris-sorot td { animation: sorotBaris 4s ease forwards; }
+
+    /* ===== Modal Hasil Import ===== */
+    #modalHasil .m-box { max-width: 820px; border-radius: 24px; }
+    #modalHasil .m-head {
+        padding: 24px 34px 20px;
+        background: linear-gradient(90deg, #b81f1f 0%, #6e0f0f 55%, #470000 100%);
+        color: #fff; border-radius: 24px 24px 0 0;
+    }
+    #modalHasil .m-body { padding: 22px 34px 4px; }
+    .hs-ringkas { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .hs-chip {
+        flex: 1 1 140px; padding: 10px 14px; border-radius: 10px;
+        border: 1px solid #e5e7eb; background: #fafafa;
+    }
+    .hs-chip b { display: block; font-size: 20px; line-height: 1.2; }
+    .hs-chip span { font-size: 11px; color: #6b7280; }
+    .hs-chip.baru b { color: #15803d; }
+    .hs-chip.upd b { color: #b45309; }
+    .hs-chip.lewat b { color: #b91c1c; }
+    .hs-tabel { max-height: 300px; overflow: auto; border: 1px solid #e2e2e2; border-radius: 10px; }
+    .hs-tabel table { width: 100%; border-collapse: collapse; }
+    .hs-tabel th {
+        position: sticky; top: 0; padding: 10px 12px; background: #f3f4f6;
+        font-size: 11px; font-weight: 600; text-align: left; color: #374151;
+    }
+    .hs-tabel td { padding: 8px 12px; font-size: 12px; border-top: 1px solid #eee; }
+    .hs-tabel td.no { width: 46px; color: #9ca3af; }
+    .hs-tabel td.kode { width: 100px; font-weight: 600; }
+    .hs-badge { padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 600; }
+    .hs-badge.baru { background: #dcfce7; color: #15803d; }
+    .hs-badge.upd { background: #fef3c7; color: #b45309; }
+    .hs-catatan { margin: 10px 0 0; font-size: 11px; color: #6b7280; }
+    .hs-judul { margin: 18px 0 8px; font-size: 12.5px; font-weight: 600; color: #b91c1c; }
+    #modalHasil .m-foot { padding: 22px 34px 26px; }
+    #modalHasil .btn-m { min-width: 128px; height: 30px; border-radius: 6px; font-size: 11.5px; }
+
     /* konfirmasi hapus */
     .m-confirm { padding: 26px 22px 6px; text-align: center; }
     .m-confirm .ic {
@@ -282,6 +355,11 @@
 
 
 @section('content')
+
+@php
+    $hasil = session('hasil_import');
+    $sorot = (array) session('sorot', []);
+@endphp
 
 <div class="dashboard">
 
@@ -329,7 +407,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($tindakans as $d)
-                                    <tr>
+                                    <tr class="{{ in_array($d->kode, $sorot, true) ? 'baris-sorot' : '' }}">
                                         <td>{{ $d->kode }}</td>
                                         <td>{{ $d->nama }}</td>
                                         <td>
@@ -427,11 +505,11 @@
     $errImport = $errors->getBag('import');
 @endphp
 
-<div class="m-overlay {{ $errors->any() ? 'show' : '' }}" id="modalForm">
+<div class="m-overlay {{ $errors->any() ? 'show' : '' }} {{ $mode === 'edit' ? 'is-edit' : '' }}" id="modalForm">
     <div class="m-box">
         <div class="m-head">
             <h3 id="formJudul">{{ $mode === 'edit' ? 'Edit Tindakan' : 'Tambah Tindakan' }}</h3>
-            <p id="formSub">{{ $mode === 'edit' ? 'Perbarui data tindakan/ICD-9 SIP-REK' : 'Kelola data tindakan/ICD-9 SIP-REK' }}</p>
+            <p id="formSub">{{ $mode === 'edit' ? 'Perbarui data tindakan SIP-REK' : 'Kelola data tindakan SIP-REK' }}</p>
         </div>
 
         <form method="POST" id="formTindakan"
@@ -451,7 +529,7 @@
                 <div class="f-grid">
 
                     <div class="f-group">
-                        <label for="fKode">Kode ICD-9</label>
+                        <label for="fKode" id="fKodeLabel">{{ $mode === 'edit' ? 'Kode ICD' : 'Kode ICD-9' }}</label>
                         <input type="text" name="kode" id="fKode" class="f-input @error('kode') is-invalid @enderror"
                                value="{{ old('kode') }}" maxlength="20" placeholder="Contoh: 89.7" style="text-transform:uppercase">
                         @error('kode') <div class="f-error">{{ $message }}</div> @enderror
@@ -481,26 +559,26 @@
 <div class="m-overlay {{ $errImport->any() ? 'show' : '' }}" id="modalImport">
     <div class="m-box">
         <div class="m-head">
-            <h3>Import Excel</h3>
-            <p>Unggah daftar tindakan (ICD-9) dari file Excel atau CSV</p>
+            <h3>Import Data Tindakan dari Excel</h3>
+            <p>Format : Kolom 1 kode ICD, Kolom 2 Nama Tindakan - baris pertama header</p>
         </div>
 
         <form method="POST" action="{{ route('tindakan.import') }}" enctype="multipart/form-data" id="formImport">
             @csrf
             <div class="m-body">
 
-                <div class="imp-info">
-                    Susun file dengan 2 kolom:<br>
-                    <b>Kolom A</b>: Kode ICD-9 (contoh <code>89.7</code>) &nbsp;•&nbsp; <b>Kolom B</b>: Nama Tindakan<br>
-                    Baris judul boleh ada. Kode yang sudah ada akan <b>diperbarui</b> namanya, yang belum ada <b>ditambahkan</b>.
-                    Format: <b>.xlsx</b> atau <b>.csv</b>, maksimal 5 MB.
+                <div class="imp-hint">
+                    Mendukung file xlsx atau csv (maksimal 5 MB). Kode yang sudah ada akan diperbarui namanya, yang belum ada ditambahkan.
+                    <a href="{{ route('tindakan.template') }}">Unduh contoh template</a>
                 </div>
 
-                <label class="imp-file {{ $errImport->has('file') ? 'is-invalid' : '' }}" id="impFile">
-                    <i class="bi bi-file-earmark-spreadsheet"></i>
-                    <span id="impNama">Klik untuk memilih file…</span>
-                    <input type="file" name="file" id="impInput" accept=".xlsx,.csv">
-                </label>
+                <span class="imp-label">Pilih File Excel/CSV</span>
+
+                <div class="imp-box {{ $errImport->has('file') ? 'is-invalid' : '' }}" id="impFile">
+                    <label for="impInput" class="imp-pilih">Choose File</label>
+                    <span class="imp-nama" id="impNama">No File chosen</span>
+                    <input type="file" name="file" id="impInput" accept=".xlsx,.csv" hidden>
+                </div>
                 @if ($errImport->has('file'))
                     <div class="f-error">{{ $errImport->first('file') }}</div>
                 @endif
@@ -509,11 +587,83 @@
 
             <div class="m-foot">
                 <button type="button" class="btn-m btn-m-cancel" data-tutup>Batal</button>
-                <button type="submit" class="btn-m btn-m-save" id="btnImpOk">Import</button>
+                <button type="submit" class="btn-m btn-m-save" id="btnImpOk">Simpan</button>
             </div>
         </form>
     </div>
 </div>
+
+
+{{-- ====== MODAL: Hasil Import ====== --}}
+@if ($hasil)
+<div class="m-overlay show" id="modalHasil">
+    <div class="m-box">
+        <div class="m-head">
+            <h3>Hasil Import Excel</h3>
+            <p>{{ $hasil['file'] }}</p>
+        </div>
+
+        <div class="m-body">
+
+            <div class="hs-ringkas">
+                <div class="hs-chip baru"><b>{{ number_format($hasil['baru'], 0, ',', '.') }}</b><span>Tindakan baru</span></div>
+                <div class="hs-chip upd"><b>{{ number_format($hasil['diperbarui'], 0, ',', '.') }}</b><span>Diperbarui</span></div>
+                <div class="hs-chip lewat"><b>{{ number_format($hasil['dilewati'], 0, ',', '.') }}</b><span>Baris dilewati</span></div>
+            </div>
+
+            <div class="hs-tabel">
+                <table>
+                    <thead>
+                        <tr><th>No</th><th>Kode ICD</th><th>Tindakan</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($hasil['rows'] as $i => $h)
+                            <tr>
+                                <td class="no">{{ $i + 1 }}</td>
+                                <td class="kode">{{ $h['kode'] }}</td>
+                                <td>{{ $h['nama'] }}</td>
+                                <td><span class="hs-badge {{ $h['status'] === 'Baru' ? 'baru' : 'upd' }}">{{ $h['status'] }}</span></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @if ($hasil['total_rows'] > count($hasil['rows']))
+                <p class="hs-catatan">Menampilkan {{ count($hasil['rows']) }} dari {{ number_format($hasil['total_rows'], 0, ',', '.') }} data hasil import. Seluruhnya sudah tersimpan dan tampil di tabel Data Tindakan.</p>
+            @endif
+
+            @if (! empty($hasil['lewat']))
+                <div class="hs-judul">Baris yang dilewati</div>
+                <div class="hs-tabel" style="max-height:160px">
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Kode</th><th>Tindakan</th><th>Alasan</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($hasil['lewat'] as $l)
+                                <tr>
+                                    <td class="no">{{ $l['no'] }}</td>
+                                    <td class="kode">{{ $l['kode'] ?: '-' }}</td>
+                                    <td>{{ $l['nama'] ?: '-' }}</td>
+                                    <td>{{ $l['alasan'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @if ($hasil['dilewati'] > count($hasil['lewat']))
+                    <p class="hs-catatan">dan {{ $hasil['dilewati'] - count($hasil['lewat']) }} baris lainnya.</p>
+                @endif
+            @endif
+
+        </div>
+
+        <div class="m-foot">
+            <button type="button" class="btn-m btn-m-save" data-tutup>Selesai</button>
+        </div>
+    </div>
+</div>
+@endif
 
 
 {{-- ====== MODAL: Konfirmasi Hapus ====== --}}
@@ -601,7 +751,9 @@
     $('#btnTambah').addEventListener('click', () => {
         resetForm();
         $('#formJudul').textContent = 'Tambah Tindakan';
-        $('#formSub').textContent = 'Kelola data tindakan/ICD-9 SIP-REK';
+        $('#formSub').textContent = 'Kelola data tindakan SIP-REK';
+        $('#fKodeLabel').textContent = 'Kode ICD-9';
+        modalForm.classList.remove('is-edit');
         form.action = @json(route('tindakan.store'));
         $('#fMethod').value = 'POST';
         $('#fMode').value = 'tambah';
@@ -617,7 +769,9 @@
             const d = edit.dataset;
             resetForm();
             $('#formJudul').textContent = 'Edit Tindakan';
-            $('#formSub').textContent = 'Perbarui data tindakan/ICD-9 SIP-REK';
+            $('#formSub').textContent = 'Perbarui data tindakan SIP-REK';
+            $('#fKodeLabel').textContent = 'Kode ICD';
+            modalForm.classList.add('is-edit');
             form.action = BASE + '/' + d.id;
             $('#fMethod').value = 'PUT';
             $('#fMode').value = 'edit';
@@ -643,19 +797,23 @@
 
     $('#btnImport').addEventListener('click', () => {
         impInput.value = '';
-        $('#impNama').textContent = 'Klik untuk memilih file…';
+        $('#impNama').textContent = 'No File chosen';
         $$('.f-error', modalImport).forEach(el => el.remove());
         $('#impFile').classList.remove('is-invalid');
         buka(modalImport);
     });
 
     impInput.addEventListener('change', () => {
-        $('#impNama').textContent = impInput.files.length ? impInput.files[0].name : 'Klik untuk memilih file…';
+        $('#impNama').textContent = impInput.files.length ? impInput.files[0].name : 'No File chosen';
     });
 
     $('#formImport').addEventListener('submit', () => {
         setTimeout(() => { const b = $('#btnImpOk'); b.disabled = true; b.textContent = 'Mengimpor…'; }, 0);
     });
+
+    /* ---------- Sorot baris yang baru disimpan ---------- */
+    const sorotan = $('.baris-sorot');
+    if (sorotan) sorotan.scrollIntoView({ block: 'center' });
 
     /* ---------- Cegah double submit ---------- */
     [form, $('#formHapus')].forEach(f => f.addEventListener('submit', () => {
