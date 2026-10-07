@@ -1607,6 +1607,12 @@
                            value="{{ old('saksi', $consent->saksi ?? '') }}" autocomplete="off">
                 </div>
 
+                <div class="f-group">
+                    <label for="fPetugas">Nama Petugas yang mencatat</label>
+                    <input type="text" id="fPetugas" name="petugas_pencatat" placeholder="Nama petugas yang bertanda tangan"
+                           value="{{ old('petugas_pencatat', $consent->petugas_pencatat ?? (auth()->user()->nama_lengkap ?? auth()->user()->name ?? '')) }}" autocomplete="off">
+                </div>
+
                 <div class="f-group lebar">
                     <label for="fPendamping">Keluarga/pendamping yang boleh menerima informasi</label>
                     <input type="text" id="fPendamping" name="pendamping" placeholder="Nama keluarga/pendamping (jika ada)"

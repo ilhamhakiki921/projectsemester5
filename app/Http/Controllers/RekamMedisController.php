@@ -93,6 +93,7 @@ class RekamMedisController extends Controller
             'nama_penyetuju'   => 'required|string|max:255',
             'hubungan'         => 'required|string|max:100',
             'saksi'            => 'nullable|string|max:255',
+            'petugas_pencatat' => 'nullable|string|max:255',
             'pendamping'       => 'nullable|string|max:255',
             'pernyataan'       => 'nullable|array',
             'pernyataan.*'     => 'integer|between:0,' . ($jumlahPernyataan - 1),
@@ -128,9 +129,11 @@ class RekamMedisController extends Controller
             'pendamping'        => $data['pendamping'] ?? null,
             'saksi'             => $data['saksi'] ?? null,
             'pernyataan_setuju' => $dipilih,
-            'petugas_pencatat'  => Auth::check()
-                                        ? (Auth::user()->nama_lengkap ?? Auth::user()->name ?? null)
-                                        : null,
+            'petugas_pencatat'  => ! empty($data['petugas_pencatat'])
+                                        ? $data['petugas_pencatat']
+                                        : (Auth::check()
+                                            ? (Auth::user()->nama_lengkap ?? Auth::user()->name ?? null)
+                                            : null),
         ];
 
         foreach ($tambahan as $kolom => $nilai) {

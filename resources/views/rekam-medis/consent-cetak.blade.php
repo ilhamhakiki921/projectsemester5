@@ -41,6 +41,7 @@
     .ttd .garis{height:64px;display:flex;align-items:center;justify-content:center}
     .ttd .garis img{max-height:60px;max-width:100%}
     .ttd .nm{font-weight:bold;text-decoration:underline;min-height:18px}
+    .ttd .peran{font-size:11px;margin-top:2px}
 
     .bar{position:fixed;top:10px;right:14px;display:flex;gap:8px}
     .bar button{border:0;border-radius:6px;padding:8px 16px;font:600 12px sans-serif;cursor:pointer;color:#fff;background:#1717d6}
@@ -125,21 +126,27 @@
 
     <p style="margin-top:16px">Demikian persetujuan umum ini dibuat dengan sebenar-benarnya dan berlaku untuk seluruh kunjungan pasien.</p>
 
+    @php
+        $namaTtd = fn ($v) => filled($v) ? $v : '(.............................)';
+    @endphp
     <div class="ttd">
         <div>
             Penandatangan
             <div class="garis">@if ($consent && $consent->ttd_penanggung_jawab)<img src="{{ $consent->ttd_penanggung_jawab }}" alt="Tanda tangan">@endif</div>
-            <div class="nm">{{ $consent->nama_penyetuju ?? '' }}</div>
+            <div class="nm">{{ $namaTtd($consent->nama_penyetuju ?? null) }}</div>
+            <div class="peran">{{ $consent ? ($pemberiWali ? 'Wali pasien' . ($consent->hubungan ? ' (' . $consent->hubungan . ')' : '') : 'Pasien') : '' }}</div>
         </div>
         <div>
             Saksi
             <div class="garis">@if ($consent && $consent->ttd_saksi)<img src="{{ $consent->ttd_saksi }}" alt="Tanda tangan">@endif</div>
-            <div class="nm">{{ $consent->saksi ?? '' }}</div>
+            <div class="nm">{{ $namaTtd($consent->saksi ?? null) }}</div>
+            <div class="peran">Saksi pasien</div>
         </div>
         <div>
             Ngawi, {{ ($tglConsent ?? now())->locale('id')->translatedFormat('j F Y') }}<br>Petugas yang mencatat,
             <div class="garis">@if ($consent && $consent->ttd_petugas)<img src="{{ $consent->ttd_petugas }}" alt="Tanda tangan">@endif</div>
-            <div class="nm">{{ $consent->petugas_pencatat ?? '' }}</div>
+            <div class="nm">{{ $namaTtd($consent->petugas_pencatat ?? null) }}</div>
+            <div class="peran">Petugas rawat inap</div>
         </div>
     </div>
 </div>

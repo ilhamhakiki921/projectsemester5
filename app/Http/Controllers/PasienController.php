@@ -123,6 +123,8 @@ public function create()
             'general_consent.ttd_petugas'         => 'nullable|string|max:700000',
             'general_consent.ttd_penanggung_jawab'=> 'nullable|string|max:700000',
             'general_consent.ttd_saksi'           => 'nullable|string|max:700000',
+            'general_consent.nama_petugas'        => 'nullable|string|max:255',
+            'general_consent.nama_saksi'          => 'nullable|string|max:255',
         ]);
 
         $noRm = $request->filled('no_rm') ? $request->no_rm : $this->noRmBerikutnya();
@@ -208,8 +210,15 @@ public function create()
                     $dataConsent['ttd_saksi']            = $gc['ttd_saksi'] ?? null;
                 }
 
+                // Nama yang tercetak di bawah tanda tangan petugas & saksi
                 if (Schema::hasColumn('general_consent', 'petugas_pencatat')) {
-                    $dataConsent['petugas_pencatat'] = optional(auth()->user())->name;
+                    $dataConsent['petugas_pencatat'] = ! empty($gc['nama_petugas'])
+                        ? $gc['nama_petugas']
+                        : (optional(auth()->user())->nama_lengkap ?? optional(auth()->user())->name);
+                }
+
+                if (Schema::hasColumn('general_consent', 'saksi')) {
+                    $dataConsent['saksi'] = ! empty($gc['nama_saksi']) ? $gc['nama_saksi'] : null;
                 }
 
                 GeneralConsent::create($dataConsent);

@@ -2390,6 +2390,107 @@ body.sidebar-collapsed .main {
     background: #fdecee;
 }
 
+.gc-ttd-nama {
+    padding: 0 28px 12px;
+}
+
+.gc-ttd-nama label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.gc-ttd-nama input[type="text"] {
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+
+    border: 1px solid #cfcfcf;
+    border-radius: 6px;
+    background: #ffffff;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    text-align: center;
+    color: #222;
+}
+
+.gc-ttd-nama input[readonly] {
+    background: #f4f4f4;
+    color: #444;
+    cursor: default;
+}
+
+/* Penanda kolom wajib diisi pada nama tanda tangan */
+.gc-ttd-nama.wajib-isi {
+    margin: 0 28px 12px;
+    padding: 10px 12px 12px;
+    border: 1px solid #e2a3a3;
+    border-left: 4px solid var(--gc-merah);
+    border-radius: 8px;
+    background: #fff5f5;
+}
+
+.gc-ttd-nama.wajib-isi label {
+    color: var(--gc-merah);
+    font-weight: 600;
+}
+
+.gc-ttd-nama .bintang {
+    margin-left: 3px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gc-merah);
+}
+
+.gc-ttd-nama .badge-wajib {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--gc-merah);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    color: #ffffff;
+    vertical-align: middle;
+}
+
+.gc-ttd-nama .badge-opsional {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #e6e6e6;
+    font-size: 9px;
+    font-weight: 600;
+    color: #555;
+    vertical-align: middle;
+}
+
+.gc-ttd-nama.wajib-isi input[type="text"] {
+    border: 1.5px solid var(--gc-merah);
+}
+
+.gc-ttd-nama.wajib-isi input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(196, 0, 0, .15);
+}
+
+.gc-ttd-nama .petunjuk {
+    margin-top: 4px;
+    font-size: 9.5px;
+    line-height: 1.4;
+    color: #777;
+    text-align: left;
+}
+
+.gc-ttd-nama.wajib-isi .petunjuk {
+    color: #a30000;
+}
+
 .gc-ttd-label {
     padding: 9px 12px;
     border-top: 1px solid #bdbdbd;
@@ -3977,6 +4078,24 @@ body.sidebar-collapsed .main {
                         <div class="gc-ttd-aksi">
                             <button type="button" class="gc-btn-ttd" id="gcTtdTombol_{{ $kunci }}" onclick="bukaTtdGeneralConsent('{{ $kunci }}')">Bubuhkan tanda tangan</button>
                         </div>
+                        <div class="gc-ttd-nama wajib-isi" id="gcTtdNamaWadah_{{ $kunci }}">
+                            @if ($kunci === 'penanggung')
+                                <label for="gcTtdNama_{{ $kunci }}">Nama penanggung jawab/pasien yang bertanda tangan<span class="bintang">*</span><span class="badge-wajib">WAJIB DIISI</span></label>
+                                <input type="text" id="gcTtdNama_{{ $kunci }}" maxlength="255" autocomplete="off" placeholder="Ketik nama lengkap penanggung jawab/pasien">
+                                <div class="petunjuk">Wajib diisi agar nama tercetak di bawah tanda tangan. Kolom ini saling terhubung dengan "Nama Penanda Tangan" di atas.</div>
+                            @elseif ($kunci === 'petugas')
+                                <label for="gcTtdNama_{{ $kunci }}">Nama petugas yang bertanda tangan<span class="bintang">*</span><span class="badge-wajib">WAJIB DIISI</span></label>
+                                <input type="text" id="gcTtdNama_{{ $kunci }}" maxlength="255" autocomplete="off"
+                                       value="{{ optional(auth()->user())->nama_lengkap ?? optional(auth()->user())->name }}"
+                                       data-default="{{ optional(auth()->user())->nama_lengkap ?? optional(auth()->user())->name }}"
+                                       placeholder="Ketik nama lengkap petugas">
+                                <div class="petunjuk">Wajib diisi agar nama petugas tercetak di bawah tanda tangan.</div>
+                            @else
+                                <label for="gcTtdNama_{{ $kunci }}">Nama saksi yang bertanda tangan<span class="bintang">*</span><span class="badge-wajib">WAJIB DIISI</span></label>
+                                <input type="text" id="gcTtdNama_{{ $kunci }}" maxlength="255" autocomplete="off" placeholder="Ketik nama lengkap saksi">
+                                <div class="petunjuk">Wajib diisi agar nama saksi tercetak di bawah tanda tangan.</div>
+                            @endif
+                        </div>
                         <div class="gc-ttd-label">{{ $label }}</div>
                     </div>
                 @endforeach
@@ -5512,6 +5631,11 @@ function resetFormGeneralConsent() {
         tampilkanTtdGeneralConsent(k);
     });
 
+    // Nama di bawah tanda tangan: petugas kembali ke nama user login, saksi dikosongkan
+    gcEl('gcTtdNama_petugas').value = gcEl('gcTtdNama_petugas').getAttribute('data-default') || '';
+    gcEl('gcTtdNama_saksi').value = '';
+    gcEl('gcTtdNama_penanggung').value = '';
+
     bersihkanErrorGeneralConsent();
 }
 
@@ -5563,6 +5687,9 @@ function bukaModalGeneralConsent() {
         }
     }
 
+    // Nama di bawah tanda tangan penanggung jawab ikut terisi dari Nama Penanda Tangan
+    sinkronNamaPenanggungGeneralConsent('atas');
+
     bersihkanErrorGeneralConsent();
 
     gcEl('modalGeneralConsent').classList.add('show');
@@ -5612,6 +5739,42 @@ function aturHubunganGeneralConsent() {
         }
     }
 }
+
+
+// Nama penanggung jawab/pasien: kolom "Nama Penanda Tangan" (atas) dan kolom di bawah
+// tanda tangan saling terhubung (ketik di salah satu, yang lain ikut terisi).
+function sinkronNamaPenanggungGeneralConsent(dari) {
+
+    const atas  = gcEl('gcPtNama');
+    const bawah = gcEl('gcTtdNama_penanggung');
+
+    if (!atas || !bawah) {
+        return;
+    }
+
+    if (dari === 'bawah') {
+        atas.value = bawah.value;
+    } else if (dari === 'atas') {
+        bawah.value = atas.value;
+    } else {
+        // tanpa arah: isi yang kosong dari yang terisi
+        if (atas.value.trim() && !bawah.value.trim()) {
+            bawah.value = atas.value;
+        } else if (bawah.value.trim() && !atas.value.trim()) {
+            atas.value = bawah.value;
+        }
+    }
+}
+
+(function pasangSinkronNama() {
+    const atas  = gcEl('gcPtNama');
+    const bawah = gcEl('gcTtdNama_penanggung');
+
+    if (atas)  { atas.addEventListener('input',  function() { sinkronNamaPenanggungGeneralConsent('atas'); }); }
+    if (bawah) { bawah.addEventListener('input', function() { sinkronNamaPenanggungGeneralConsent('bawah'); }); }
+
+    sinkronNamaPenanggungGeneralConsent();
+})();
 
 
 // =========================
@@ -5796,6 +5959,8 @@ function setujuiGeneralConsent() {
         salah.push({ id: idElemen, pesan: pesan });
     }
 
+    sinkronNamaPenanggungGeneralConsent();
+
     if (!gcNilai('gcPtNama'))   { tandai('gcPtNama', 'Nama penanda tangan wajib diisi.'); }
     if (!gcEl('gcPtHubungan').value) { tandai('gcPtHubungan', 'Hubungan dengan pasien wajib dipilih.'); }
 
@@ -5808,7 +5973,12 @@ function setujuiGeneralConsent() {
     if (!gcEl('gcCbD').checked) { tandai('gcWrapD', 'Informasi biaya (D) belum dicentang.'); }
 
     if (!GC_TTD.penanggung) { tandai('gcTtdKotak_penanggung', 'Tanda tangan penanggung jawab/pasien belum dibubuhkan.'); }
+    if (!gcNilai('gcTtdNama_penanggung')) { tandai('gcTtdNama_penanggung', 'Nama penanggung jawab/pasien di bawah tanda tangan wajib diisi.'); }
     if (!GC_TTD.petugas)    { tandai('gcTtdKotak_petugas', 'Tanda tangan petugas rawat inap belum dibubuhkan.'); }
+
+    if (!gcNilai('gcTtdNama_petugas')) { tandai('gcTtdNama_petugas', 'Nama petugas yang bertanda tangan wajib diisi.'); }
+    if (!GC_TTD.saksi)                  { tandai('gcTtdKotak_saksi', 'Tanda tangan saksi pasien belum dibubuhkan.'); }
+    if (!gcNilai('gcTtdNama_saksi'))    { tandai('gcTtdNama_saksi', 'Nama saksi pasien wajib diisi.'); }
 
     if (salah.length) {
 
@@ -5847,7 +6017,9 @@ function setujuiGeneralConsent() {
         keterangan_privasi: gcNilai('gcKetPrivasi'),
         ttd_petugas:          GC_TTD.petugas,
         ttd_penanggung_jawab: GC_TTD.penanggung,
-        ttd_saksi:            GC_TTD.saksi
+        ttd_saksi:            GC_TTD.saksi,
+        nama_petugas:         gcNilai('gcTtdNama_petugas'),
+        nama_saksi:           gcNilai('gcTtdNama_saksi')
     };
 
     generalConsentDisetujui = true;
