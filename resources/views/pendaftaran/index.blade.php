@@ -300,11 +300,22 @@ body.sidebar-collapsed .main {
 }
 
 .col-status {
-    width: 12%;
+    width: 15%;
 }
 
 .col-action {
-    width: 10%;
+    width: 11%;
+}
+
+/* Jarak antara kolom Status dan Action supaya badge tidak menempel ke tombol */
+.patient-table th.col-status,
+.patient-table td:nth-child(8) {
+    padding-right: 28px;
+}
+
+.patient-table th.col-action,
+.patient-table td:nth-child(9) {
+    padding-left: 14px;
 }
 
 
@@ -771,6 +782,34 @@ body.sidebar-collapsed .main {
     color: #111827;
 
     pointer-events: none;
+}
+
+
+/* Kolom tanggal: ikon bawaan browser disembunyikan (tapi tetap menutupi seluruh kolom
+   supaya klik di mana saja membuka kalender); ikon kalender yang dipakai hanya satu */
+.input-icon input[type="date"] {
+    cursor: pointer;
+}
+
+.input-icon input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.input-icon input[type="date"] ~ i.bi-calendar3 {
+    right: 16px;
+    font-size: 16px;
+    color: #6b7684;
+}
+
+.input-icon input[type="date"]:focus ~ i.bi-calendar3 {
+    color: #0f766e;
 }
 
 
@@ -3494,6 +3533,7 @@ body.sidebar-collapsed .main {
                             value="{{ date('Y-m-d') }}"
                             required
                         >
+                        <i class="bi bi-calendar3"></i>
                     </div>
                 </div>
 
@@ -4066,7 +4106,7 @@ body.sidebar-collapsed .main {
                             required
                         >
 
-                        <i class="bi bi-calendar"></i>
+                        <i class="bi bi-calendar3"></i>
 
                     </div>
 
@@ -4148,6 +4188,10 @@ body.sidebar-collapsed .main {
                             BPJS
                         </option>
 
+                        <option value="Asuransi Lain">
+                            Asuransi Lain
+                        </option>
+
                     </select>
 
                 </div>
@@ -4168,6 +4212,24 @@ body.sidebar-collapsed .main {
                         inputmode="numeric"
                         autocomplete="off"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);"
+                    >
+
+                </div>
+
+
+                {{-- NAMA ASURANSI: muncul otomatis kalau Cara Pembayaran = Asuransi Lain --}}
+                <div class="form-group" id="grupAsuransiLainKunjungan" hidden>
+
+                    <label for="asuransiLainKunjungan">
+                        Nama Asuransi<span class="wajib">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="asuransiLainKunjungan"
+                        placeholder="Tulis nama asuransi"
+                        maxlength="100"
+                        autocomplete="off"
                     >
 
                 </div>
@@ -4722,6 +4784,8 @@ function bukaModalKunjungan(button) {
     document.getElementById('caraPembayaran').selectedIndex = 0;
     document.getElementById('noBpjsKunjungan').value = '';
     document.getElementById('grupBpjsKunjungan').hidden = true;
+    document.getElementById('asuransiLainKunjungan').value = '';
+    document.getElementById('grupAsuransiLainKunjungan').hidden = true;
 
     document.getElementById('modalKunjungan')
         .classList.add('show');
@@ -4771,6 +4835,18 @@ async function daftarkanKunjungan() {
         }
     }
 
+    // Asuransi Lain: nama asuransi wajib diisi
+    if (document.getElementById('caraPembayaran').value === 'Asuransi Lain') {
+
+        const namaAsuransi = document.getElementById('asuransiLainKunjungan');
+
+        if (!namaAsuransi.value.trim()) {
+            namaAsuransi.focus();
+            tampilkanPopupPeringatan('Nama asuransi wajib diisi kalau Cara Pembayaran = <strong>Asuransi Lain</strong>.', 'Nama asuransi belum diisi');
+            return;
+        }
+    }
+
     const noRm = document.getElementById('modalRm').textContent.trim();
     const nama = document.getElementById('modalNama').textContent || '-';
 
@@ -4789,7 +4865,9 @@ async function daftarkanKunjungan() {
             body: JSON.stringify({
                 tanggal_kunjungan: document.getElementById('tanggalKunjungan').value,
                 poli:              poliKeSlug(document.getElementById('poliTujuan').value),
-                pembayaran:        document.getElementById('caraPembayaran').value
+                pembayaran:        document.getElementById('caraPembayaran').value === 'Asuransi Lain'
+                                        ? 'Asuransi Lain - ' + document.getElementById('asuransiLainKunjungan').value.trim()
+                                        : document.getElementById('caraPembayaran').value
             })
         });
 
@@ -4827,6 +4905,14 @@ async function daftarkanKunjungan() {
 }
 
 
+// Klik di mana saja pada kolom tanggal -> kalender terbuka
+document.querySelectorAll('.input-icon input[type="date"]').forEach(function(el) {
+    el.addEventListener('click', function() {
+        try { if (el.showPicker) el.showPicker(); } catch (e) {}
+    });
+});
+
+
 // Kolom Nomor BPJS (kunjungan) muncul otomatis kalau Cara Pembayaran = BPJS
 document.getElementById('caraPembayaran')
     .addEventListener('change', function() {
@@ -4841,6 +4927,19 @@ document.getElementById('caraPembayaran')
             input.focus();
         } else {
             input.value = '';
+        }
+
+        // Kolom Nama Asuransi muncul kalau Cara Pembayaran = Asuransi Lain
+        const lain = this.value === 'Asuransi Lain';
+        const grupLain = document.getElementById('grupAsuransiLainKunjungan');
+        const inputLain = document.getElementById('asuransiLainKunjungan');
+
+        grupLain.hidden = !lain;
+
+        if (lain) {
+            inputLain.focus();
+        } else {
+            inputLain.value = '';
         }
     });
 
@@ -6856,8 +6955,9 @@ function tutupPopupSimpan() {
 }
 
 
-function tampilkanPopupPeringatan(pesanHtml) {
+function tampilkanPopupPeringatan(pesanHtml, judul) {
 
+    document.getElementById('popupPeringatanJudul').textContent = judul || 'Nomor BPJS tidak valid';
     document.getElementById('popupPeringatanPesan').innerHTML = pesanHtml;
     munculkanPopup('popupPeringatan');
 

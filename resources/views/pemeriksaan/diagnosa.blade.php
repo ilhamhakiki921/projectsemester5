@@ -443,7 +443,7 @@
 
                     <div class="field-group">
                         <div class="field">
-                            <label for="kode_icd10">Kode ICD-10 (opsional)</label>
+                            <label for="kode_icd10">Kode ICD-10</label>
                             <input type="text" id="kode_icd10" name="kode_icd10"
                                    value="{{ $kodeIcd10 }}"
                                    placeholder="Contoh: J06.9">
@@ -453,7 +453,7 @@
                     {{-- Diagnosis Sekunder & Tindakan: masing-masing satu baris penuh (tersusun ke bawah, seperti Diagnosis Utama) --}}
                     <div class="field-group">
                         <div class="field" data-dx-section>
-                            <label>Diagnosis Sekunder (opsional)</label>
+                            <label>Diagnosis Sekunder</label>
 
                             <div class="repeat-list" data-list>
                                 @foreach ($sekunder as $nilai)
@@ -484,7 +484,7 @@
 
                     <div class="field-group">
                         <div class="field" data-dx-section>
-                            <label>Tindakan (opsional)</label>
+                            <label>Tindakan</label>
 
                             <div class="repeat-list" data-list>
                                 @foreach ($tindakanList as $nilai)
