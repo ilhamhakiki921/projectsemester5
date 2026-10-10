@@ -30,6 +30,34 @@
         padding: 26px 24px;
     }
 
+    /* Tombol kembali ke daftar rekam medis */
+    .btn-kembali {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        height: 34px;
+        padding: 0 18px;
+        margin-bottom: 16px;
+
+        border: 1px solid #a30000;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #a30000;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none;
+
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-kembali:hover {
+        background: #a30000;
+        color: #ffffff;
+    }
+
     /* =================================
        BAR IDENTITAS RINGKAS
     ================================== */
@@ -628,6 +656,114 @@
         .soap-grid { grid-template-columns: 1fr; }
     }
 
+    /* ----- Aksi Edit pemeriksaan & SOAP ----- */
+    .rp-aksi {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .btn-edit-soap {
+        min-width: 82px;
+        height: 25px;
+        padding: 0 14px;
+
+        border: 1px solid #777;
+        border-radius: 4px;
+        background: #ffffff;
+        cursor: pointer;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 9.5px;
+        color: #111;
+    }
+
+    .btn-edit-soap:hover {
+        background: #a30000;
+        border-color: #a30000;
+        color: #ffffff;
+    }
+
+    .info-terkunci {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+
+        border: 1px solid #cfcfcf;
+        border-radius: 14px;
+        background: #ececec;
+
+        font-size: 10px;
+        color: #666;
+        cursor: not-allowed;
+    }
+
+    /* ----- Tab Rujukan ----- */
+    .ick-pill.rj-int { background: #dff3e2; border-color: #a9d9b0; color: #1a5c26; }
+    .ick-pill.rj-ext { background: #e4ecfb; border-color: #b4c8ee; color: #1f3f86; }
+
+    .img-ttd {
+        display: block;
+        max-width: 240px;
+        max-height: 110px;
+        padding: 6px;
+
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        background: #ffffff;
+    }
+
+    a.btn-edit-soap.rj-cetak {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .f-group textarea {
+        width: 100%;
+        min-height: 112px;
+        padding: 10px 14px;
+
+        border: 1px solid #9b9b9b;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #222;
+        resize: vertical;
+        outline: none;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .f-group textarea:focus {
+        border-color: #b40000;
+        box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
+    }
+
+    .f-group.salah textarea {
+        border-color: #dc2626;
+    }
+
+    .f-group input[readonly] {
+        background: #f3f3f3;
+        color: #555;
+    }
+
+    .f-grid.dua {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 800px) {
+        .f-grid.dua { grid-template-columns: 1fr; }
+    }
+
     /* =================================
        HASIL LABORATORIUM (kosong)
     ================================== */
@@ -1132,6 +1268,11 @@
 
         <section class="content">
 
+            {{-- KEMBALI KE HALAMAN PERTAMA REKAM MEDIS --}}
+            <a href="{{ route('rekam-medis.index') }}" class="btn-kembali">
+                <span aria-hidden="true">&larr;</span> Kembali ke Daftar Rekam Medis
+            </a>
+
             {{-- BAR IDENTITAS RINGKAS --}}
             <div class="berkas-bar">
                 <div class="item"><span class="lbl">No.RM</span><span class="val">{{ $pasien->no_rm }}</span></div>
@@ -1335,6 +1476,14 @@
                         <div class="flash-ok">{{ session('sukses_koding') }}</div>
                     @endif
 
+                    @if (session('sukses_soap'))
+                        <div class="flash-ok">{{ session('sukses_soap') }}</div>
+                    @endif
+
+                    @if (session('gagal_soap'))
+                        <div class="f-error">{{ session('gagal_soap') }}</div>
+                    @endif
+
                     @php
                         $adaPeriksa = $kunjungan->filter(fn ($k) => $k->rekamMedis);
                         // Nomor kunjungan menurut urutan waktu (kunjungan paling awal = 1)
@@ -1372,6 +1521,31 @@
                                 </summary>
 
                                 <div class="rp-body">
+
+                                    <div class="rp-aksi">
+                                        @if ($terverifikasi)
+                                            <span class="info-terkunci" title="Sudah dikoding dan terverifikasi, data tidak dapat diedit lagi">&#128274; Terverifikasi — tidak dapat diedit</span>
+                                        @else
+                                            <button type="button" class="btn-edit-soap"
+                                                    data-id="{{ $k->id }}"
+                                                    data-action="{{ route('rekam-medis.soap.update', $k->id) }}"
+                                                    data-rm="{{ json_encode([
+                                                        'tb'               => $rm->tb,
+                                                        'berat_badan'      => $rm->berat_badan,
+                                                        'imt'              => $rm->imt,
+                                                        'suhu_badan'       => $rm->suhu_badan,
+                                                        'td'               => $rm->td,
+                                                        'detak_jantung'    => $rm->detak_jantung,
+                                                        'respiratory_rate' => $rm->respiratory_rate,
+                                                        'saturasi'         => $rm->saturasi,
+                                                        'gcs'              => $rm->gcs,
+                                                        'subjective'       => $rm->subjective,
+                                                        'objective'        => $rm->objective,
+                                                        'assessment'       => $rm->assessment,
+                                                        'plan'             => $rm->plan,
+                                                    ]) }}">Edit</button>
+                                        @endif
+                                    </div>
 
                                     <div class="table-wrapper">
                                         <table class="vital-table">
@@ -1525,11 +1699,62 @@
 
                 {{-- ========== RUJUKAN ========== --}}
                 <div class="berkas-panel" id="panel-rujukan">
-                    {{-- TODO: tampilan Rujukan (data: tabel surat_rujukan lewat model SuratRujukan) --}}
-                    <div class="kosong-penunjang">
-                        <div class="judul">Rujukan</div>
-                        <div class="sub">Tampilan ini belum dibuat.</div>
-                    </div>
+                    @php
+                        $kunjunganById = $kunjungan->keyBy('id');
+                    @endphp
+
+                    @if ($rujukan->isEmpty())
+                        <p class="empty-note">Belum ada surat rujukan.</p>
+                    @else
+                        @foreach ($rujukan as $r)
+                            @php
+                                $internal = $r->jenis === 'Internal';
+                                $kAsal    = $kunjunganById[$r->kunjungan_id] ?? null;
+                                $tujuan   = $internal ? $namaPoliDari($r->poli_tujuan) : ($r->nama_faskes ?: '-');
+                            @endphp
+
+                            <details class="rp-card ick-acc">
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Rujukan {{ $internal ? 'Internal' : 'Eksternal' }} — {{ $tujuan }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $r->tanggal_surat ? $r->tanggal_surat->format('d-m-Y') : '-' }}</span>
+                                        <span class="ick-pill {{ $internal ? 'rj-int' : 'rj-ext' }}">{{ $r->jenis }}</span>
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
+
+                                <div class="rp-body">
+
+                                    <div class="rp-aksi">
+                                        @if ($kAsal)
+                                            <a href="{{ route('rujukan.cetak', [$kAsal->poli, $pasien->no_rm, $r->id]) }}"
+                                               target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Surat</a>
+                                        @endif
+                                    </div>
+
+                                    <div class="dx-list" style="margin-bottom: 22px;">
+                                        <div class="dx-row"><span class="k">Tanggal Surat</span><span class="v">{{ $r->tanggal_surat ? $tglIndo($r->tanggal_surat) : '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Dari</span><span class="v">{{ $kAsal ? $namaPoliDari($kAsal->poli) : '-' }}</span></div>
+                                        @if ($internal)
+                                            <div class="dx-row"><span class="k">Poli Tujuan</span><span class="v">{{ $namaPoliDari($r->poli_tujuan) }}</span></div>
+                                            <div class="dx-row"><span class="k">Jadwal Datang</span><span class="v">{{ $r->jadwal_datang ? $tglIndo($r->jadwal_datang) : '-' }}</span></div>
+                                        @else
+                                            <div class="dx-row"><span class="k">Ditujukan Kepada</span><span class="v">{{ $r->ditujukan_kepada ?: '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Rumah Sakit / Fasyankes</span><span class="v">{{ $r->nama_faskes ?: '-' }}</span></div>
+                                        @endif
+                                        <div class="dx-row"><span class="k">Dokter / Petugas Perujuk</span><span class="v">{{ $r->dokter_perujuk ?: '-' }}</span></div>
+                                    </div>
+
+                                    <div class="soap-grid">
+                                        <div class="soap-item"><span class="lbl">Anamnesa</span><span class="isi">{{ $r->anamnesa ?: '-' }}</span></div>
+                                        <div class="soap-item"><span class="lbl">Diagnosa</span><span class="isi">{{ $r->diagnosa ?: '-' }}</span></div>
+                                        <div class="soap-item"><span class="lbl">Terapi</span><span class="isi">{{ $r->terapi ?: '-' }}</span></div>
+                                    </div>
+
+                                </div>
+                            </details>
+                        @endforeach
+                    @endif
                 </div>
 
 
@@ -1742,11 +1967,70 @@
 
                 {{-- ========== AUTENTIKASI ========== --}}
                 <div class="berkas-panel" id="panel-autentikasi">
-                    {{-- TODO: tampilan Autentikasi (data: model AutentikasiPemeriksaan, tabel autentikasi_kunjungan) --}}
-                    <div class="kosong-penunjang">
-                        <div class="judul">Autentikasi</div>
-                        <div class="sub">Tampilan ini belum dibuat.</div>
-                    </div>
+                    @php
+                        $adaAuth = $kunjungan->filter(fn ($k) => $k->rekamMedis);
+                        $noKunjunganAuth = $kunjungan->sortBy([['tanggal_kunjungan', 'asc'], ['id', 'asc']])
+                            ->values()->pluck('id')->flip()->map(fn ($i) => $i + 1);
+                    @endphp
+
+                    @if ($adaAuth->isEmpty())
+                        <p class="empty-note">Belum ada pemeriksaan yang perlu diautentikasi.</p>
+                    @else
+                        @foreach ($adaAuth as $k)
+                            @php
+                                $rmA = $k->rekamMedis;
+                                $auth = $autentikasi[$k->id] ?? null;
+                                // Sama dengan halaman Pemeriksaan: terautentikasi kalau data lengkap, ditandatangani, dan status Selesai
+                                $dataLengkap = filled($rmA->keluhan_utama)
+                                    && (filled($rmA->subjective) || filled($rmA->assessment))
+                                    && filled($rmA->diagnosis_utama);
+                                $terautentikasi = $auth && $dataLengkap && $k->status === 'Selesai';
+                            @endphp
+
+                            <details class="rp-card ick-acc">
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Kunjungan {{ $noKunjunganAuth[$k->id] }} — {{ $namaPoliDari($k->poli) }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '-' }}</span>
+                                        @if ($terautentikasi)
+                                            <span class="ick-pill ok">Terautentikasi</span>
+                                        @else
+                                            <span class="ick-pill">Belum diautentikasi</span>
+                                        @endif
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
+
+                                <div class="rp-body">
+                                    @if ($terautentikasi)
+                                        <div class="rp-aksi">
+                                            <a href="{{ route('rekam-medis.autentikasi.cetak', $k->id) }}"
+                                               target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Autentikasi</a>
+                                        </div>
+
+                                        <div class="dx-list">
+                                            <div class="dx-row"><span class="k">Nama Dokter / Petugas</span><span class="v">{{ $auth->nama_dokter }}</span></div>
+                                            <div class="dx-row"><span class="k">Jabatan</span><span class="v">{{ $auth->jabatan }}</span></div>
+                                            <div class="dx-row"><span class="k">Waktu Autentikasi</span><span class="v">{{ $auth->waktu_autentikasi ? $auth->waktu_autentikasi->format('d-m-Y H:i') . ' WIB' : '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Diagnosa Utama</span><span class="v">{{ $rmA->diagnosis_utama ?: '-' }}{{ $rmA->kode_icd10 ? ' (' . $rmA->kode_icd10 . ')' : '' }}</span></div>
+                                            <div class="dx-row" style="align-items: flex-start;">
+                                                <span class="k">Tanda Tangan</span>
+                                                <span class="v">
+                                                    @if ($auth->tanda_tangan)
+                                                        <img src="{{ $auth->tanda_tangan }}" alt="Tanda tangan {{ $auth->nama_dokter }}" class="img-ttd">
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <p class="empty-note" style="margin: 4px 0;">Pemeriksaan pada kunjungan ini belum diautentikasi oleh dokter/petugas.</p>
+                                    @endif
+                                </div>
+                            </details>
+                        @endforeach
+                    @endif
                 </div>
 
             </div>
@@ -1785,6 +2069,99 @@
         <div class="modal-foot">
             <button type="button" class="btn-batal" id="btnBatalKoding">Batal</button>
             <button type="submit" class="btn-simpan" id="btnSimpanKoding" disabled>Simpan &amp; Verifikasi</button>
+        </div>
+    </form>
+</div>
+
+{{-- MODAL EDIT PEMERIKSAAN & SOAP (hanya untuk kunjungan yang belum terverifikasi) --}}
+@php $errEdit = $errors->getBag('editSoap'); @endphp
+<div class="modal-bg" id="modalEditSoap">
+    <form class="modal-box" style="width: 860px;" method="POST" action="#" id="formEditSoap" novalidate>
+        @csrf
+        @method('PUT')
+
+        <div class="modal-head">
+            <h3>Edit Pemeriksaan &amp; SOAP</h3>
+        </div>
+
+        <div class="modal-main">
+            <div class="pernyataan-judul">Tanda Vital</div>
+            <div class="f-grid">
+                <div class="f-group {{ $errEdit->has('tb') ? 'salah' : '' }}">
+                    <label for="es_tb">TB (cm) <span class="wajib">*</span></label>
+                    <input type="text" id="es_tb" name="tb" placeholder="Tinggi badan dalam cm" autocomplete="off">
+                    @if ($errEdit->has('tb'))<span class="f-pesan">{{ $errEdit->first('tb') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('berat_badan') ? 'salah' : '' }}">
+                    <label for="es_berat_badan">BB (kg) <span class="wajib">*</span></label>
+                    <input type="text" id="es_berat_badan" name="berat_badan" placeholder="Berat badan dalam kg" autocomplete="off">
+                    @if ($errEdit->has('berat_badan'))<span class="f-pesan">{{ $errEdit->first('berat_badan') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('imt') ? 'salah' : '' }}">
+                    <label for="es_imt">IMT</label>
+                    <input type="text" id="es_imt" name="imt" placeholder="Terisi otomatis" autocomplete="off" readonly>
+                    @if ($errEdit->has('imt'))<span class="f-pesan">{{ $errEdit->first('imt') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('suhu_badan') ? 'salah' : '' }}">
+                    <label for="es_suhu_badan">Suhu (°C) <span class="wajib">*</span></label>
+                    <input type="text" id="es_suhu_badan" name="suhu_badan" placeholder="Contoh: 36,8" autocomplete="off">
+                    @if ($errEdit->has('suhu_badan'))<span class="f-pesan">{{ $errEdit->first('suhu_badan') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('td') ? 'salah' : '' }}">
+                    <label for="es_td">TD (mmHg) <span class="wajib">*</span></label>
+                    <input type="text" id="es_td" name="td" placeholder="Contoh: 120/80" autocomplete="off">
+                    @if ($errEdit->has('td'))<span class="f-pesan">{{ $errEdit->first('td') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('detak_jantung') ? 'salah' : '' }}">
+                    <label for="es_detak_jantung">Denyut Jantung <span class="wajib">*</span></label>
+                    <input type="text" id="es_detak_jantung" name="detak_jantung" placeholder="x/menit" autocomplete="off">
+                    @if ($errEdit->has('detak_jantung'))<span class="f-pesan">{{ $errEdit->first('detak_jantung') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('respiratory_rate') ? 'salah' : '' }}">
+                    <label for="es_respiratory_rate">RR</label>
+                    <input type="text" id="es_respiratory_rate" name="respiratory_rate" placeholder="x/menit" autocomplete="off">
+                    @if ($errEdit->has('respiratory_rate'))<span class="f-pesan">{{ $errEdit->first('respiratory_rate') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('saturasi') ? 'salah' : '' }}">
+                    <label for="es_saturasi">Saturasi</label>
+                    <input type="text" id="es_saturasi" name="saturasi" placeholder="Contoh: 98" autocomplete="off">
+                    @if ($errEdit->has('saturasi'))<span class="f-pesan">{{ $errEdit->first('saturasi') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('gcs') ? 'salah' : '' }}">
+                    <label for="es_gcs">GCS</label>
+                    <input type="text" id="es_gcs" name="gcs" placeholder="Contoh: E4V5M6" autocomplete="off">
+                    @if ($errEdit->has('gcs'))<span class="f-pesan">{{ $errEdit->first('gcs') }}</span>@endif
+                </div>
+            </div>
+
+            <div class="pernyataan-judul">SOAP</div>
+            <div class="f-grid dua">
+                <div class="f-group {{ $errEdit->has('subjective') ? 'salah' : '' }}">
+                    <label for="es_subjective">S — Subjective <span class="wajib">*</span></label>
+                    <textarea id="es_subjective" name="subjective"></textarea>
+                    @if ($errEdit->has('subjective'))<span class="f-pesan">{{ $errEdit->first('subjective') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('objective') ? 'salah' : '' }}">
+                    <label for="es_objective">O — Objective <span class="wajib">*</span></label>
+                    <textarea id="es_objective" name="objective"></textarea>
+                    @if ($errEdit->has('objective'))<span class="f-pesan">{{ $errEdit->first('objective') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('assessment') ? 'salah' : '' }}">
+                    <label for="es_assessment">A — Assessment <span class="wajib">*</span></label>
+                    <textarea id="es_assessment" name="assessment"></textarea>
+                    @if ($errEdit->has('assessment'))<span class="f-pesan">{{ $errEdit->first('assessment') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('plan') ? 'salah' : '' }}">
+                    <label for="es_plan">P — Plan <span class="wajib">*</span></label>
+                    <textarea id="es_plan" name="plan"></textarea>
+                    @if ($errEdit->has('plan'))<span class="f-pesan">{{ $errEdit->first('plan') }}</span>@endif
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-batal" id="btnBatalEditSoap">Batal</button>
+            <button type="submit" class="btn-simpan">Simpan Perubahan</button>
         </div>
     </form>
 </div>
@@ -1970,6 +2347,53 @@
         modalKoding.addEventListener('click', function (e) {
             if (e.target === modalKoding) modalKoding.classList.remove('show');
         });
+
+        // Modal Edit Pemeriksaan & SOAP
+        var modalEdit = document.getElementById('modalEditSoap');
+        var formEdit  = document.getElementById('formEditSoap');
+        var kolomEdit = ['tb', 'berat_badan', 'imt', 'suhu_badan', 'td', 'detak_jantung',
+                         'respiratory_rate', 'saturasi', 'gcs',
+                         'subjective', 'objective', 'assessment', 'plan'];
+
+        function esEl(n) { return document.getElementById('es_' + n); }
+
+        // IMT otomatis: BB (kg) / (TB (m))^2, TB dalam cm
+        function hitungImtEdit() {
+            var tb = parseFloat(String(esEl('tb').value).replace(',', '.'));
+            var bb = parseFloat(String(esEl('berat_badan').value).replace(',', '.'));
+            esEl('imt').value = (tb > 0 && bb > 0) ? (bb / Math.pow(tb / 100, 2)).toFixed(2) : '';
+        }
+        esEl('tb').addEventListener('input', hitungImtEdit);
+        esEl('berat_badan').addEventListener('input', hitungImtEdit);
+
+        function bukaEdit(action, nilai) {
+            formEdit.action = action;
+            kolomEdit.forEach(function (n) {
+                esEl(n).value = (nilai && nilai[n] != null) ? nilai[n] : '';
+            });
+            modalEdit.classList.add('show');
+        }
+
+        document.querySelectorAll('.btn-edit-soap').forEach(function (b) {
+            b.addEventListener('click', function () {
+                bukaEdit(b.dataset.action, JSON.parse(b.dataset.rm || '{}'));
+            });
+        });
+        document.getElementById('btnBatalEditSoap').addEventListener('click', function () {
+            modalEdit.classList.remove('show');
+        });
+        modalEdit.addEventListener('click', function (e) {
+            if (e.target === modalEdit) modalEdit.classList.remove('show');
+        });
+
+        @if (session('edit_soap_kunjungan_id'))
+            // Validasi gagal: buka lagi modalnya dengan isian terakhir + pesan error
+            bukaTab('soap');
+            bukaEdit(
+                @json(route('rekam-medis.soap.update', session('edit_soap_kunjungan_id'))),
+                @json(old())
+            );
+        @endif
 
         // Klik baris riwayat kunjungan -> detail kunjungan
         document.querySelectorAll('.kj-row').forEach(function (tr) {

@@ -112,6 +112,20 @@
 
         </a>
 
+
+        {{-- Laporan (tampilannya belum dibuat; sementara belum mengarah ke halaman mana pun) --}}
+        {{-- Nanti kalau halamannya sudah ada: ganti href="#" dengan {{ route('laporan.index') }}
+             dan hapus onclick. Status "active" otomatis menyala untuk route berawalan laporan.* --}}
+        <a href="#"
+           class="menu-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
+           onclick="event.preventDefault();">
+
+            <span class="menu-icon"><i class="bi bi-file-earmark-bar-graph-fill"></i></span>
+
+            <span class="menu-label">Laporan</span>
+
+        </a>
+
     </nav>
 
 
@@ -149,6 +163,7 @@
     width: 230px;
     min-width: 230px;
     height: 100vh;
+    height: 100dvh;
     position: fixed;
     left: 0;
     top: 0;
@@ -288,6 +303,7 @@ body.sidebar-collapsed .main {
 
     .logo {
         height: 78px;
+        flex-shrink: 0;
 
         display: flex;
         align-items: center;
@@ -359,13 +375,52 @@ body.sidebar-collapsed .main {
     ================================== */
 
     .menu {
-        padding: 28px 12px;
+        /* Mengisi sisa tinggi di antara logo dan tombol Keluar, lalu bisa di-scroll */
+        flex: 1 1 auto;
+        min-height: 0;
+
+        padding: 22px 12px 14px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+
+        /* Scrollbar tipis, senada dengan sidebar */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+    }
+
+    .menu::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .menu::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .menu::-webkit-scrollbar-thumb {
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .menu::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Mode ciut: tetap bisa di-scroll tapi tanpa scrollbar supaya ikon tidak terdorong */
+    .sidebar.collapsed .menu {
+        scrollbar-width: none;
+    }
+
+    .sidebar.collapsed .menu::-webkit-scrollbar {
+        display: none;
     }
 
 
     .menu-item {
         width: 100%;
         height: 44px;
+        flex-shrink: 0;
 
         display: flex;
         align-items: center;
@@ -459,7 +514,7 @@ body.sidebar-collapsed .main {
     }
 
     .menu-group.open {
-        max-height: 260px;
+        max-height: 800px;
     }
 
     .submenu-item {
@@ -526,6 +581,7 @@ body.sidebar-collapsed .main {
     ================================== */
 
     .logout {
+        flex-shrink: 0;
         margin-top: auto;
 
         padding: 16px 12px;

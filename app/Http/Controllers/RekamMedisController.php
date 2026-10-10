@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AutentikasiPemeriksaan;
 use App\Models\GeneralConsent;
 use App\Models\InformedConsent;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
 use App\Models\Poli;
+use App\Models\SuratRujukan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class RekamMedisController extends Controller
@@ -84,7 +87,30 @@ class RekamMedisController extends Controller
             $informedConsent = collect();
         }
 
+        // Surat rujukan (internal & eksternal) dari seluruh kunjungan pasien, terbaru di atas
+        try {
+            $rujukan = SuratRujukan::whereIn('kunjungan_id', $kunjungan->pluck('id'))
+                ->orderByDesc('tanggal_surat')
+                ->orderByDesc('id')
+                ->get();
+        } catch (\Throwable $e) {
+            report($e);   // tabel surat_rujukan belum dibuat (migrasi belum dijalankan)
+            $rujukan = collect();
+        }
+
+        // Autentikasi (tanda tangan dokter) per kunjungan
+        try {
+            $autentikasi = AutentikasiPemeriksaan::whereIn('kunjungan_id', $kunjungan->pluck('id'))
+                ->get()
+                ->keyBy('kunjungan_id');
+        } catch (\Throwable $e) {
+            report($e);   // tabel autentikasi_kunjungan belum dibuat (migrasi belum dijalankan)
+            $autentikasi = collect();
+        }
+
         return view('rekam-medis.berkas', [
+            'autentikasi'     => $autentikasi,
+            'rujukan'         => $rujukan,
             'pasien'          => $pasien,
             'kunjungan'       => $kunjungan,
             'resep'           => $resep,
@@ -203,6 +229,98 @@ class RekamMedisController extends Controller
             ->to(route('rekam-medis.berkas', $kunjungan->pasien_id) . '#soap')
             ->with('sukses_koding', 'Koding berhasil disimpan dan diverifikasi.')
             ->with('koding_kunjungan_id', $kunjungan->id);
+    }
+
+    /**
+     * Edit data pemeriksaan (tanda vital + SOAP) dari tab "Riwayat Pemeriksaan & SOAP".
+     * Hanya boleh selama belum Terverifikasi; kalau sudah dikoding & diverifikasi, ditolak.
+     */
+    public function soapUpdate(Request $request, Kunjungan $kunjungan)
+    {
+        $rekam = $kunjungan->rekamMedis;
+
+        if (! $rekam) {
+            abort(404, 'Rekam medis untuk kunjungan ini belum ada.');
+        }
+
+        $kembali = route('rekam-medis.berkas', $kunjungan->pasien_id) . '#soap';
+
+        // Penjagaan di sisi server (tombol di tampilan bisa saja dilewati)
+        if ($rekam->sudahTerverifikasi()) {
+            return redirect()->to($kembali)
+                ->with('gagal_soap', 'Rekam medis ini sudah terverifikasi sehingga tidak dapat diedit lagi.')
+                ->with('koding_kunjungan_id', $kunjungan->id);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'tb'               => 'required|string|max:50',
+            'berat_badan'      => 'required|string|max:50',
+            'imt'              => 'nullable|string|max:50',
+            'suhu_badan'       => 'required|string|max:50',
+            'td'               => 'required|string|max:50',
+            'detak_jantung'    => 'required|string|max:50',
+            'respiratory_rate' => 'nullable|string|max:50',
+            'saturasi'         => 'nullable|string|max:50',
+            'gcs'              => 'nullable|string|max:50',
+            'subjective'       => 'required|string',
+            'objective'        => 'required|string',
+            'assessment'       => 'required|string',
+            'plan'             => 'required|string',
+        ], [
+            'required' => 'Kolom :attribute wajib diisi.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->to($kembali)
+                ->withErrors($validator, 'editSoap')
+                ->withInput()
+                ->with('edit_soap_kunjungan_id', $kunjungan->id);
+        }
+
+        $data = $validator->validated();
+
+        // IMT dihitung ulang di server: BB (kg) / (TB (m))^2, TB dalam cm
+        $tb = (float) str_replace(',', '.', $data['tb']);
+        $bb = (float) str_replace(',', '.', $data['berat_badan']);
+        if ($tb > 0 && $bb > 0) {
+            $data['imt'] = number_format($bb / (($tb / 100) ** 2), 2, '.', '');
+        }
+
+        $rekam->fill($data)->save();
+
+        return redirect()->to($kembali)
+            ->with('sukses_soap', 'Data pemeriksaan & SOAP berhasil diperbarui.')
+            ->with('koding_kunjungan_id', $kunjungan->id);
+    }
+
+    /**
+     * Lembar autentikasi siap cetak untuk kunjungan tertentu (dari tab Autentikasi di berkas).
+     * Syarat sama dengan halaman Pemeriksaan: data terisi, status Selesai, dan sudah ditandatangani.
+     */
+    public function autentikasiCetak(Kunjungan $kunjungan)
+    {
+        $kunjungan->load('pasien', 'rekamMedis');
+        $rm = $kunjungan->rekamMedis;
+
+        $autentikasi = AutentikasiPemeriksaan::where('kunjungan_id', $kunjungan->id)->first();
+
+        $lengkap = $rm
+            && filled($rm->keluhan_utama)
+            && (filled($rm->subjective) || filled($rm->assessment))
+            && filled($rm->diagnosis_utama);
+
+        abort_unless(
+            $autentikasi && $lengkap && $kunjungan->status === 'Selesai',
+            404,
+            'Pemeriksaan ini belum diautentikasi.'
+        );
+
+        return view('pemeriksaan.autentikasi-cetak', [
+            'pasien'      => $kunjungan->pasien,
+            'kunjungan'   => $kunjungan,
+            'autentikasi' => $autentikasi,
+            'namaPoli'    => Poli::daftar()[$kunjungan->poli] ?? ucfirst($kunjungan->poli),
+        ]);
     }
 
     public function show(Kunjungan $kunjungan)

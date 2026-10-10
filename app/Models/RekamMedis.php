@@ -111,6 +111,15 @@ class RekamMedis extends Model
         session(['ic_aktif' => $data]);
     }
 
+    /**
+     * Rekam medis yang sudah dikoding & diverifikasi dikunci: data asesmen/SOAP
+     * tidak boleh diubah lagi dari halaman Berkas Rekam Medis.
+     */
+    public function sudahTerverifikasi(): bool
+    {
+        return ($this->status_koding ?? null) === 'Terverifikasi';
+    }
+
     public function kunjungan()
     {
         return $this->belongsTo(Kunjungan::class);
