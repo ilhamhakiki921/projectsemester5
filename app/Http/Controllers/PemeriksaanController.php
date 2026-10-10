@@ -420,10 +420,18 @@ class PemeriksaanController extends Controller
             ->latest('updated_at')
             ->get();
 
-        $daftarDokter = \App\Models\User::where('role', 'dokter')
-            ->where('status', 'aktif')
-            ->orderBy('nama_lengkap')
-            ->pluck('nama_lengkap');
+$daftarDokter = collect([
+    'dr. Hendrik Wahyudi, Sp.PD',
+    'dr. Bagus Fitriadi, Sp.JP',
+    'dr. Ichwanul Aminin, Sp.Rad',
+    'dr. Devi Anggraini P., Sp.KJ',
+    'dr. Ratna Wijayanti, Sp.S',
+    'dr. Aditya Iqbal Maulana, Sp.OG',
+    'dr. Muhammad Amin, Sp.MK, M.Ked.Klin',
+    'dr. Denisa Khoirunnisa',
+    'drg. Aisya Nurrachma',
+    'Veti Novitasari, A.Md.Ft.',
+]);
 
         // ------------------------------------------------------------------
         // Data otomatis dari tab Diagnosa & Resep (dipakai sebagai isian awal
