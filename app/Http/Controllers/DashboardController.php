@@ -331,9 +331,9 @@ class DashboardController extends Controller
 
         $tanggal = $request->input('tanggal') ?: Carbon::today()->toDateString();
 
-        return response()->json(
-            array_merge(['tanggal' => $tanggal], $this->hitungKunjunganPerPoli($tanggal))
-        );
+        return response()
+            ->json(array_merge(['tanggal' => $tanggal], $this->hitungKunjunganPerPoli($tanggal)))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
     }
 
     /**

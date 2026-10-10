@@ -1352,8 +1352,24 @@
                                 $sudahKode = ! empty($rm->kode_icd10);
                             @endphp
 
-                            <div class="rp-card">
-                                <div class="rp-head">Kunjungan {{ $noKunjungan[$k->id] }} — {{ $namaPoliDari($k->poli) }}</div>
+                            <details class="rp-card ick-acc" @if (session('koding_kunjungan_id') == $k->id) open @endif>
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Kunjungan {{ $noKunjungan[$k->id] }} — {{ $namaPoliDari($k->poli) }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '-' }}</span>
+                                        @if ($rm->diagnosis_utama)
+                                            <span class="ick-pill">{{ \Illuminate\Support\Str::limit($rm->diagnosis_utama, 40) }}{{ $sudahKode ? ' (' . $rm->kode_icd10 . ')' : '' }}</span>
+                                        @endif
+                                        @if ($terverifikasi)
+                                            <span class="ick-pill ok">Terverifikasi</span>
+                                        @elseif ($sudahKode)
+                                            <span class="ick-pill draft">Sudah dikoding</span>
+                                        @else
+                                            <span class="ick-pill">Belum dikoding</span>
+                                        @endif
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
 
                                 <div class="rp-body">
 
@@ -1419,7 +1435,7 @@
                                     </div>
 
                                 </div>
-                            </div>
+                            </details>
                         @endforeach
                     @endif
                 </div>

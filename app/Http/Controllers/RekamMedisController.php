@@ -201,7 +201,8 @@ class RekamMedisController extends Controller
 
         return redirect()
             ->to(route('rekam-medis.berkas', $kunjungan->pasien_id) . '#soap')
-            ->with('sukses_koding', 'Koding berhasil disimpan dan diverifikasi.');
+            ->with('sukses_koding', 'Koding berhasil disimpan dan diverifikasi.')
+            ->with('koding_kunjungan_id', $kunjungan->id);
     }
 
     public function show(Kunjungan $kunjungan)
