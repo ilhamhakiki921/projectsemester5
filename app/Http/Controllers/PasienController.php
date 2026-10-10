@@ -36,7 +36,11 @@ class PasienController extends Controller
                 $kunjungan = $p->kunjungan->first();
 
                 $p->alamat_jalan = trim(explode(',', $p->alamat)[0]);
-                $p->lahir_text   = $this->tanggalKeTeks($p->tanggal_lahir);
+                // Format "Tempat, 12 Feb 2006" (kalau tempat lahir kosong -> tanggalnya saja)
+                $tglLahirTeks    = $this->tanggalKeTeks($p->tanggal_lahir);
+                $p->lahir_text   = filled($p->tempat_lahir)
+                    ? trim($p->tempat_lahir) . ', ' . $tglLahirTeks
+                    : $tglLahirTeks;
 
                 $p->tgl_kunjungan_text = $kunjungan
                     ? $this->tanggalKeTeks($kunjungan->tanggal_kunjungan)
@@ -291,6 +295,7 @@ public function create()
             'nama'          => 'required',
             'jenis_kelamin' => 'required',
             'tanggal_lahir' => 'nullable|date',
+            'tempat_lahir'  => 'nullable|string|max:255',
             'nik'           => 'required|digits:16|unique:pasien,nik,' . $pasien->id,
             'no_telepon'    => 'nullable',
             'alamat'        => 'required',
@@ -301,6 +306,8 @@ public function create()
             'nama'          => $request->nama,
             'jenis_kelamin' => $request->jenis_kelamin,
             'tanggal_lahir' => $request->filled('tanggal_lahir') ? $request->tanggal_lahir : $pasien->tanggal_lahir,
+            // Hanya diubah kalau dikirim dari form, supaya tidak terhapus oleh pemanggil lain
+            'tempat_lahir'  => $request->has('tempat_lahir') ? $request->tempat_lahir : $pasien->tempat_lahir,
             'nik'           => $request->nik,
             'no_telepon'    => $request->no_telepon,
             'alamat'        => $request->alamat,
