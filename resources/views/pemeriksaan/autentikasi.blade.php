@@ -101,7 +101,7 @@
                 </div>
                 <div class="au-f">
                     <label for="auJabatan">Jabatan</label>
-                    <input type="text" id="auJabatan" name="jabatan" value="" placeholder="Contoh: Dokter Umum">
+                    <input type="text" id="auJabatan" name="jabatan" value="{{ $jabatanDefault }}" placeholder="Contoh: Dokter Umum">
                 </div>
             </div>
 

@@ -1153,117 +1153,7 @@
         }
     });
 
-    // ------------------------------------------------------------------
-    // Sumber data grafik: tabel "Data Pasien" di halaman Pendaftaran
-    // (kolom "Tgl Kunjungan" dan "Poli Tujuan"). Jadi grafik selalu sama
-    // dengan data pasien yang tampil di web, tanpa perlu database.
-    // Kalau halaman itu gagal dibaca, dipakai data dari server (database).
-    // ------------------------------------------------------------------
-    const urlPendaftaran = "{{ route('pendaftaran') }}";
-    const labelPoliTetap = kunjunganPoliAwal.labels.slice();   // urutan batang
     const inputTanggalPoli = document.getElementById('filterTanggalPoli');
-
-    const bulanIndo = {
-        jan: 1, feb: 2, mar: 3, apr: 4, mei: 5, may: 5, jun: 6, jul: 7,
-        agu: 8, agt: 8, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, des: 12, dec: 12
-    };
-
-    // "18 Sep 2026" / "18 September 2026" / "2026-09-18" / "18/09/2026" -> "2026-09-18"
-    function tanggalKeISO(teks) {
-        teks = (teks || '').trim().toLowerCase();
-
-        let m = teks.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (m) return m[1] + '-' + m[2] + '-' + m[3];
-
-        m = teks.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-        if (m) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
-
-        m = teks.match(/^(\d{1,2})\s+([a-z]+)\.?\s+(\d{4})$/);
-        if (m) {
-            const bln = bulanIndo[m[2].substring(0, 3)];
-            if (bln) return m[3] + '-' + String(bln).padStart(2, '0') + '-' + m[1].padStart(2, '0');
-        }
-
-        return null;
-    }
-
-    // "Poli Umum" -> "umum", "Poli Penyakit Dalam" -> "dalam"
-    function kunciPoli(teks) {
-        let k = (teks || '').toLowerCase().replace(/\s+/g, ' ').trim().replace(/^poli\s+/, '');
-        if (k === 'penyakit dalam') k = 'dalam';
-        return k;
-    }
-
-    let janjiTabelPasien = null;   // di-cache: halaman pendaftaran cukup dibaca sekali
-
-    function bacaTabelPasien() {
-        if (janjiTabelPasien) {
-            return janjiTabelPasien;
-        }
-
-        janjiTabelPasien = fetch(urlPendaftaran, { headers: { 'Accept': 'text/html' } })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Halaman pendaftaran tidak bisa dibaca.');
-                }
-                return response.text();
-            })
-            .then(html => {
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                const kepala = Array.from(doc.querySelectorAll('#tabelPasien thead th'));
-                const idxRm = kepala.findIndex(th => th.classList.contains('col-rm'));
-                const idxTanggal = kepala.findIndex(th => th.classList.contains('col-tanggal'));
-                const idxPoli = kepala.findIndex(th => th.classList.contains('col-poli'));
-
-                if (idxTanggal < 0 || idxPoli < 0) {
-                    throw new Error('Kolom tanggal / poli tidak ditemukan pada tabel pasien.');
-                }
-
-                const hasil = [];
-                doc.querySelectorAll('#tabelPasienBody > tr').forEach(tr => {
-                    const sel = tr.children;
-                    if (sel.length <= Math.max(idxTanggal, idxPoli)) return;
-
-                                        hasil.push({
-                        rm: idxRm >= 0 ? sel[idxRm].textContent.trim() : '',
-                        tanggal: tanggalKeISO(sel[idxTanggal].textContent),
-                        poli: sel[idxPoli].textContent.replace(/\s+/g, ' ').trim()
-                    });
-                });
-
-                return hasil;
-            });
-
-        // kalau gagal, izinkan dicoba lagi lain kali
-        janjiTabelPasien.catch(() => { janjiTabelPasien = null; });
-
-        return janjiTabelPasien;
-    }
-
-    function hitungPerPoliDariTabel(baris, tanggal) {
-        const jumlah = {};   // key poli -> jumlah
-        const namaAsli = {}; // key poli -> teks asli (untuk poli di luar daftar tetap)
-
-        baris.filter(b => b.tanggal === tanggal && b.poli).forEach(b => {
-            const k = kunciPoli(b.poli);
-            jumlah[k] = (jumlah[k] || 0) + 1;
-            namaAsli[k] = b.poli;
-        });
-
-        const labels = labelPoliTetap.slice();
-        const data = labelPoliTetap.map(label => jumlah[kunciPoli(label)] || 0);
-
-        // Poli lain yang ada di tabel tapi tidak ada di daftar tetap tetap ditampilkan
-        const kunciTetap = labelPoliTetap.map(kunciPoli);
-        Object.keys(jumlah).forEach(k => {
-            if (kunciTetap.indexOf(k) === -1) {
-                labels.push(namaAsli[k]);
-                data.push(jumlah[k]);
-            }
-        });
-
-        return { labels: labels, data: data };
-    }
 
     function tampilkanGrafik(hasil) {
         kunjunganPoliChart.data.labels = hasil.labels;
@@ -1271,10 +1161,20 @@
         kunjunganPoliChart.update();
     }
 
-    // Cadangan: ambil dari server (database) kalau tabel tidak bisa dibaca
-    function muatDariServer(tanggal) {
-        return fetch(`${urlKunjunganPerPoli}?tanggal=${tanggal}`, {
-            headers: { 'Accept': 'application/json' }
+    // Sumber data grafik = database (tabel kunjungan) lewat endpoint server, jadi selalu
+    // sama dengan data yang diinputkan di sistem. Tidak lagi membaca tabel HTML halaman lain.
+    let sedangMemuatGrafik = false;
+
+    function muatGrafikPoli(tanggal) {
+        if (!tanggal || sedangMemuatGrafik) {
+            return;
+        }
+
+        sedangMemuatGrafik = true;
+
+        fetch(`${urlKunjunganPerPoli}?tanggal=${encodeURIComponent(tanggal)}&_=${Date.now()}`, {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
         })
             .then(response => {
                 if (!response.ok) {
@@ -1282,29 +1182,35 @@
                 }
                 return response.json();
             })
-            .then(tampilkanGrafik);
+            .then(tampilkanGrafik)
+            .catch(error => console.error(error))
+            .finally(() => { sedangMemuatGrafik = false; });
     }
 
-    function muatGrafikPoli(tanggal) {
-        if (!tanggal) {
-            return;
-        }
-
-        bacaTabelPasien()
-            .then(baris => tampilkanGrafik(hitungPerPoliDariTabel(baris, tanggal)))
-            .catch(errorTabel => {
-                console.warn(errorTabel);
-                muatDariServer(tanggal).catch(error => console.error(error));
-            });
-    }
-
-    // Saat tanggal pada kalender filter diganti, hitung ulang grafik
+    // Saat tanggal pada kalender filter diganti, muat ulang grafik
     inputTanggalPoli.addEventListener('change', function () {
         muatGrafikPoli(this.value);
     });
 
-    // Tampilkan juga untuk tanggal yang sedang terpilih saat halaman dibuka
+    // Tampilkan untuk tanggal yang sedang terpilih saat halaman dibuka
     muatGrafikPoli(inputTanggalPoli.value);
+
+    // Perbarui otomatis: tiap 10 detik, dan saat tab dashboard kembali dibuka
+    setInterval(function () {
+        if (!document.hidden) {
+            muatGrafikPoli(inputTanggalPoli.value);
+        }
+    }, 10000);
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            muatGrafikPoli(inputTanggalPoli.value);
+        }
+    });
+
+    window.addEventListener('focus', function () {
+        muatGrafikPoli(inputTanggalPoli.value);
+    });
 
 
     // ==================================================================

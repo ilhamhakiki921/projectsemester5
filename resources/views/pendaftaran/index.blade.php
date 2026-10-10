@@ -2344,58 +2344,61 @@ body.sidebar-collapsed .main {
     overflow: hidden;
 }
 
-.gc-ttd-kotak {
-    height: 74px;
-    margin: 14px 28px 10px;
+/* Kotak tanda tangan (sama seperti di halaman pemeriksaan) */
+.gc-pad {
+    margin: 14px 28px 12px;
 
+    border: 1px solid #9a9a9a;
+    border-radius: 10px;
+    background: #f2f2f2;
+    overflow: hidden;
+}
+
+.gc-pad-area {
+    position: relative;
+    height: 190px;
+}
+
+.gc-pad-area canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.gc-pad-bar {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 
-    border: 1px solid #b04a52;
-    border-radius: 12px;
-    background: #f4c9cd;
-
-    font-size: 11.5px;
-    font-weight: 600;
-    color: #444;
+    padding: 8px 14px;
+    border-top: 1px solid #c4c4c4;
+    background: #ebebeb;
 }
 
-.gc-ttd-kotak.sudah {
-    background: #ffffff;
-    border-color: #2e7d32;
+.gc-pad-hint {
+    font-size: 10.5px;
+    color: #777;
 }
 
-.gc-ttd-kotak img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-.gc-ttd-aksi {
-    display: flex;
-    justify-content: center;
-    padding-bottom: 12px;
-}
-
-.gc-btn-ttd {
-    height: 26px;
-    padding: 0 26px;
-
-    border: 1px solid var(--gc-merah);
-    border-radius: 999px;
-    background: #ffffff;
+.gc-pad-bersih {
+    border: 0;
+    background: none;
 
     font-family: 'Poppins', sans-serif;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: #333;
+    font-size: 11px;
+    font-weight: 700;
+    color: #c00000;
 
     cursor: pointer;
 }
 
-.gc-btn-ttd:hover {
-    background: #fdecee;
+.gc-pad-bersih:hover {
+    text-decoration: underline;
 }
 
 .gc-ttd-nama {
@@ -2577,62 +2580,6 @@ body.sidebar-collapsed .main {
 .gc-error {
     outline: 2px solid var(--gc-merah) !important;
     outline-offset: 1px;
-}
-
-/* Popup tanda tangan */
-#modalTtdGC {
-    z-index: 10003;
-}
-
-.gc-ttd-modal {
-    width: 560px;
-    max-width: 100%;
-
-    background: #ffffff;
-    border-radius: 14px;
-    overflow: hidden;
-
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    font-family: 'Poppins', sans-serif;
-}
-
-.gc-ttd-modal-head {
-    padding: 16px 22px;
-    border-bottom: 1px solid #e5e7eb;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--gc-merah, #c40000);
-}
-
-.gc-ttd-modal-body {
-    padding: 18px 22px;
-}
-
-.gc-ttd-modal-body p {
-    margin: 0 0 8px;
-    font-size: 11.5px;
-    color: #607d8b;
-}
-
-#ttdGcCanvas {
-    display: block;
-    width: 100%;
-    height: 200px;
-
-    border: 1px dashed #9e9e9e;
-    border-radius: 10px;
-    background: #fafafa;
-
-    touch-action: none;
-    cursor: crosshair;
-}
-
-.gc-ttd-modal-foot {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 14px 22px;
-    border-top: 1px solid #e5e7eb;
 }
 
 /* Notifikasi kecil */
@@ -4082,9 +4029,12 @@ body.sidebar-collapsed .main {
 
                 @foreach (['petugas' => 'Petugas Rawat Inap', 'penanggung' => 'Penanggung jawab/pasien', 'saksi' => 'Saksi pasien'] as $kunci => $label)
                     <div class="gc-ttd-kartu">
-                        <div class="gc-ttd-kotak" id="gcTtdKotak_{{ $kunci }}">Belum ditandatangani</div>
-                        <div class="gc-ttd-aksi">
-                            <button type="button" class="gc-btn-ttd" id="gcTtdTombol_{{ $kunci }}" onclick="bukaTtdGeneralConsent('{{ $kunci }}')">Bubuhkan tanda tangan</button>
+                        <div class="gc-pad" id="gcTtdKotak_{{ $kunci }}">
+                            <div class="gc-pad-area"><canvas id="gcTtdCanvas_{{ $kunci }}" aria-label="Tanda tangan {{ $label }}"></canvas></div>
+                            <div class="gc-pad-bar">
+                                <span class="gc-pad-hint">Gunakan mouse/jari untuk menandatangani</span>
+                                <button type="button" class="gc-pad-bersih" onclick="bersihkanTtdGeneralConsent('{{ $kunci }}')">Bersihkan</button>
+                            </div>
                         </div>
                         <div class="gc-ttd-nama wajib-isi" id="gcTtdNamaWadah_{{ $kunci }}">
                             @if ($kunci === 'penanggung')
@@ -4127,22 +4077,6 @@ body.sidebar-collapsed .main {
 
 </div>
 
-
-{{-- Popup untuk membubuhkan tanda tangan --}}
-<div id="modalTtdGC" class="modal-overlay">
-    <div class="gc-ttd-modal">
-        <div class="gc-ttd-modal-head" id="ttdGcJudul">Tanda Tangan</div>
-        <div class="gc-ttd-modal-body">
-            <p>Tanda tangan di dalam kotak di bawah ini menggunakan mouse, jari, atau stylus.</p>
-            <canvas id="ttdGcCanvas"></canvas>
-        </div>
-        <div class="gc-ttd-modal-foot">
-            <button type="button" class="gc-btn gc-btn-draft" onclick="hapusTtdGeneralConsent()">Hapus</button>
-            <button type="button" class="gc-btn gc-btn-draft" onclick="tutupTtdGeneralConsent()">Batal</button>
-            <button type="button" class="gc-btn gc-btn-hijau" onclick="simpanTtdGeneralConsent()">Simpan Tanda Tangan</button>
-        </div>
-    </div>
-</div>
 
 <div class="gc-toast" id="gcToast"></div>
 
@@ -5601,9 +5535,6 @@ const GC_TTD_LABEL = {
     saksi:      'Saksi pasien'
 };
 
-let gcTtdAktif = null;
-let gcSedangMenggambar = false;
-let gcAdaGoresan = false;
 
 function gcEl(id) {
     return document.getElementById(id);
@@ -5701,6 +5632,9 @@ function bukaModalGeneralConsent() {
     bersihkanErrorGeneralConsent();
 
     gcEl('modalGeneralConsent').classList.add('show');
+
+    // Kotak tanda tangan baru bisa diukur setelah modal terlihat
+    siapkanSemuaPadTtd();
 }
 
 
@@ -5789,153 +5723,208 @@ function sinkronNamaPenanggungGeneralConsent(dari) {
 // TANDA TANGAN (canvas)
 // =========================
 
-function tampilkanTtdGeneralConsent(kunci) {
+// Setiap penanda tangan punya kotak (canvas) sendiri di halaman, tanpa popup.
+// GC_TTD[kunci] selalu berisi gambar terbaru (data URL PNG) atau null bila kosong.
+const gcPad = {};
 
-    const kotak  = gcEl('gcTtdKotak_' + kunci);
-    const tombol = gcEl('gcTtdTombol_' + kunci);
-
-    kotak.textContent = '';
-
-    if (GC_TTD[kunci]) {
-
-        const img = document.createElement('img');
-        img.src = GC_TTD[kunci];
-        img.alt = 'Tanda tangan ' + GC_TTD_LABEL[kunci];
-
-        kotak.appendChild(img);
-        kotak.classList.add('sudah');
-        tombol.textContent = 'Ulangi tanda tangan';
-
-    } else {
-
-        kotak.textContent = 'Belum ditandatangani';
-        kotak.classList.remove('sudah');
-        tombol.textContent = 'Bubuhkan tanda tangan';
-    }
+function gcKunciPad() {
+    return Object.keys(GC_TTD);
 }
 
+// Ukuran kanvas disesuaikan dengan kotaknya. Hanya bisa dilakukan saat modal terlihat,
+// jadi dipanggil setiap modal dibuka / jendela diubah ukurannya. Goresan tersimpan digambar ulang.
+function siapkanPadTtd(kunci) {
 
-function siapkanKanvasTtd() {
+    const c = gcEl('gcTtdCanvas_' + kunci);
+    const w = c.clientWidth;
+    const h = c.clientHeight;
 
-    const c   = gcEl('ttdGcCanvas');
-    const r   = c.getBoundingClientRect();
+    if (!w || !h) {
+        return;     // modal belum terlihat
+    }
+
     const dpr = window.devicePixelRatio || 1;
 
-    c.width  = Math.round(r.width * dpr);
-    c.height = Math.round(r.height * dpr);
+    c.width  = Math.round(w * dpr);
+    c.height = Math.round(h * dpr);
 
     const ctx = c.getContext('2d');
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.lineWidth   = 2.2;
+    ctx.lineWidth   = 2.4;
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
     ctx.strokeStyle = '#111111';
+
+    gcPad[kunci] = gcPad[kunci] || { menggambar: false };
+    gcPad[kunci].w = w;
+    gcPad[kunci].h = h;
+
+    // Gambar ulang tanda tangan yang sudah tersimpan (mis. setelah Simpan Draft lalu dibuka lagi)
+    if (GC_TTD[kunci]) {
+
+        const img = new Image();
+
+        img.onload = function() {
+            const skala = Math.min((w - 24) / img.width, (h - 24) / img.height, 1);
+            const iw = img.width * skala;
+            const ih = img.height * skala;
+
+            ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+        };
+
+        img.src = GC_TTD[kunci];
+    }
 }
 
-
-function bukaTtdGeneralConsent(kunci) {
-
-    gcTtdAktif = kunci;
-    gcAdaGoresan = false;
-
-    gcEl('ttdGcJudul').textContent = 'Tanda Tangan - ' + GC_TTD_LABEL[kunci];
-    gcEl('modalTtdGC').classList.add('show');
-
-    siapkanKanvasTtd();
+function siapkanSemuaPadTtd() {
+    gcKunciPad().forEach(siapkanPadTtd);
 }
 
+// Simpan isi kanvas sebagai PNG transparan, dipangkas dari ruang kosong supaya tanda tangan
+// tampil besar dan rapi di berkas & cetakan, dan ukurannya tetap ringan.
+function ambilGambarPadTtd(kunci) {
 
-function tutupTtdGeneralConsent() {
+    const c = gcEl('gcTtdCanvas_' + kunci);
+    const lebar = c.width;
+    const tinggi = c.height;
 
-    gcEl('modalTtdGC').classList.remove('show');
-    gcTtdAktif = null;
-}
+    const data = c.getContext('2d').getImageData(0, 0, lebar, tinggi).data;
 
+    let minX = lebar, minY = tinggi, maxX = -1, maxY = -1;
 
-function hapusTtdGeneralConsent() {
-
-    siapkanKanvasTtd();
-    gcAdaGoresan = false;
-}
-
-
-function simpanTtdGeneralConsent() {
-
-    if (!gcAdaGoresan) {
-        alert('Silakan bubuhkan tanda tangan terlebih dahulu.');
-        return;
+    for (let y = 0; y < tinggi; y++) {
+        for (let x = 0; x < lebar; x++) {
+            if (data[(y * lebar + x) * 4 + 3] > 20) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
     }
 
-    const asal = gcEl('ttdGcCanvas');
+    if (maxX < 0) {
+        return null;
+    }
 
-    // Perkecil supaya ukuran data yang dikirim ke server tetap ringan
-    const lebar  = 500;
-    const tinggi = Math.round(lebar * asal.height / asal.width);
+    const pad = 10;
 
-    const kecil = document.createElement('canvas');
-    kecil.width  = lebar;
-    kecil.height = tinggi;
+    minX = Math.max(0, minX - pad);
+    minY = Math.max(0, minY - pad);
+    maxX = Math.min(lebar - 1, maxX + pad);
+    maxY = Math.min(tinggi - 1, maxY + pad);
 
-    kecil.getContext('2d').drawImage(asal, 0, 0, lebar, tinggi);
+    const cw = maxX - minX + 1;
+    const ch = maxY - minY + 1;
 
-    GC_TTD[gcTtdAktif] = kecil.toDataURL('image/png');
+    // Perkecil bila terlalu besar (maks. 600 px lebar)
+    const skala = Math.min(1, 600 / cw);
 
-    tampilkanTtdGeneralConsent(gcTtdAktif);
+    const hasil = document.createElement('canvas');
+    hasil.width  = Math.max(1, Math.round(cw * skala));
+    hasil.height = Math.max(1, Math.round(ch * skala));
 
-    tutupTtdGeneralConsent();
+    hasil.getContext('2d').drawImage(c, minX, minY, cw, ch, 0, 0, hasil.width, hasil.height);
+
+    return hasil.toDataURL('image/png');
 }
 
+// Dipanggil saat reset: kosongkan kanvas sesuai isi GC_TTD
+function tampilkanTtdGeneralConsent(kunci) {
+
+    const c = gcEl('gcTtdCanvas_' + kunci);
+
+    if (c && gcPad[kunci]) {
+        siapkanPadTtd(kunci);
+    }
+}
+
+function bersihkanTtdGeneralConsent(kunci) {
+
+    GC_TTD[kunci] = null;
+
+    siapkanPadTtd(kunci);
+
+    gcEl('gcTtdKotak_' + kunci).classList.remove('gc-error');
+}
 
 (function pasangEventTtd() {
 
-    const c = gcEl('ttdGcCanvas');
+    gcKunciPad().forEach(function(kunci) {
 
-    function posisi(e) {
-        const r = c.getBoundingClientRect();
-        return { x: e.clientX - r.left, y: e.clientY - r.top };
-    }
+        const c = gcEl('gcTtdCanvas_' + kunci);
 
-    c.addEventListener('pointerdown', function(e) {
-        e.preventDefault();
-        c.setPointerCapture(e.pointerId);
-
-        const p   = posisi(e);
-        const ctx = c.getContext('2d');
-
-        gcSedangMenggambar = true;
-
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        // titik tunggal (klik tanpa geser) tetap tergambar
-        ctx.lineTo(p.x + 0.01, p.y + 0.01);
-        ctx.stroke();
-
-        gcAdaGoresan = true;
-    });
-
-    c.addEventListener('pointermove', function(e) {
-
-        if (!gcSedangMenggambar) {
-            return;
+        function posisi(e) {
+            const r = c.getBoundingClientRect();
+            // Disesuaikan bila tampilan sedang diskalakan (mis. animasi modal)
+            return {
+                x: (e.clientX - r.left) * (c.clientWidth / (r.width || 1)),
+                y: (e.clientY - r.top) * (c.clientHeight / (r.height || 1))
+            };
         }
 
-        e.preventDefault();
+        c.addEventListener('pointerdown', function(e) {
 
-        const p   = posisi(e);
-        const ctx = c.getContext('2d');
+            if (!gcPad[kunci]) {
+                siapkanPadTtd(kunci);
+            }
 
-        ctx.lineTo(p.x, p.y);
-        ctx.stroke();
+            e.preventDefault();
+            c.setPointerCapture(e.pointerId);
+
+            const p   = posisi(e);
+            const ctx = c.getContext('2d');
+
+            gcPad[kunci].menggambar = true;
+
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            // titik tunggal (klik tanpa geser) tetap tergambar
+            ctx.lineTo(p.x + 0.01, p.y + 0.01);
+            ctx.stroke();
+
+            gcEl('gcTtdKotak_' + kunci).classList.remove('gc-error');
+        });
+
+        c.addEventListener('pointermove', function(e) {
+
+            if (!gcPad[kunci] || !gcPad[kunci].menggambar) {
+                return;
+            }
+
+            e.preventDefault();
+
+            const p   = posisi(e);
+            const ctx = c.getContext('2d');
+
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+        });
+
+        function selesai() {
+
+            if (!gcPad[kunci] || !gcPad[kunci].menggambar) {
+                return;
+            }
+
+            gcPad[kunci].menggambar = false;
+
+            // Simpan hasil goresan; kanvas tetap menampilkan goresan aslinya
+            GC_TTD[kunci] = ambilGambarPadTtd(kunci);
+        }
+
+        c.addEventListener('pointerup', selesai);
+        c.addEventListener('pointercancel', selesai);
+        c.addEventListener('pointerleave', selesai);
     });
 
-    function selesai() {
-        gcSedangMenggambar = false;
-    }
-
-    c.addEventListener('pointerup', selesai);
-    c.addEventListener('pointercancel', selesai);
-    c.addEventListener('pointerleave', selesai);
+    // Ukuran kotak berubah (jendela diubah ukurannya): sesuaikan kanvas yang sedang terlihat
+    window.addEventListener('resize', function() {
+        if (gcEl('modalGeneralConsent').classList.contains('show')) {
+            siapkanSemuaPadTtd();
+        }
+    });
 
 })();
 

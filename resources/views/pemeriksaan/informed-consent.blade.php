@@ -2,7 +2,7 @@
 
 @php
     // Identitas terisi otomatis dari data pendaftaran
-    $dokter = $kunjungan->dokter ?? '';
+    $dokter = $kunjungan->dokter_tampil ?? '';
     $jk     = $pasien->jenis_kelamin ?? '';
     $jkL    = $jk === 'Laki-laki';
     $jkP    = $jk === 'Perempuan';

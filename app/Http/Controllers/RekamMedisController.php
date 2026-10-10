@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GeneralConsent;
+use App\Models\InformedConsent;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
 use App\Models\Poli;
@@ -73,11 +74,22 @@ class RekamMedisController extends Controller
             $penunjang = collect();
         }
 
+        // Informed Consent dari seluruh kunjungan pasien (poli apa pun: Gigi, Umum, dst.)
+        try {
+            $informedConsent = InformedConsent::whereIn('kunjungan_id', $kunjungan->pluck('id'))
+                ->get()
+                ->keyBy('kunjungan_id');
+        } catch (\Throwable $e) {
+            report($e);   // tabel informed_consent belum dibuat (migrasi belum dijalankan)
+            $informedConsent = collect();
+        }
+
         return view('rekam-medis.berkas', [
-            'pasien'    => $pasien,
-            'kunjungan' => $kunjungan,
-            'resep'     => $resep,
-            'penunjang' => $penunjang,
+            'pasien'          => $pasien,
+            'kunjungan'       => $kunjungan,
+            'resep'           => $resep,
+            'penunjang'       => $penunjang,
+            'informedConsent' => $informedConsent,
             'namaPoli'  => Poli::daftar(),
         ]);
     }
@@ -189,7 +201,8 @@ class RekamMedisController extends Controller
 
         return redirect()
             ->to(route('rekam-medis.berkas', $kunjungan->pasien_id) . '#soap')
-            ->with('sukses_koding', 'Koding berhasil disimpan dan diverifikasi.');
+            ->with('sukses_koding', 'Koding berhasil disimpan dan diverifikasi.')
+            ->with('koding_kunjungan_id', $kunjungan->id);
     }
 
     public function show(Kunjungan $kunjungan)

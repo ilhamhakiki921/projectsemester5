@@ -651,6 +651,55 @@
     }
 
     /* =================================
+       INFORMED CONSENT (semua poli)
+    ================================== */
+    .ick-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .ick-pill {
+        display: inline-block; padding: 3px 12px; border-radius: 999px;
+        font-size: 12px; font-weight: 600; background: #ececec; color: #444;
+    }
+    .ick-pill.ok    { background: #84ee84; color: #0f4a0f; }
+    .ick-pill.draft { background: #e6e8b4; color: #6d6a00; }
+    .ick-pill.setuju { background: #84ee84; color: #0f4a0f; }
+    .ick-pill.tolak  { background: #f6c4c4; color: #8a0f0f; }
+
+    .ick-acc > summary { list-style: none; cursor: pointer; }
+    .ick-acc > summary::-webkit-details-marker { display: none; }
+    .ick-summary {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 8px 14px; user-select: none;
+    }
+    .ick-summary:hover { background: #fdf4f4; }
+    .ick-summary .ick-judul { flex: 1 1 auto; }
+    .ick-summary .ick-meta { margin: 0; }
+    .ick-chevron {
+        width: 10px; height: 10px; flex: 0 0 auto; margin: 0 4px 3px 4px;
+        border-right: 2px solid #8a0f0f; border-bottom: 2px solid #8a0f0f;
+        transform: rotate(45deg); transition: transform .2s;
+    }
+    .ick-acc[open] > summary .ick-chevron { transform: rotate(-135deg); margin-top: 6px; margin-bottom: 0; }
+    .ick-acc > summary.rp-head { border-bottom: 0; }
+    .ick-acc[open] > summary.rp-head { border-bottom: 1px solid #9b9b9b; }
+
+    .ick-sub {
+        margin: 18px 0 8px; font-size: 13px; font-weight: 600; color: #8a0f0f;
+    }
+    .ick-sub:first-child { margin-top: 0; }
+
+    .ick-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ick-tbl th, .ick-tbl td {
+        padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top;
+    }
+    .ick-tbl th { background: #fbeeee; color: #6d0d0d; font-weight: 600; }
+    .ick-tbl td.c, .ick-tbl th.c { text-align: center; width: 150px; }
+    .ick-tbl td.no { width: 50px; }
+
+    .ick-ttd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 8px; }
+    .ick-ttd { border: 1px solid #e3e3e3; border-radius: 8px; padding: 10px; text-align: center; }
+    .ick-ttd .lbl { display: block; font-size: 12px; color: #78909c; margin-bottom: 6px; }
+    .ick-ttd img { max-width: 100%; max-height: 110px; background: #fff; }
+
+    /* =================================
        GENERAL CONSENT
     ================================== */
 
@@ -1104,7 +1153,7 @@
                     <button type="button" class="berkas-tab" data-tab="lab">Hasil Laboratorium</button>
                     <button type="button" class="berkas-tab" data-tab="resep">Riwayat Resep &amp; Obat</button>
                     <button type="button" class="berkas-tab" data-tab="rujukan">Rujukan</button>
-                    <button type="button" class="berkas-tab" data-tab="informed-consent">Informed Consent Gigi</button>
+                    <button type="button" class="berkas-tab" data-tab="informed-consent">Informed Consent</button>
                     <button type="button" class="berkas-tab" data-tab="resume">Resume Medis</button>
                     <button type="button" class="berkas-tab" data-tab="surat-medis">Surat Medis</button>
                     <button type="button" class="berkas-tab" data-tab="autentikasi">Autentikasi</button>
@@ -1303,8 +1352,24 @@
                                 $sudahKode = ! empty($rm->kode_icd10);
                             @endphp
 
-                            <div class="rp-card">
-                                <div class="rp-head">Kunjungan {{ $noKunjungan[$k->id] }} — {{ $namaPoliDari($k->poli) }}</div>
+                            <details class="rp-card ick-acc" @if (session('koding_kunjungan_id') == $k->id) open @endif>
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Kunjungan {{ $noKunjungan[$k->id] }} — {{ $namaPoliDari($k->poli) }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '-' }}</span>
+                                        @if ($rm->diagnosis_utama)
+                                            <span class="ick-pill">{{ \Illuminate\Support\Str::limit($rm->diagnosis_utama, 40) }}{{ $sudahKode ? ' (' . $rm->kode_icd10 . ')' : '' }}</span>
+                                        @endif
+                                        @if ($terverifikasi)
+                                            <span class="ick-pill ok">Terverifikasi</span>
+                                        @elseif ($sudahKode)
+                                            <span class="ick-pill draft">Sudah dikoding</span>
+                                        @else
+                                            <span class="ick-pill">Belum dikoding</span>
+                                        @endif
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
 
                                 <div class="rp-body">
 
@@ -1370,7 +1435,7 @@
                                     </div>
 
                                 </div>
-                            </div>
+                            </details>
                         @endforeach
                     @endif
                 </div>
@@ -1468,13 +1533,190 @@
                 </div>
 
 
-                {{-- ========== INFORMED CONSENT GIGI ========== --}}
+                {{-- ========== INFORMED CONSENT (semua poli) ========== --}}
                 <div class="berkas-panel" id="panel-informed-consent">
-                    {{-- TODO: tampilan Informed Consent Gigi --}}
-                    <div class="kosong-penunjang">
-                        <div class="judul">Informed Consent Gigi</div>
-                        <div class="sub">Tampilan ini belum dibuat.</div>
-                    </div>
+
+                    @php
+                        // Seluruh Informed Consent pasien ini, dari poli apa pun, terbaru di atas
+                        $daftarIc = $kunjungan->filter(fn ($k) => isset($informedConsent[$k->id]));
+                        $noKunjunganIc = $kunjungan->sortBy([['tanggal_kunjungan', 'asc'], ['id', 'asc']])
+                            ->values()->pluck('id')->flip()->map(fn ($i) => $i + 1);
+
+                        // Isian tersimpan berbentuk daftar pasangan [nama_field, nilai] -> jadikan peta nama => [nilai, ...]
+                        $icPeta = function ($ic) {
+                            $peta = [];
+                            foreach (($ic->data ?? []) as $baris) {
+                                if (! is_array($baris) || ! isset($baris[0])) continue;
+                                $peta[$baris[0]][] = $baris[1] ?? '';
+                            }
+                            return $peta;
+                        };
+
+                        $infoGigi = [
+                            'Diagnosis/kelainan gigi dan mulut berdasarkan hasil pemeriksaan.',
+                            'Hasil anamnesis, pemeriksaan gigi dan mulut serta pemeriksaan penunjang apabila diperlukan.',
+                            'Tindakan kedokteran gigi yang akan dilakukan.',
+                            'Nomor gigi/area yang akan dilakukan tindakan.',
+                            'Alasan medis dilakukannya tindakan berdasarkan kondisi dan diagnosis pasien.',
+                            'Tata cara tindakan sesuai prosedur kedokteran gigi, termasuk anestesi lokal apabila diperlukan.',
+                            'Tujuan & manfaat: mengatasi keluhan, menghilangkan sumber infeksi/kerusakan, menjaga fungsi gigi.',
+                            'Risiko & efek samping: nyeri, tidak nyaman, perdarahan, pembengkakan, reaksi obat/anestesi.',
+                            'Komplikasi: infeksi, perdarahan berkepanjangan, reaksi alergi, gangguan penyembuhan.',
+                            'Alternatif tindakan/perawatan lain yang sesuai kondisi pasien, termasuk observasi atau rujukan.',
+                            'Risiko bila tindakan tidak dilakukan: keluhan menetap/memburuk, nyeri, infeksi, gangguan fungsi.',
+                            'Prognosis dipengaruhi kondisi gigi/jaringan pendukung, kesehatan pasien, dan kepatuhan perawatan.',
+                        ];
+                        $tindakanGigi = [
+                            'pencabutan'   => 'Pencabutan gigi',
+                            'penambalan'   => 'Penambalan/restorasi',
+                            'scaling'      => 'Scaling',
+                            'bedah_minor'  => 'Tindakan bedah minor',
+                            'saluran_akar' => 'Perawatan saluran akar',
+                            'lainnya'      => 'Lainnya',
+                        ];
+                        $infoUmum = [
+                            'Diagnosis', 'Dasar diagnosis', 'Tindakan kedokteran', 'Indikasi tindakan', 'Tata cara',
+                            'Tujuan tindakan', 'Risiko bila tindakan dilakukan', 'Risiko bila tindakan tidak dilakukan',
+                            'Komplikasi tindakan', 'Prognosis', 'Alternatif dan risiko',
+                        ];
+                    @endphp
+
+                    @if ($daftarIc->isEmpty())
+                        <p class="empty-note">Belum ada Informed Consent.</p>
+                    @else
+                        @foreach ($daftarIc as $k)
+                            @php
+                                $ic   = $informedConsent[$k->id];
+                                $d    = $icPeta($ic);
+                                $nilai = fn ($nama) => trim((string) ($d[$nama][0] ?? ''));
+                                $adalahUmum = $k->poli === 'umum';
+                                $keputusan = $nilai('keputusan');
+                                $ttd = [
+                                    'ttd_dokter' => 'Tanda tangan dokter',
+                                    'ttd_pasien' => 'Tanda tangan pasien/wali',
+                                    'ttd_saksi'  => 'Tanda tangan saksi',
+                                ];
+                                $dicentang = array_map('strval', $d[$adalahUmum ? 'dijelaskan[]' : 'informasi[]'] ?? []);
+                                $tglIc = $adalahUmum
+                                    ? ($nilai('tanggal') ? \Carbon\Carbon::parse($nilai('tanggal'))->format('d-m-Y') : '')
+                                    : $nilai('tempat_tanggal');
+                            @endphp
+
+                            <details class="rp-card ick-acc">
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Kunjungan {{ $noKunjunganIc[$k->id] }} — {{ $namaPoliDari($k->poli) }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '-' }}</span>
+                                        @if ($k->dokter_tampil)
+                                            <span class="ick-pill">{{ $k->dokter_tampil }}</span>
+                                        @endif
+                                        <span class="ick-pill {{ $ic->lengkap ? 'ok' : 'draft' }}">{{ $ic->lengkap ? 'Lengkap' : 'Draft (belum disimpan final)' }}</span>
+                                        @if ($keputusan === 'setuju')
+                                            <span class="ick-pill setuju">Menyetujui tindakan</span>
+                                        @elseif ($keputusan === 'tolak')
+                                            <span class="ick-pill tolak">Menolak tindakan</span>
+                                        @endif
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
+
+                                <div class="rp-body">
+
+                                    {{-- Pemberian informasi --}}
+                                    <div class="ick-sub">Pemberian Informasi</div>
+                                    <div class="dx-list">
+                                        <div class="dx-row"><span class="k">Penerima Informasi</span><span class="v">{{ $nilai('penerima_informasi') ?: '-' }}</span></div>
+                                        @if ($adalahUmum)
+                                            <div class="dx-row"><span class="k">Nama Tindakan</span><span class="v">{{ $nilai('nama_tindakan') ?: '-' }}</span></div>
+                                        @else
+                                            <div class="dx-row">
+                                                <span class="k">Jenis Tindakan</span>
+                                                <span class="v">
+                                                    @php
+                                                        $pilihTindakan = collect($d['tindakan[]'] ?? [])
+                                                            ->map(fn ($kode) => $kode === 'lainnya' && $nilai('tindakan_lainnya')
+                                                                ? 'Lainnya: ' . $nilai('tindakan_lainnya')
+                                                                : ($tindakanGigi[$kode] ?? $kode))
+                                                            ->implode(', ');
+                                                    @endphp
+                                                    {{ $pilihTindakan ?: '-' }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                        <div class="dx-row"><span class="k">{{ $adalahUmum ? 'Area Tindakan' : 'Nomor Gigi / Area Tindakan' }}</span><span class="v">{{ $nilai('area_tindakan') ?: '-' }}</span></div>
+                                    </div>
+
+                                    <div class="table-wrapper" style="margin-top: 12px;">
+                                        <table class="ick-tbl">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50px">No</th>
+                                                    <th>Jenis Informasi</th>
+                                                    @if ($adalahUmum)<th>Isi Informasi</th>@endif
+                                                    <th class="c">Sudah {{ $adalahUmum ? 'Dijelaskan' : 'Disampaikan' }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (($adalahUmum ? $infoUmum : $infoGigi) as $i => $teks)
+                                                    <tr>
+                                                        <td class="no">{{ $i + 1 }}</td>
+                                                        <td>{{ $teks }}</td>
+                                                        @if ($adalahUmum)
+                                                            <td>{{ $nilai('isi_informasi[' . ($i + 1) . ']') ?: '-' }}</td>
+                                                        @endif
+                                                        <td class="c">{{ in_array((string) ($i + 1), $dicentang, true) ? '✔' : '-' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {{-- Data penandatangan --}}
+                                    <div class="ick-sub">Penandatangan (Pasien/Wali)</div>
+                                    <div class="dx-list">
+                                        <div class="dx-row"><span class="k">Nama</span><span class="v">{{ $nilai('ttp_nama') ?: '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Umur</span><span class="v">{{ $nilai('ttp_umur') !== '' ? $nilai('ttp_umur') . ' tahun' : '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Jenis Kelamin</span><span class="v">{{ ['L' => 'Laki-laki', 'P' => 'Perempuan'][$nilai('ttp_jk')] ?? ($nilai('ttp_jk') ?: '-') }}</span></div>
+                                        <div class="dx-row"><span class="k">Alamat</span><span class="v">{{ $nilai('ttp_alamat') ?: '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Hubungan dengan Pasien</span><span class="v">{{ $nilai('ttp_hubungan') ?: '-' }}</span></div>
+                                    </div>
+
+                                    {{-- Keputusan --}}
+                                    <div class="ick-sub">Keputusan</div>
+                                    <div class="dx-list">
+                                        <div class="dx-row">
+                                            <span class="k">Keputusan</span>
+                                            <span class="v">{{ $keputusan === 'setuju' ? 'Menyetujui tindakan' : ($keputusan === 'tolak' ? 'Menolak tindakan' : '-') }}</span>
+                                        </div>
+                                        @if ($keputusan === 'tolak' && $adalahUmum)
+                                            <div class="dx-row"><span class="k">Alasan Penolakan</span><span class="v">{{ $nilai('alasan_penolakan') ?: '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Memahami Risiko Penolakan</span><span class="v">{{ $nilai('paham_penolakan') === '1' ? 'Ya' : 'Belum' }}</span></div>
+                                        @endif
+                                        <div class="dx-row"><span class="k">{{ $adalahUmum ? 'Tanggal' : 'Tempat, Tanggal' }}</span><span class="v">{{ $tglIc ?: '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Pukul</span><span class="v">{{ $nilai('pukul') ?: '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Nama Saksi</span><span class="v">{{ $nilai('nama_saksi') ?: '-' }}</span></div>
+                                    </div>
+
+                                    {{-- Tanda tangan --}}
+                                    @php
+                                        $adaTtd = collect(array_keys($ttd))->filter(fn ($n) => str_starts_with($nilai($n), 'data:image/'));
+                                    @endphp
+                                    @if ($adaTtd->isNotEmpty())
+                                        <div class="ick-sub">Tanda Tangan</div>
+                                        <div class="ick-ttd-grid">
+                                            @foreach ($adaTtd as $n)
+                                                <div class="ick-ttd">
+                                                    <span class="lbl">{{ $ttd[$n] }}</span>
+                                                    <img src="{{ $nilai($n) }}" alt="{{ $ttd[$n] }}">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                </div>
+                            </details>
+                        @endforeach
+                    @endif
                 </div>
 
 

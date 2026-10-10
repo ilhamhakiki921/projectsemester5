@@ -75,8 +75,12 @@ class AutentikasiController extends Controller
             'kunjungan'   => $kunjungan,
             'autentikasi' => $autentikasi,
             'bagianKosong' => $bagianKosong,
+            // Nama dokter diambil dari dokter yang diinput saat pendaftaran kunjungan
             'namaDefault' => $tersimpan?->nama_dokter
-                ?? (Auth::check() ? Auth::user()->nama_lengkap : $kunjungan->dokter),
+                ?: ($kunjungan->dokter_tampil ?: (Auth::check() ? Auth::user()->nama_lengkap : '')),
+            // Jabatan mengikuti poli tempat dokter bertugas (config/dokter.php)
+            'jabatanDefault' => $tersimpan?->jabatan
+                ?: config('dokter.jabatan.' . $poli, 'Dokter ' . ucfirst($poli)),
             'storeUrl'    => route('autentikasi.store', [$poli, $no_rm]),
         ]);
     }
