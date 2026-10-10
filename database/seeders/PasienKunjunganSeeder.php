@@ -13,7 +13,7 @@ class PasienKunjunganSeeder extends Seeder
         $data = [
             [
                 'pasien' => [
-                    'no_rm'         => '00123',
+                    'no_rm'         => '000004',
                     'nama'          => 'Budi Santoso',
                     'jenis_kelamin' => 'Laki-laki',
                     'tanggal_lahir' => '1990-04-20',
@@ -32,7 +32,7 @@ class PasienKunjunganSeeder extends Seeder
             ],
             [
                 'pasien' => [
-                    'no_rm'         => '00124',
+                    'no_rm'         => '000005',
                     'nama'          => 'Siti Aminah',
                     'jenis_kelamin' => 'Perempuan',
                     'tanggal_lahir' => '1995-08-11',
@@ -51,7 +51,7 @@ class PasienKunjunganSeeder extends Seeder
             ],
             [
                 'pasien' => [
-                    'no_rm'         => '00201',
+                    'no_rm'         => '000006',
                     'nama'          => 'Andi Wijaya',
                     'jenis_kelamin' => 'Laki-laki',
                     'tanggal_lahir' => '1988-01-02',

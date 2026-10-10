@@ -355,15 +355,19 @@
                         <div class="form-group">
 
                             <label>
-                                No. RM <span class="required">*</span>
+                                No. RM
                             </label>
 
-                            <input type="text" 
-                            name="no_rm" 
-                            value="{{ old('no_rm') }}" 
-                            placeholder="No. RM" 
-                            required
+                            <input type="text"
+                            value="{{ $noRmBerikutnya ?? '' }}"
+                            placeholder="Otomatis"
+                            readonly
+                            style="background:#f1f5f9; cursor:not-allowed; font-weight:600; letter-spacing:1px;"
                             >
+
+                            <small style="color:#64748b;">
+                                Dibuat otomatis oleh sistem (6 digit).
+                            </small>
 
                         </div>
 

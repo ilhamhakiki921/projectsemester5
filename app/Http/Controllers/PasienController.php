@@ -6,6 +6,7 @@ use App\Models\GeneralConsent;
 use App\Models\Pasien;
 use App\Models\Poli;
 use App\Models\Kunjungan;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -66,7 +67,9 @@ class PasienController extends Controller
     // Form tambah pasien baru
 public function create()
 {
-    return view('pasien.baru');
+    return view('pasien.baru', [
+        'noRmBerikutnya' => $this->noRmBerikutnya(),
+    ]);
 }
  
     // Simpan pasien baru sekaligus kunjungan pertamanya
@@ -81,7 +84,6 @@ public function create()
     public function store(Request $request)
     {
         $request->validate([
-            'no_rm'              => 'nullable|unique:pasien,no_rm',
             'nama'                => 'required',
             'jenis_kelamin'       => 'required',
             'tanggal_lahir'       => 'required|date',
@@ -127,13 +129,55 @@ public function create()
             'general_consent.nama_saksi'          => 'nullable|string|max:255',
         ]);
 
-        $noRm = $request->filled('no_rm') ? $request->no_rm : $this->noRmBerikutnya();
-
+        // No. RM SELALU dibuat otomatis oleh sistem (6 digit, berurutan).
+        // Input 'no_rm' dari form/klien sengaja diabaikan supaya tidak bisa
+        // diisi manual atau dipalsukan.
+        $noRm = null;
         $kunjungan = null;
 
         // Satu transaksi: kalau simpan kunjungan gagal, data pasien ikut dibatalkan
         // (supaya tidak ada pasien "yatim" tanpa kunjungan).
-        DB::transaction(function () use ($request, $noRm, &$kunjungan) {
+        //
+        // Dicoba ulang maksimal 5x kalau ada 2 pendaftaran yang kebetulan
+        // mendapat No. RM yang sama pada waktu bersamaan (bentrok unique).
+        $percobaan = 0;
+        while (true) {
+            try {
+                DB::transaction(function () use ($request, &$noRm, &$kunjungan) {
+                    $noRm = $this->noRmBerikutnya();
+                    $this->simpanPasienBaru($request, $noRm, $kunjungan);
+                });
+                break;
+            } catch (QueryException $e) {
+                $percobaan++;
+                $bentrokRm = ($e->errorInfo[0] ?? null) === '23000'
+                    && str_contains($e->getMessage(), 'no_rm');
+
+                if (!$bentrokRm || $percobaan >= 5) {
+                    throw $e;
+                }
+            }
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success'    => true,
+                'no_rm'      => $noRm,
+                'no_antrian' => $kunjungan->no_antrian,
+                'poli'       => $kunjungan->poli,
+                'message'    => 'Pasien baru berhasil didaftarkan.',
+            ]);
+        }
+
+        return redirect()
+            ->route('pasien.lama')
+            ->with('success', 'Pasien baru berhasil didaftarkan dengan No. RM ' . $noRm . '.');
+    }
+
+    // Isi transaksi simpan pasien baru + general consent + kunjungan pertama.
+    protected function simpanPasienBaru(Request $request, string $noRm, &$kunjungan): void
+    {
+        {
             $pasien = Pasien::create([
                 'no_rm'         => $noRm,
                 'nama'          => $request->nama,
@@ -233,21 +277,7 @@ public function create()
                 'pembayaran'        => $request->pembayaran,
                 'status'            => 'Menunggu',
             ]);
-        });
-
-        if ($request->wantsJson()) {
-            return response()->json([
-                'success'    => true,
-                'no_rm'      => $noRm,
-                'no_antrian' => $kunjungan->no_antrian,
-                'poli'       => $kunjungan->poli,
-                'message'    => 'Pasien baru berhasil didaftarkan.',
-            ]);
         }
- 
-        return redirect()
-            ->route('pasien.lama')
-            ->with('success', 'Pasien baru berhasil didaftarkan.');
     }
 
     // Simpan perubahan data pasien dari modal "Edit Data Pasien" di halaman
@@ -287,18 +317,17 @@ public function create()
         return back()->with('success', 'Data pasien berhasil diperbarui.');
     }
 
-    // No. RM otomatis: nomor terbesar yang sudah ada di database + 1.
+    // No. RM otomatis: 6 digit, berurutan (000001, 000002, 000003, ...).
+    // Diambil dari No. RM numerik terbesar yang sudah ada + 1.
+    // Dipanggil juga dari form "Pasien Baru" untuk menampilkan nomor berikutnya.
     protected function noRmBerikutnya(): string
     {
-        $mulaiDari = 123456; // No. RM awal yang dipakai untuk pasien baru
-
         $terbesar = Pasien::query()
+            ->whereRaw("no_rm REGEXP '^[0-9]+$'")
             ->selectRaw('MAX(CAST(no_rm AS UNSIGNED)) as terbesar')
             ->value('terbesar');
 
-        $terbesar = max((int) $terbesar, $mulaiDari - 1);
-
-        return (string) ($terbesar + 1);
+        return str_pad((string) ((int) $terbesar + 1), 6, '0', STR_PAD_LEFT);
     }
 
     public function cari(Request $request)
