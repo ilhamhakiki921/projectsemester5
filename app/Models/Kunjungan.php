@@ -35,6 +35,22 @@ class Kunjungan extends Model
         return ((int) $terakhir) + 1;
     }
 
+    /**
+     * Nama dokter untuk ditampilkan/diisi otomatis di form pemeriksaan.
+     * Memakai dokter yang diinput saat pendaftaran; kalau kosong atau masih berisi
+     * "Dokter Jaga" (nilai cadangan lama), dipakai dokter bawaan poli (config/dokter.php).
+     */
+    public function getDokterTampilAttribute(): string
+    {
+        $dokter = trim((string) $this->dokter);
+
+        if ($dokter !== '' && strcasecmp($dokter, 'Dokter Jaga') !== 0) {
+            return $dokter;
+        }
+
+        return (string) config('dokter.daftar.' . $this->poli . '.0', $dokter);
+    }
+
     public function pasien()
     {
         return $this->belongsTo(Pasien::class);

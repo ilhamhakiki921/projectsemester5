@@ -2,7 +2,7 @@
 
 @php
     // Identitas terisi otomatis dari data pendaftaran
-    $dokter = $kunjungan->dokter ?? '';
+    $dokter = $kunjungan->dokter_tampil ?? '';
 
     // Jenis informasi (isinya diketik sendiri oleh dokter)
     $daftarInformasi = [

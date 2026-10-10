@@ -35,9 +35,10 @@
     p.ket{font-size:13px;line-height:1.55;margin:0 0 6px}
 
     .ttd{display:flex;justify-content:flex-end;margin-top:26px;font-size:13px}
-    .ttd > div{width:62mm;text-align:center}
-    .ttd .gambar{height:90px;display:flex;align-items:center;justify-content:center}
-    .ttd .gambar img{max-width:100%;max-height:90px}
+    .ttd > div{width:72mm;text-align:center}
+    .ttd .gambar{height:130px;margin:6px 0 4px;display:flex;align-items:center;justify-content:center}
+    /* Tanda tangan dipangkas dari ruang kosong lalu diperbesar mengisi kotak (lihat skrip di bawah) */
+    .ttd .gambar img{display:block;height:100%;width:auto;max-width:100%;object-fit:contain}
     .ttd .nm{font-weight:bold;text-decoration:underline}
     .ttd .jb{font-size:12px}
 
@@ -104,7 +105,7 @@
             Ngawi, {{ $waktu->translatedFormat('j F Y') }}<br>Dokter/Petugas pemeriksa,
             <div class="gambar">
                 @if ($autentikasi->tanda_tangan)
-                    <img src="{{ $autentikasi->tanda_tangan }}" alt="Tanda tangan">
+                    <img id="ttdImg" src="{{ $autentikasi->tanda_tangan }}" alt="Tanda tangan">
                 @endif
             </div>
             <div class="nm">{{ $autentikasi->nama_dokter }}</div>
@@ -112,5 +113,48 @@
         </div>
     </div>
 </div>
+<script>
+// Pangkas ruang kosong di sekeliling tanda tangan supaya goresannya tampil besar dan rapi saat dicetak
+(function () {
+    var img = document.getElementById('ttdImg');
+    if (!img) return;
+
+    function pangkas() {
+        try {
+            var w = img.naturalWidth, h = img.naturalHeight;
+            if (!w || !h) return;
+            var c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            var x = c.getContext('2d');
+            x.drawImage(img, 0, 0);
+            var d = x.getImageData(0, 0, w, h).data;
+            var minX = w, minY = h, maxX = -1, maxY = -1;
+            for (var yy = 0; yy < h; yy++) {
+                for (var xx = 0; xx < w; xx++) {
+                    var i = (yy * w + xx) * 4;
+                    // piksel "tinta": tidak transparan dan bukan putih
+                    if (d[i + 3] > 20 && (d[i] + d[i + 1] + d[i + 2]) < 720) {
+                        if (xx < minX) minX = xx;
+                        if (xx > maxX) maxX = xx;
+                        if (yy < minY) minY = yy;
+                        if (yy > maxY) maxY = yy;
+                    }
+                }
+            }
+            if (maxX < 0) return;                      // kanvas kosong, biarkan apa adanya
+            var pad = 8;
+            minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+            maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+            var cw = maxX - minX + 1, ch = maxY - minY + 1;
+            var out = document.createElement('canvas');
+            out.width = cw; out.height = ch;
+            out.getContext('2d').drawImage(c, minX, minY, cw, ch, 0, 0, cw, ch);
+            img.src = out.toDataURL('image/png');
+        } catch (e) { /* gagal memangkas: tampilkan gambar asli */ }
+    }
+
+    if (img.complete) pangkas(); else img.addEventListener('load', pangkas, { once: true });
+})();
+</script>
 </body>
 </html>

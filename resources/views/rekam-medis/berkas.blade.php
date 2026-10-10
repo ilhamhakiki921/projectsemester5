@@ -1591,8 +1591,8 @@
                                     <span class="ick-judul">Kunjungan {{ $noKunjunganIc[$k->id] }} — {{ $namaPoliDari($k->poli) }}</span>
                                     <span class="ick-meta">
                                         <span class="ick-pill">{{ $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '-' }}</span>
-                                        @if ($k->dokter)
-                                            <span class="ick-pill">{{ $k->dokter }}</span>
+                                        @if ($k->dokter_tampil)
+                                            <span class="ick-pill">{{ $k->dokter_tampil }}</span>
                                         @endif
                                         <span class="ick-pill {{ $ic->lengkap ? 'ok' : 'draft' }}">{{ $ic->lengkap ? 'Lengkap' : 'Draft (belum disimpan final)' }}</span>
                                         @if ($keputusan === 'setuju')

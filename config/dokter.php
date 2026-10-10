@@ -22,4 +22,18 @@ return [
         'jiwa'         => ['dr. Devi Anggraini P., Sp.KJ'],
         'fisioterapi'  => ['Veti Novitasari, Amd.Ft'],
     ],
+
+    // Jabatan dokter/petugas per poli (mengisi kolom Jabatan otomatis di tab Autentikasi).
+    'jabatan' => [
+        'umum'         => 'Dokter Umum',
+        'gigi'         => 'Dokter Gigi',
+        'dalam'        => 'Dokter Spesialis Penyakit Dalam',
+        'jantung'      => 'Dokter Spesialis Jantung dan Pembuluh Darah',
+        'saraf'        => 'Dokter Spesialis Saraf',
+        'kandungan'    => 'Dokter Spesialis Kebidanan dan Kandungan',
+        'radiologi'    => 'Dokter Spesialis Radiologi',
+        'mikrobiologi' => 'Dokter Spesialis Mikrobiologi Klinik',
+        'jiwa'         => 'Dokter Spesialis Kedokteran Jiwa',
+        'fisioterapi'  => 'Fisioterapis',
+    ],
 ];
