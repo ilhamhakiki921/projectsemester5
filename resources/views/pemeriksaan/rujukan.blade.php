@@ -58,6 +58,16 @@
     .rj-toast.err{border-color:#ff5a5f}
     .rj-toast.show{opacity:1;transform:none}
 
+    /* Tanda tangan digital */
+    .rj-ttd-label{margin:18px 0 6px;font-size:11px;font-weight:700;color:#111}
+    .rj-pad{border:1px solid #333;border-radius:8px;overflow:hidden;background:#fff}
+    .rj-pad .area{position:relative;height:170px;background:#f3f3f3}
+    .rj-pad canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
+    .rj-pad .bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-top:1px solid #bdbdbd;background:#ececec}
+    .rj-pad .hint{font-size:9.5px;color:#777}
+    .rj-pad .clear{border:0;background:none;color:#c00000;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+    .rj-pad .clear:hover{text-decoration:underline}
+
     @media (max-width:800px){.rj-pilih,.rj-grid2{grid-template-columns:1fr}}
 </style>
 @endpush
@@ -145,6 +155,16 @@
             <input type="text" id="rjDokter" class="sm" name="dokter_perujuk" value="{{ $dokterPerujuk }}">
         </div>
 
+        {{-- Tanda tangan digital (berlaku untuk rujukan Internal maupun Eksternal) --}}
+        <div class="rj-ttd-label">Tanda Tangan Dokter/Petugas Perujuk <span style="color:#c00000">*</span></div>
+        <div class="rj-pad">
+            <div class="area"><canvas id="rjCanvas"></canvas></div>
+            <div class="bar">
+                <span class="hint">Gunakan mouse/jari untuk menandatangani</span>
+                <button type="button" class="clear" id="rjTtdClear">Bersihkan</button>
+            </div>
+        </div>
+
         <div class="rj-act">
             <button type="button" class="rj-btn hapus" id="rjHapus">Hapus</button>
             <button type="button" class="rj-btn simpan" id="rjSimpan">Simpan</button>
@@ -188,6 +208,41 @@
     form.querySelectorAll('input[name="jenis"]').forEach(r => r.addEventListener('change', () => pilihJenis(r.value)));
     pilihJenis('Internal');
 
+    // ---------- Kanvas tanda tangan ----------
+    const canvas = document.getElementById('rjCanvas'), ctx = canvas.getContext('2d');
+    let menggambar = false, adaGoresan = false;
+
+    function siapkanKanvas() {
+        const r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+        canvas.width  = Math.round(r.width * dpr);
+        canvas.height = Math.round(r.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111';
+        adaGoresan = false;
+    }
+    siapkanKanvas();
+    window.addEventListener('load', siapkanKanvas);   // ukur ulang setelah layout selesai (hanya kalau belum ada goresan)
+
+    const titik = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+
+    canvas.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        canvas.setPointerCapture(e.pointerId);
+        menggambar = true;
+        const [x, y] = titik(e);
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 0.01, y + 0.01); ctx.stroke();
+        adaGoresan = true;
+    });
+    canvas.addEventListener('pointermove', e => {
+        if (!menggambar) return;
+        const [x, y] = titik(e);
+        ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
+        canvas.addEventListener(ev, () => { menggambar = false; ctx.beginPath(); }));
+
+    document.getElementById('rjTtdClear').addEventListener('click', siapkanKanvas);
+
     function render() {
         if (!data.length) {
             rows.innerHTML = '<tr class="empty"><td colspan="7">Belum ada surat rujukan.</td></tr>';
@@ -226,15 +281,24 @@
     function kosongkanForm() {
         form.reset();
         pilihJenis(form.querySelector('input[name="jenis"]:checked').value);
+        siapkanKanvas();
+    }
+
+    // Data form + gambar tanda tangan (PNG base64)
+    function dataKirim() {
+        const fd = new FormData(form);
+        fd.append('tanda_tangan', canvas.toDataURL('image/png'));
+        return fd;
     }
 
     // cetak = true  -> simpan lalu buka surat rujukan untuk dicetak (tombol "Cetak Rujukan")
     // cetak = false -> hanya simpan, datanya masuk ke tabel di atas (tombol "Simpan")
     async function kirim(cetak) {
+        if (!adaGoresan) return toast('Tanda tangan dokter/petugas perujuk wajib diisi.', true);
         kunciTombol(true);
         const jendela = cetak ? window.open('', '_blank') : null;   // dibuka sekarang supaya tidak diblokir popup-blocker
         try {
-            const res = await fetch(storeUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, body: new FormData(form) });
+            const res = await fetch(storeUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, body: dataKirim() });
             if (res.status === 422) {
                 const j = await res.json();
                 const pesan = Object.values(j.errors || {})[0]?.[0] || 'Data belum lengkap';

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InformedConsent;
 use App\Models\Poli;
 use App\Models\Kunjungan;
 use App\Models\Obat;
@@ -257,6 +258,14 @@ class PemeriksaanController extends Controller
         // Tiap poli punya formulir sendiri: Poli Umum memakai tampilan khusus (isi informasi diketik dokter)
         $tampilan = $poli === 'umum' ? 'pemeriksaan.informed-consent-umum' : 'pemeriksaan.informed-consent';
 
+        // Isian Informed Consent yang sudah pernah disimpan dipulihkan lagi (tidak perlu input ulang)
+        $icData = null;
+        try {
+            $icData = optional(InformedConsent::where('kunjungan_id', $kunjungan->id)->first())->data;
+        } catch (\Throwable $e) {
+            report($e);   // tabel informed_consent belum dibuat (migrasi belum dijalankan)
+        }
+
         return view($tampilan, [
             'poli'      => $poli,
             'rm'        => $no_rm,
@@ -264,7 +273,43 @@ class PemeriksaanController extends Controller
             'kunjungan' => $kunjungan,
             'pasien'    => $kunjungan->pasien,
             'rekam'     => $kunjungan->rekamMedis,
+            'icData'    => $icData,
         ]);
+    }
+
+    /**
+     * Simpan isian form Informed Consent (dipanggil otomatis saat mengetik / pindah tab,
+     * dan saat tombol Simpan ditekan). Isian dipulihkan lagi saat halaman dibuka kembali.
+     */
+    public function simpanInformedConsent(Request $request, $poli, $no_rm)
+    {
+        abort_unless(RekamMedis::poliPunyaInformedConsent($poli), 404);
+
+        $kunjungan = $this->carikanKunjungan($poli, $no_rm);
+
+        $request->validate([
+            'data'     => 'required|array|max:600',
+            'data.*'   => 'array|size:2',
+            'data.*.0' => 'required|string|max:200',
+            'data.*.1' => 'nullable|string|max:900000',
+            'lengkap'  => 'nullable|boolean',
+        ]);
+
+        $data = collect($request->input('data'))
+            ->map(fn ($p) => [(string) $p[0], isset($p[1]) ? (string) $p[1] : ''])
+            ->values()
+            ->all();
+
+        InformedConsent::updateOrCreate(
+            ['kunjungan_id' => $kunjungan->id],
+            [
+                'poli'    => $poli,
+                'data'    => $data,
+                'lengkap' => $request->boolean('lengkap'),
+            ]
+        );
+
+        return response()->json(['ok' => true]);
     }
 
     // ==========================================================

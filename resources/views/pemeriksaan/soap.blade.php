@@ -137,20 +137,33 @@
 
     .tab-item[hidden] { display: none; }
 
-    /* Pilihan Informed Consent */
-    .field .ic-tanya { margin: 0 0 8px; font-size: 11px; color: #333; }
-    .field .ic-pilihan { display: flex; gap: 10px; }
-    .field label.ic-opt { display: inline-block; margin: 0; cursor: pointer; }
-    .ic-opt input { position: absolute; opacity: 0; pointer-events: none; }
-    .ic-opt span {
-        display: inline-flex; align-items: center; justify-content: center;
-        min-width: 72px; height: 34px; padding: 0 18px;
-        border: 1px solid #bdbdbd; border-radius: 6px; background: #fff;
-        font-size: 11px; font-weight: 600; color: #222;
+    /* Pop-up Informed Consent (muncul saat Simpan SOAP diklik) */
+    .ic-overlay {
+        position: fixed; inset: 0; z-index: 9999;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(0, 0, 0, .55); padding: 16px;
     }
-    .ic-opt input:checked + span { border-color: #c00000; background: #fdecec; color: #c00000; box-shadow: 0 0 0 1px #c00000; }
-    .ic-opt input:focus-visible + span { outline: 2px solid #c00000; outline-offset: 2px; }
-    .field .ic-catatan { display: block; margin-top: 8px; font-size: 9.5px; color: #777; }
+    .ic-overlay.show { display: flex; }
+    .ic-modal {
+        width: 100%; max-width: 420px; background: #fff; border-radius: 14px;
+        padding: 28px 26px 22px; text-align: center;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
+        animation: icMasuk .18s ease-out;
+    }
+    @keyframes icMasuk { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+    .ic-modal h3 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #c00000; }
+    .ic-modal p { margin: 0 0 22px; font-size: 13px; color: #222; line-height: 1.5; }
+    .ic-modal .ic-aksi { display: flex; gap: 12px; justify-content: center; }
+    .ic-modal button {
+        min-width: 130px; height: 40px; padding: 0 20px; border-radius: 8px;
+        font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .ic-modal .ic-ya { border: 0; background: #c00000; color: #fff; }
+    .ic-modal .ic-ya:hover { background: #a00000; }
+    .ic-modal .ic-tidak { border: 1px solid #bdbdbd; background: #fff; color: #222; }
+    .ic-modal .ic-tidak:hover { background: #f1f1f1; }
+    .ic-modal button:focus-visible { outline: 2px solid #c00000; outline-offset: 2px; }
+    .ic-modal button:disabled { opacity: .6; cursor: wait; }
 
     .tab-item.active {
         background: #7a0000;
@@ -309,16 +322,7 @@
             <div class="tabs">
                 <a href="{{ route('pemeriksaan.asesmen', [$poli, $pasien->no_rm]) }}" class="tab-item">Anamnesa</a>
                 <span class="tab-item active">SOAP</span>
-                @if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
-                @php
-                    // Pilihan terakhir (Ya/Tidak) dipertahankan saat halaman SOAP dibuka lagi
-                    $icYa = old('butuh_informed_consent') !== null
-                        ? old('butuh_informed_consent') === 'ya'
-                        : \App\Models\RekamMedis::butuhInformedConsent($poli, $pasien->no_rm);
-                @endphp
-                <a href="{{ route('pemeriksaan.informed-consent', [$poli, $pasien->no_rm]) }}" class="tab-item" id="tabInformedConsent"
-                   @unless ($icYa) hidden @endunless>Informed Consent</a>
-                @endif
+                {{-- Tab Informed Consent tidak ditampilkan di sini: baru muncul di halaman Informed Consent setelah memilih "Ya" di pop-up Simpan SOAP --}}
                 <a href="{{ route('pemeriksaan.diagnosa', [$poli, $pasien->no_rm]) }}" class="tab-item">Diagnosa</a>
                 <a href="{{ route('pemeriksaan.resep', [$poli, $pasien->no_rm]) }}" class="tab-item">Resep</a>
                 <a href="{{ route('pemeriksaan.clinical-pathway', [$poli, $pasien->no_rm]) }}" class="tab-item">Clinical Pathway</a>
@@ -373,26 +377,8 @@
                     </div>
 
                     @if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
-                    @php
-                        $icAwal = $icYa ? 'ya' : 'tidak';
-                    @endphp
-                    <div class="field-group">
-                        <div class="field">
-                            <label>Informed Consent</label>
-                            <p class="ic-tanya">Apakah pasien membutuhkan Informed Consent?</p>
-                            <div class="ic-pilihan">
-                                <label class="ic-opt">
-                                    <input type="radio" name="butuh_informed_consent" value="ya" @checked($icAwal === 'ya')>
-                                    <span>Ya</span>
-                                </label>
-                                <label class="ic-opt">
-                                    <input type="radio" name="butuh_informed_consent" value="tidak" @checked($icAwal !== 'ya')>
-                                    <span>Tidak</span>
-                                </label>
-                            </div>
-                            <small class="ic-catatan">Pilih "Ya" untuk menampilkan tab Informed Consent di antara SOAP dan Diagnosa.</small>
-                        </div>
-                    </div>
+                    {{-- Diisi lewat pop-up "Apakah pasien membutuhkan Informed Consent?" saat Simpan SOAP diklik --}}
+                    <input type="hidden" name="butuh_informed_consent" id="inputButuhIc" value="tidak">
                     @endif
 
                     <div class="form-footer">
@@ -411,6 +397,19 @@
 
 </div>
 
+@if (\App\Models\RekamMedis::poliPunyaInformedConsent($poli))
+<div class="ic-overlay" id="icOverlay" role="dialog" aria-modal="true" aria-labelledby="icJudul">
+    <div class="ic-modal">
+        <h3 id="icJudul">Informed Consent</h3>
+        <p>Apakah pasien membutuhkan Informed Consent?</p>
+        <div class="ic-aksi">
+            <button type="button" class="ic-tidak" id="icTidak">Tidak</button>
+            <button type="button" class="ic-ya" id="icYa">Ya</button>
+        </div>
+    </div>
+</div>
+@endif
+
 <script>
     document.querySelectorAll('#form-soap [required]').forEach(function (field) {
         field.addEventListener('invalid', function () {
@@ -421,41 +420,46 @@
         });
     });
 
-    // Pilih "Ya" -> tab Informed Consent langsung muncul (tersimpan permanen setelah Simpan SOAP)
-    document.querySelectorAll('input[name="butuh_informed_consent"]').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            var tab = document.getElementById('tabInformedConsent');
-            if (! tab) return;
+    // Simpan SOAP -> pop-up "butuh Informed Consent?"
+    //   Tidak -> pop-up tertutup, SOAP disimpan, lanjut ke Diagnosa
+    //   Ya    -> SOAP disimpan, lanjut ke halaman Informed Consent
+    (function () {
+        var form    = document.getElementById('form-soap');
+        var overlay = document.getElementById('icOverlay');
+        var input   = document.getElementById('inputButuhIc');
+        if (! overlay || ! input) return;          // poli ini tidak punya Informed Consent -> simpan langsung
 
-            var tampil = (this.value === 'ya');
-            tab.hidden = ! tampil;
+        var btnYa = document.getElementById('icYa'), btnTidak = document.getElementById('icTidak');
+        var terkirim = false;
 
-            // Simpan pilihan langsung ke database supaya tab bisa diklik sebelum Simpan SOAP
-            fetch(@json(route('pemeriksaan.informed-consent.status', [$poli, $pasien->no_rm])), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('#form-soap input[name="_token"]').value
-                },
-                body: JSON.stringify({ butuh_informed_consent: this.value })
-            }).catch(function () {});
+        function buka()  { overlay.classList.add('show'); btnTidak.focus(); }
+        function tutup() { overlay.classList.remove('show'); }
 
-            // Klik "Ya" -> gulir ke atas supaya tab Informed Consent yang baru muncul terlihat
-            if (tampil) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                [document.documentElement, document.body, document.querySelector('.main')].forEach(function (el) {
-                    if (el && el.scrollTo) el.scrollTo({ top: 0, behavior: 'smooth' });
-                });
+        function pilih(nilai) {
+            if (terkirim) return;
+            terkirim = true;
+            input.value = nilai;
+            btnYa.disabled = btnTidak.disabled = true;
+            tutup();
+            form.submit();
+        }
 
-                // Sorot sebentar supaya jelas tab Informed Consent baru muncul
-                tab.animate(
-                    [{ boxShadow: '0 0 0 0 rgba(180,0,0,.55)' }, { boxShadow: '0 0 0 10px rgba(180,0,0,0)' }],
-                    { duration: 900, iterations: 2 }
-                );
-            }
+        // Validasi kolom wajib tetap jalan dulu; pop-up baru muncul kalau semua sudah terisi
+        form.addEventListener('submit', function (e) {
+            if (terkirim) return;
+            e.preventDefault();
+            buka();
         });
-    });
+
+        btnYa.addEventListener('click', function () { pilih('ya'); });
+        btnTidak.addEventListener('click', function () { pilih('tidak'); });
+
+        // Klik di luar kotak / tekan Esc = batal (kembali ke form, SOAP belum disimpan)
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) tutup(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('show')) tutup();
+        });
+    })();
 
     // Tekan Enter -> pindah ke kolom berikutnya (Shift+Enter tetap bisa bikin baris baru di textarea)
     (function () {

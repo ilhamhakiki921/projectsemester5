@@ -20,6 +20,7 @@ class SuratRujukan extends Model
         'diagnosa',
         'terapi',
         'dokter_perujuk',
+        'tanda_tangan',
         'tanggal_surat',
     ];
 

@@ -465,9 +465,17 @@
             tampil('err', 'Lengkapi dulu: ' + kurang.join(', ') + '.');
             return;
         }
-        // TODO: kirim ke server setelah route & tabel penyimpanan Informed Consent dibuat
-        tampil('ok', 'Formulir Informed Consent lengkap.');
+        // Simpan ke database: isian tetap ada saat halaman ini dibuka lagi
+        if (window.icSimpanServer) {
+            window.icSimpanServer(true).then(function (ok) {
+                tampil(ok ? 'ok' : 'err', ok ? 'Informed Consent tersimpan.' : 'Gagal menyimpan Informed Consent, coba lagi.');
+            });
+        } else {
+            tampil('ok', 'Formulir Informed Consent lengkap.');
+        }
     });
 })();
 </script>
 @endpush
+
+@include('pemeriksaan._ic-simpan', ['poli' => $poli, 'rm' => $rm, 'icData' => $icData ?? null])

@@ -25,8 +25,11 @@
     p{font-size:13px;line-height:1.5;margin:0 0 10px}
     .lbl{font-weight:bold;font-size:13px;margin:12px 0 3px}
     .box{white-space:pre-wrap;font-size:13px;line-height:1.5;min-height:22px}
-    .ttd{margin:36px 0 0 auto;width:230px;text-align:center;font-size:13px}
+    .ttd{margin:36px 0 0 auto;width:260px;text-align:center;font-size:13px;page-break-inside:avoid}
     .ttd .nm{margin-top:64px;font-weight:bold;text-decoration:underline}
+    .ttd .img{height:100px;margin:8px 0 4px;display:flex;align-items:center;justify-content:center}
+    .ttd .img img{max-height:100px;max-width:100%;width:auto;height:auto;display:block}
+    .ttd .img + .nm{margin-top:0}
     .bar{position:fixed;top:10px;right:14px;display:flex;gap:8px}
     .bar button{border:0;border-radius:6px;padding:8px 16px;font:600 12px sans-serif;cursor:pointer;color:#fff;background:#1717d6}
     .bar button.x{background:#666}
@@ -85,8 +88,49 @@
 
     <div class="ttd">
         Ngawi, {{ $surat->tanggal_surat->locale('id')->translatedFormat('j F Y') }}<br>Dokter/Petugas Perujuk,
+        @if ($surat->tanda_tangan)
+            <div class="img"><img id="ttdImg" src="{{ $surat->tanda_tangan }}" alt="Tanda tangan"></div>
+        @endif
         <div class="nm">{{ $surat->dokter_perujuk }}</div>
     </div>
 </div>
+<script>
+// Potong gambar tanda tangan ke area goresan saja supaya tampil besar & rapi (kanvas aslinya lebar dan banyak ruang kosong)
+(function () {
+    var img = document.getElementById('ttdImg');
+    if (!img) return;
+    var sudah = false;
+
+    function rapikan() {
+        if (sudah || !img.naturalWidth) return;
+        sudah = true;
+        try {
+            var w = img.naturalWidth, h = img.naturalHeight;
+            var c = document.createElement('canvas'); c.width = w; c.height = h;
+            var x = c.getContext('2d'); x.drawImage(img, 0, 0);
+            var d = x.getImageData(0, 0, w, h).data;
+            var minX = w, minY = h, maxX = -1, maxY = -1;
+            for (var yy = 0; yy < h; yy++) {
+                for (var xx = 0; xx < w; xx++) {
+                    if (d[(yy * w + xx) * 4 + 3] > 10) {
+                        if (xx < minX) minX = xx; if (xx > maxX) maxX = xx;
+                        if (yy < minY) minY = yy; if (yy > maxY) maxY = yy;
+                    }
+                }
+            }
+            if (maxX < 0) return;                       // kosong, biarkan apa adanya
+            var pad = Math.round(Math.max(w, h) * 0.015) + 2;
+            minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+            maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+            var cw = maxX - minX + 1, ch = maxY - minY + 1;
+            var o = document.createElement('canvas'); o.width = cw; o.height = ch;
+            o.getContext('2d').drawImage(c, minX, minY, cw, ch, 0, 0, cw, ch);
+            img.src = o.toDataURL('image/png');
+        } catch (e) { /* gagal memotong: tetap tampilkan gambar asli */ }
+    }
+
+    if (img.complete) rapikan(); else img.addEventListener('load', rapikan);
+})();
+</script>
 </body>
 </html>

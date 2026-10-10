@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClinicalPathway;
 use App\Models\Poli;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
@@ -43,6 +44,36 @@ class RujukanController extends Controller
         );
     }
 
+    /**
+     * Dokter perujuk otomatis = DPJP yang sudah diinput di Clinical Pathway
+     * (diambil dari kunjungan terakhir yang DPJP-nya terisi).
+     * Kalau Clinical Pathway belum diisi, pakai user yang login / dokter kunjungan.
+     */
+    protected function dokterPerujuk($poli, $no_rm, Kunjungan $kunjungan): ?string
+    {
+        $dpjp = null;
+
+        try {
+            $pathway = ClinicalPathway::with('kunjungan')
+                ->where('no_rm', $no_rm)->where('poli', $poli)->first();
+
+            $dpjp = optional(
+                $pathway?->kunjungan
+                    ->filter(fn ($k) => filled($k->dpjp))
+                    ->sortByDesc('urutan')
+                    ->first()
+            )->dpjp;
+        } catch (\Throwable $e) {
+            // tabel Clinical Pathway belum ada / error lain: pakai cadangan di bawah
+        }
+
+        if (filled($dpjp)) {
+            return $dpjp;
+        }
+
+        return Auth::check() ? Auth::user()->nama_lengkap : $kunjungan->dokter;
+    }
+
     public function index($poli, $no_rm)
     {
         [$pasien, $kunjungan] = $this->konteks($poli, $no_rm);
@@ -59,7 +90,7 @@ class RujukanController extends Controller
             'pasien'      => $pasien,
             'daftarPoli'  => collect($this->daftarPoli)->except($poli)->all(),
             'resume'      => $this->resume($kunjungan),
-            'dokterPerujuk' => Auth::check() ? Auth::user()->nama_lengkap : $kunjungan->dokter,
+            'dokterPerujuk' => $this->dokterPerujuk($poli, $no_rm, $kunjungan),
             'storeUrl'    => route('rujukan.store', [$poli, $no_rm]),
             'riwayat'     => $riwayat,
         ]);
@@ -77,6 +108,14 @@ class RujukanController extends Controller
             'diagnosa'       => 'nullable|string|max:1000',
             'terapi'         => 'nullable|string|max:3000',
             'dokter_perujuk' => 'required|string|max:150',
+            'tanda_tangan'   => [
+                'required', 'string', 'max:700000',
+                function ($attribute, $value, $fail) {
+                    if (! str_starts_with($value, 'data:image/png;base64,')) {
+                        $fail('Tanda tangan tidak valid.');
+                    }
+                },
+            ],
         ];
 
         if ($internal) {
@@ -89,6 +128,7 @@ class RujukanController extends Controller
 
         $data = $request->validate($rules, [
             'required'               => ':attribute wajib diisi.',
+            'tanda_tangan.max'       => 'Gambar tanda tangan terlalu besar.',
             'poli_tujuan.in'         => 'Poli tujuan tidak valid.',
             'jadwal_datang.after_or_equal' => 'Jadwal datang tidak boleh sebelum hari ini.',
         ], [
@@ -97,6 +137,7 @@ class RujukanController extends Controller
             'ditujukan_kepada' => 'Ditujukan kepada',
             'nama_faskes'      => 'Nama rumah sakit / fasyankes',
             'dokter_perujuk'   => 'Dokter / petugas perujuk',
+            'tanda_tangan'     => 'Tanda tangan',
         ]);
 
         $surat = DB::transaction(function () use ($data, $internal, $kunjungan) {
@@ -128,6 +169,7 @@ class RujukanController extends Controller
                 'diagnosa'            => $data['diagnosa'] ?? null,
                 'terapi'              => $data['terapi'] ?? null,
                 'dokter_perujuk'      => $data['dokter_perujuk'],
+                'tanda_tangan'        => $data['tanda_tangan'],
                 'tanggal_surat'       => now()->toDateString(),
             ]);
         });
