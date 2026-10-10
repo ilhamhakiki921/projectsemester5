@@ -21,6 +21,9 @@ Route::prefix('pemeriksaan/{poli}/{no_rm}')->group(function () {
 
     // Surat Medis (tab setelah Rujukan, sebelum Autentikasi)
     Route::get('surat-medis', [SuratMedisController::class, 'index'])->name('surat-medis.index');
+    Route::post('surat-medis', [SuratMedisController::class, 'store'])->name('surat-medis.store');
+    Route::get('surat-medis/{id}/cetak', [SuratMedisController::class, 'cetak'])->name('surat-medis.cetak');
+    Route::get('surat-medis/{id}/unduh', [SuratMedisController::class, 'unduh'])->name('surat-medis.unduh');
 
     // Autentikasi
     Route::get('autentikasi', [AutentikasiController::class, 'index'])->name('autentikasi.index');
