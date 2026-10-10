@@ -45,6 +45,11 @@ class Kunjungan extends Model
         return $this->hasOne(RekamMedis::class);
     }
 
+    public function informedConsent()
+    {
+        return $this->hasOne(InformedConsent::class);
+    }
+
     public function resep()
     {
         return $this->hasMany(Resep::class);
