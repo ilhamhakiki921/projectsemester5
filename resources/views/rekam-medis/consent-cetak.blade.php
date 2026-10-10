@@ -40,7 +40,10 @@
     .ttd > div{width:30%;text-align:center}
     .ttd .garis{height:64px;display:flex;align-items:center;justify-content:center}
     .ttd .garis img{max-height:60px;max-width:100%}
-    .ttd .nm{font-weight:bold;text-decoration:underline;min-height:18px}
+    .ttd .garis{border-bottom:1px solid #000;margin:0 6px}
+    .ttd .nm{font-weight:bold;min-height:18px;margin-top:4px;word-break:break-word}
+    .ttd .ket{font-size:10px;color:#444}
+    .catatan{border:1px solid #000;padding:6px 10px;font-size:11.5px;line-height:1.45;margin-top:14px}
     .ttd .peran{font-size:11px;margin-top:2px}
 
     .bar{position:fixed;top:10px;right:14px;display:flex;gap:8px}
@@ -126,27 +129,35 @@
 
     <p style="margin-top:16px">Demikian persetujuan umum ini dibuat dengan sebenar-benarnya dan berlaku untuk seluruh kunjungan pasien.</p>
 
+    <div class="catatan">
+        <strong>Catatan:</strong> General Consent hanya diberikan satu kali kepada <strong>pasien baru</strong>.
+        Pasien lama tidak diberikan General Consent pada kunjungan berikutnya.
+    </div>
+
     @php
-        $namaTtd = fn ($v) => filled($v) ? $v : '(.............................)';
+        $namaTtd = fn ($v) => '( ' . (filled($v) ? $v : '..........................') . ' )';
     @endphp
     <div class="ttd">
         <div>
             Penandatangan
             <div class="garis">@if ($consent && $consent->ttd_penanggung_jawab)<img src="{{ $consent->ttd_penanggung_jawab }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $namaTtd($consent->nama_penyetuju ?? null) }}</div>
+            <div class="ket">Nama terang</div>
             <div class="peran">{{ $consent ? ($pemberiWali ? 'Wali pasien' . ($consent->hubungan ? ' (' . $consent->hubungan . ')' : '') : 'Pasien') : '' }}</div>
         </div>
         <div>
             Saksi
             <div class="garis">@if ($consent && $consent->ttd_saksi)<img src="{{ $consent->ttd_saksi }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $namaTtd($consent->saksi ?? null) }}</div>
+            <div class="ket">Nama terang</div>
             <div class="peran">Saksi pasien</div>
         </div>
         <div>
             Ngawi, {{ ($tglConsent ?? now())->locale('id')->translatedFormat('j F Y') }}<br>Petugas yang mencatat,
             <div class="garis">@if ($consent && $consent->ttd_petugas)<img src="{{ $consent->ttd_petugas }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $namaTtd($consent->petugas_pencatat ?? null) }}</div>
-            <div class="peran">Petugas rawat inap</div>
+            <div class="ket">Nama terang</div>
+            <div class="peran">Petugas yang mencatat</div>
         </div>
     </div>
 </div>
