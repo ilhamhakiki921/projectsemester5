@@ -34,6 +34,13 @@ class WilayahController extends Controller
         ['id' => '98', 'name' => 'PAPUA BARAT DAYA'],
     ];
 
+    // Desa/kelurahan yang tidak ada di dataset emsifa. Key = id kecamatan.
+protected array $kelurahanTambahan = [
+    '3521120' => [ // Kec. Paron, Ngawi
+        ['id' => '3521120004', 'name' => 'SEMEN'],
+    ],
+];
+
     public function provinsi()
     {
         $data = Cache::remember('wilayah.provinsi', now()->addDays(30), function () {
@@ -77,9 +84,10 @@ public function kelurahan(string $kecamatanId)
         return $res->successful() ? $res->json() : [];
     });
 
+    $data = array_merge($data, $this->kelurahanTambahan[$kecamatanId] ?? []);
+
     return response()->json($this->rapikanNama($data));
 }
-
     // Dataset asli semua huruf besar ("JAWA TIMUR") -> dirapikan jadi
     // "Jawa Timur" supaya enak dibaca di form.
     protected function rapikanNama(array $data): array
