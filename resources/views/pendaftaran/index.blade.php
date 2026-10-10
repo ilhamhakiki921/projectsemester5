@@ -368,6 +368,14 @@ body.sidebar-collapsed .main {
     }
 
 
+    /* Status "Sudah Terdaftar" -> hijau */
+    .status-terdaftar {
+        color: #15803d;
+        background: #e8f7ee;
+        font-weight: 600;
+    }
+
+
     .status-diperiksa {
         color: #2875ad;
         background: #e5f1fa;
