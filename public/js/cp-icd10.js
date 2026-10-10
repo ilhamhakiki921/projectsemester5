@@ -73,7 +73,7 @@
         if (!active || !it) return;
         var p = pasangan(active);
         if (p.nama) { p.nama.value = it.title; p.nama.dataset.icdPicked = it.title; }
-        if (p.kode) p.kode.value = it.code;
+        if (p.kode) p.kode.value = active.hasAttribute('data-cp-gabung') ? (it.code + ' ' + it.title) : it.code;
         hide();
         fire(p.nama); fire(p.kode);
     }
@@ -81,7 +81,7 @@
     function search(q) {
         if (controller) controller.abort();
         controller = new AbortController();
-        fetch(url + '?q=' + encodeURIComponent(q), {
+  fetch((active.dataset.cpUrl || url) + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json' },
             signal: controller.signal
         })

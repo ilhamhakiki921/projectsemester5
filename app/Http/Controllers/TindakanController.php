@@ -36,6 +36,41 @@ class TindakanController extends Controller
         ]);
     }
 
+public function cari(Request $request)
+{
+    $q = trim((string) $request->query('q', ''));
+
+    if (mb_strlen($q) < 2) {
+        return response()->json(['data' => [], 'pesan' => null]);
+    }
+
+    try {
+        $res = \Illuminate\Support\Facades\Http::timeout(8)
+            ->get('https://clinicaltables.nlm.nih.gov/api/icd9cm_sg/v3/search', [
+                'terms'   => $q,
+                'maxList' => 15,
+            ]);
+
+        if (! $res->successful()) {
+            throw new \RuntimeException('API ICD-9 gagal');
+        }
+
+        $hasil = collect($res->json()[3] ?? [])
+            ->map(fn ($r) => ['code' => $r[0], 'title' => $r[1]])
+            ->values();
+    } catch (\Throwable $e) {
+        return response()->json([
+            'data'  => [],
+            'pesan' => 'Gagal terhubung ke layanan ICD-9. Anda tetap bisa mengetik manual.',
+        ]);
+    }
+
+    return response()->json([
+        'data'  => $hasil,
+        'pesan' => $hasil->isEmpty() ? 'Tindakan tidak ditemukan. Anda tetap bisa mengetik manual.' : null,
+    ]);
+}   
+
     public function store(Request $request)
     {
         $this->normalisasi($request);
