@@ -785,21 +785,31 @@ body.sidebar-collapsed .main {
 }
 
 
-/* Kolom tanggal: hanya satu ikon kalender (ikon bawaan browser yang berfungsi),
-   klik di mana saja pada kolom membuka kalender */
+/* Kolom tanggal: ikon bawaan browser disembunyikan (tapi tetap menutupi seluruh kolom
+   supaya klik di mana saja membuka kalender); ikon kalender yang dipakai hanya satu */
 .input-icon input[type="date"] {
     cursor: pointer;
-    padding-right: 14px;
 }
 
 .input-icon input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 0.75;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
 }
 
-.input-icon input[type="date"]::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
+.input-icon input[type="date"] ~ i.bi-calendar3 {
+    right: 16px;
+    font-size: 16px;
+    color: #6b7684;
+}
+
+.input-icon input[type="date"]:focus ~ i.bi-calendar3 {
+    color: #0f766e;
 }
 
 
@@ -2481,42 +2491,6 @@ body.sidebar-collapsed .main {
     color: #a30000;
 }
 
-/* Nama terang di bawah tanda tangan (saksi, petugas, penanggung jawab) */
-.gc-ttd-terang {
-    padding: 0 28px 10px;
-    text-align: center;
-}
-.gc-ttd-terang-garis {
-    border-top: 1px solid #333;
-    margin: 0 auto 4px;
-    width: 70%;
-}
-.gc-ttd-terang-nama {
-    font-size: 12px;
-    font-weight: 600;
-    color: #222;
-    letter-spacing: .2px;
-    word-break: break-word;
-}
-.gc-ttd-terang-nama.kosong {
-    color: #a30000;
-}
-.gc-ttd-terang-ket {
-    font-size: 10px;
-    color: #777;
-}
-.gc-catatan-baru {
-    margin: 0 0 14px;
-    padding: 10px 14px;
-    border: 1px solid #f1d28a;
-    border-left: 4px solid #e0a100;
-    border-radius: 8px;
-    background: #fff8e1;
-    font-size: 11.5px;
-    line-height: 1.5;
-    color: #5a4300;
-}
-
 .gc-ttd-label {
     padding: 9px 12px;
     border-top: 1px solid #bdbdbd;
@@ -3660,6 +3634,7 @@ body.sidebar-collapsed .main {
                             value="{{ date('Y-m-d') }}"
                             required
                         >
+                        <i class="bi bi-calendar3"></i>
                     </div>
                 </div>
 
@@ -3692,7 +3667,7 @@ body.sidebar-collapsed .main {
                         <option value="" selected disabled>Pilih cara pembayaran</option>
                         <option>Umum</option>
                         <option>BPJS</option>
-                        <option value="Asuransi Lain">Asuransi Lainnya</option>
+                        <option>Asuransi Lain</option>
                     </select>
                 </div>
 
@@ -3914,12 +3889,6 @@ body.sidebar-collapsed .main {
         {{-- BODY --}}
         <div class="gc-body">
 
-            <div class="gc-catatan-baru">
-                <strong>Catatan:</strong> General Consent hanya diisi satu kali untuk <strong>pasien baru</strong>.
-                Pasien lama tidak perlu mengisi General Consent lagi pada kunjungan berikutnya
-                (persetujuan berlaku untuk seluruh kunjungan).
-            </div>
-
             <div class="gc-grid">
 
                 {{-- ================= KOLOM KIRI ================= --}}
@@ -4127,12 +4096,6 @@ body.sidebar-collapsed .main {
                                 <div class="petunjuk">Wajib diisi agar nama saksi tercetak di bawah tanda tangan.</div>
                             @endif
                         </div>
-                        {{-- Penanda nama terang yang akan tercetak di bawah tanda tangan --}}
-                        <div class="gc-ttd-terang">
-                            <div class="gc-ttd-terang-garis"></div>
-                            <div class="gc-ttd-terang-nama" id="gcTtdTerang_{{ $kunci }}">( ............................................ )</div>
-                            <div class="gc-ttd-terang-ket">Nama terang</div>
-                        </div>
                         <div class="gc-ttd-label">{{ $label }}</div>
                     </div>
                 @endforeach
@@ -4262,6 +4225,8 @@ body.sidebar-collapsed .main {
                             required
                         >
 
+                        <i class="bi bi-calendar3"></i>
+
                     </div>
 
                 </div>
@@ -4343,7 +4308,7 @@ body.sidebar-collapsed .main {
                         </option>
 
                         <option value="Asuransi Lain">
-                            Asuransi Lainnya
+                            Asuransi Lain
                         </option>
 
                     </select>
@@ -4996,7 +4961,7 @@ async function daftarkanKunjungan() {
 
         if (!namaAsuransi.value.trim()) {
             namaAsuransi.focus();
-            tampilkanPopupPeringatan('Nama asuransi wajib diisi kalau Cara Pembayaran = <strong>Asuransi Lainnya</strong>.', 'Nama asuransi belum diisi');
+            tampilkanPopupPeringatan('Nama asuransi wajib diisi kalau Cara Pembayaran = <strong>Asuransi Lain</strong>.', 'Nama asuransi belum diisi');
             return;
         }
     }
@@ -5671,7 +5636,6 @@ function resetFormGeneralConsent() {
     gcEl('gcTtdNama_saksi').value = '';
     gcEl('gcTtdNama_penanggung').value = '';
 
-    perbaruiNamaTerangGeneralConsent();
     bersihkanErrorGeneralConsent();
 }
 
@@ -5725,7 +5689,6 @@ function bukaModalGeneralConsent() {
 
     // Nama di bawah tanda tangan penanggung jawab ikut terisi dari Nama Penanda Tangan
     sinkronNamaPenanggungGeneralConsent('atas');
-    perbaruiNamaTerangGeneralConsent();
 
     bersihkanErrorGeneralConsent();
 
@@ -5811,36 +5774,6 @@ function sinkronNamaPenanggungGeneralConsent(dari) {
     if (bawah) { bawah.addEventListener('input', function() { sinkronNamaPenanggungGeneralConsent('bawah'); }); }
 
     sinkronNamaPenanggungGeneralConsent();
-})();
-
-
-// Nama terang di bawah tanda tangan: tampil "( nama )" atau "( ........ )" bila belum diisi
-function perbaruiNamaTerangGeneralConsent() {
-
-    ['petugas', 'penanggung', 'saksi'].forEach(function(k) {
-
-        const input = gcEl('gcTtdNama_' + k);
-        const out   = gcEl('gcTtdTerang_' + k);
-
-        if (!input || !out) {
-            return;
-        }
-
-        const nama = input.value.trim();
-
-        out.textContent = nama ? '( ' + nama + ' )' : '( ............................................ )';
-        out.classList.toggle('kosong', !nama);
-    });
-}
-
-(function pasangNamaTerang() {
-    ['petugas', 'penanggung', 'saksi'].forEach(function(k) {
-        const input = gcEl('gcTtdNama_' + k);
-        if (input) { input.addEventListener('input', perbaruiNamaTerangGeneralConsent); }
-    });
-    const atas = gcEl('gcPtNama');
-    if (atas) { atas.addEventListener('input', function() { setTimeout(perbaruiNamaTerangGeneralConsent, 0); }); }
-    perbaruiNamaTerangGeneralConsent();
 })();
 
 
@@ -7048,6 +6981,7 @@ async function simpanEdit() {
                 nama:           d.nama,
                 jenis_kelamin:  d.jk,
                 tanggal_lahir:  d.tglLahir,
+                tempat_lahir:   d.tempat,
                 nik:            d.nik,
                 no_telepon:     d.telepon,
                 alamat:         d.alamat
