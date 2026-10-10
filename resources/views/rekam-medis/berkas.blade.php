@@ -1192,6 +1192,10 @@
                         $pemberiWali = $consent && $consent->pemberi_persetujuan === 'Wali';
                     @endphp
 
+                    <div style="margin:0 0 12px;padding:9px 12px;border:1px solid #f1d28a;border-left:4px solid #e0a100;border-radius:8px;background:#fff8e1;font-size:12px;color:#5a4300;">
+                        <strong>Catatan:</strong> General Consent hanya diberikan satu kali kepada pasien baru. Pasien lama tidak diberikan General Consent pada kunjungan berikutnya.
+                    </div>
+
                     <div class="gc-top">
                         <div class="kv-list">
                             <div class="kv-row"><span class="k">Tanggal</span><span class="v">{{ $consent && $consent->disetujui_pada ? $consent->disetujui_pada->format('d-m-Y H:i') : '-' }}</span></div>

@@ -843,7 +843,7 @@ body {
                                 </option>
 
                                 <option value="asuransi">
-                                    Asuransi
+                                    Asuransi Lainnya
                                 </option>
 
                             </select>

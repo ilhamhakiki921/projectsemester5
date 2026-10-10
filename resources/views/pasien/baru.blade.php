@@ -697,7 +697,7 @@
 
                                 <option value="asuransi"
                                     {{ old('pembayaran') == 'asuransi' ? 'selected' : '' }}>
-                                    Asuransi
+                                    Asuransi Lainnya
                                 </option>
 
                             </select>
