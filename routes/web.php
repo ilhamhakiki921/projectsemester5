@@ -85,6 +85,8 @@ Route::middleware('web')->group(function () {
 
     Route::get('/icd10/cari', [Icd10Controller::class, 'cari'])->name('icd10.cari');
 
+    Route::get('/icd9/cari', [TindakanController::class, 'cari'])->name('icd9.cari');
+
     // ===========================
     // PEMERIKSAAN
     // ===========================

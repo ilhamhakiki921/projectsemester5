@@ -214,10 +214,8 @@
                 <div class="cp-box-head red">Pemeriksaan Penunjang (ICD-9-CM)</div>
                 <div class="cp-box-body">
                     <div class="cp-grid-tind">
-                        <div class="cp-f"><label>Jenis Pemeriksaan</label><input type="text" name="kunjungan[{{ $i }}][tindakan_nama]" value="{{ $val($i, 'tindakan_nama') }}" placeholder="Contoh: Pemeriksaan tekanan darah"></div>
-                        <div class="cp-f"><label>Kode ICD-9-CM</label><input type="text" name="kunjungan[{{ $i }}][tindakan_kode]" value="{{ $val($i, 'tindakan_kode') }}" placeholder="Contoh: 89.52"></div>
-                        <div class="cp-f"><label>Catatan / Hasil</label><input type="text" name="kunjungan[{{ $i }}][tindakan_catatan]" value="{{ $val($i, 'tindakan_catatan') }}" placeholder="Tulis catatan atau hasil pemeriksaan"></div>
-                    </div>
+                        <div class="cp-f"><label>Jenis Pemeriksaan</label><input type="text" name="kunjungan[{{ $i }}][tindakan_nama]" value="{{ $val($i, 'tindakan_nama') }}" placeholder="Tulis bebas, mis. EKG" autocomplete="off"></div>
+                        <div class="cp-f"><label>Kode ICD-9-CM</label><input type="text" name="kunjungan[{{ $i }}][tindakan_kode]" value="{{ $val($i, 'tindakan_kode') }}" placeholder="Ketik kode atau nama, mis. 89.52" data-cp-icd data-cp-gabung data-cp-url="{{ route('icd9.cari') }}" autocomplete="off"></div>
                 </div>
             </div>
 
