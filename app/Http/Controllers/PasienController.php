@@ -272,7 +272,7 @@ public function create()
                 'pasien_id'         => $pasien->id,
                 'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
                 'tanggal_kunjungan' => $request->tanggal_kunjungan,
-                'dokter'            => $request->filled('dokter') ? $request->dokter : 'Dokter Jaga',
+                'dokter'            => $request->filled('dokter') ? $request->dokter : $this->dokterBawaan($request->poli),
                 'poli'              => $request->poli,
                 'pembayaran'        => $request->pembayaran,
                 'status'            => 'Menunggu',
@@ -315,6 +315,13 @@ public function create()
         }
 
         return back()->with('success', 'Data pasien berhasil diperbarui.');
+    }
+
+    // Dokter bawaan kalau pendaftaran tidak memilih dokter: dokter poli tujuan
+    // (lihat config/dokter.php). Kalau poli belum ada di daftar -> 'Dokter Jaga'.
+    protected function dokterBawaan($poli): string
+    {
+        return config('dokter.daftar.' . $poli . '.0', 'Dokter Jaga');
     }
 
     // No. RM otomatis: 6 digit, berurutan (000001, 000002, 000003, ...).
@@ -428,7 +435,7 @@ public function create()
             'pasien_id'         => $pasien->id,
             'no_antrian'        => Kunjungan::nomorAntrianBerikutnya($request->poli, $request->tanggal_kunjungan),
             'tanggal_kunjungan' => $request->tanggal_kunjungan,
-            'dokter'            => $request->filled('dokter') ? $request->dokter : 'Dokter Jaga',
+            'dokter'            => $request->filled('dokter') ? $request->dokter : $this->dokterBawaan($request->poli),
             'poli'              => $request->poli,
             'pembayaran'        => $request->pembayaran,
             'status'            => 'Menunggu',

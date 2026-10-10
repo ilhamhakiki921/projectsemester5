@@ -184,11 +184,11 @@
     <div class="icu-row3">
         <div>
             <label class="icu-lbl" for="icuDokter">Dokter Pelaksana Tindakan</label>
-            <input type="text" class="icu-in" id="icuDokter" name="dokter_pelaksana" value="{{ $dokter }}" placeholder="Nama dokter pelaksana tindakan">
+            @include('pemeriksaan._pilih-dokter', ['id' => 'icuDokter', 'name' => 'dokter_pelaksana', 'class' => 'icu-sel', 'poli' => $poli, 'nilai' => $dokter])
         </div>
         <div>
             <label class="icu-lbl" for="icuPemberi">Pemberi Informasi</label>
-            <input type="text" class="icu-in" id="icuPemberi" name="pemberi_informasi" value="{{ $dokter }}" placeholder="Nama dokter/pemberi informasi">
+            @include('pemeriksaan._pilih-dokter', ['id' => 'icuPemberi', 'name' => 'pemberi_informasi', 'class' => 'icu-sel', 'poli' => $poli, 'nilai' => $dokter])
         </div>
         <div>
             <label class="icu-lbl" for="icuPenerima">Penerima Informasi/Pemberi Persetujuan</label>

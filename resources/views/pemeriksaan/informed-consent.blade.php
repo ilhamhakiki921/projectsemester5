@@ -193,11 +193,11 @@
     <div class="ic-row3">
         <div>
             <label class="ic-lbl" for="icDokter">Dokter Pelaksana</label>
-            <input type="text" class="ic-in" id="icDokter" name="dokter_pelaksana" value="{{ $dokter }}" readonly>
+            @include('pemeriksaan._pilih-dokter', ['id' => 'icDokter', 'name' => 'dokter_pelaksana', 'class' => 'ic-in', 'poli' => $poli, 'nilai' => $dokter])
         </div>
         <div>
             <label class="ic-lbl" for="icPemberi">Pemberi Informasi</label>
-            <input type="text" class="ic-in" id="icPemberi" name="pemberi_informasi" value="{{ $dokter }}" readonly>
+            @include('pemeriksaan._pilih-dokter', ['id' => 'icPemberi', 'name' => 'pemberi_informasi', 'class' => 'ic-in', 'poli' => $poli, 'nilai' => $dokter])
         </div>
         <div>
             <label class="ic-lbl" for="icPenerima">Penerima Informasi/Pemberi Persetujuan</label>
