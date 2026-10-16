@@ -302,7 +302,7 @@
         ov.classList.add('show');
     }
     document.getElementById('pjClose').addEventListener('click', () => ov.classList.remove('show'));
-    ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+    // Modal hanya ditutup lewat tombol "Tutup" (klik di luar popup tidak menutup)
 
     rows.addEventListener('click', async e => {
         const b = e.target.closest('.pj-ab');
