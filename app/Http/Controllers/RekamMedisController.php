@@ -8,6 +8,7 @@ use App\Models\InformedConsent;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
 use App\Models\Poli;
+use App\Models\SuratMedis;
 use App\Models\SuratRujukan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -108,6 +109,17 @@ class RekamMedisController extends Controller
             $autentikasi = collect();
         }
 
+        // Surat Medis (Surat Keterangan Sakit & Sehat) dari seluruh kunjungan pasien, terbaru di atas
+        try {
+            $suratMedis = SuratMedis::whereIn('kunjungan_id', $kunjungan->pluck('id'))
+                ->orderByDesc('tanggal_surat')
+                ->orderByDesc('id')
+                ->get();
+        } catch (\Throwable $e) {
+            report($e);   // tabel surat_medis belum dibuat (migrasi belum dijalankan)
+            $suratMedis = collect();
+        }
+
         return view('rekam-medis.berkas', [
             'autentikasi'     => $autentikasi,
             'rujukan'         => $rujukan,
@@ -116,6 +128,7 @@ class RekamMedisController extends Controller
             'resep'           => $resep,
             'penunjang'       => $penunjang,
             'informedConsent' => $informedConsent,
+            'suratMedis'      => $suratMedis,
             'namaPoli'  => Poli::daftar(),
         ]);
     }

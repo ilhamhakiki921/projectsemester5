@@ -1962,11 +1962,77 @@
 
                 {{-- ========== SURAT MEDIS ========== --}}
                 <div class="berkas-panel" id="panel-surat-medis">
-                    {{-- TODO: tampilan Surat Medis (desain menyusul) --}}
-                    <div class="kosong-penunjang">
-                        <div class="judul">Surat Medis</div>
-                        <div class="sub">Tampilan ini belum dibuat.</div>
-                    </div>
+                    @php
+                        $kunjunganSm = $kunjungan->keyBy('id');
+                        $angkaSm = fn ($v) => rtrim(rtrim(number_format((float) $v, 1, ',', ''), '0'), ',');
+                    @endphp
+
+                    @if (empty($suratMedis) || $suratMedis->isEmpty())
+                        <p class="empty-note">Belum ada surat medis.</p>
+                    @else
+                        @foreach ($suratMedis as $sm)
+                            @php
+                                $kSm   = $kunjunganSm[$sm->kunjungan_id] ?? null;
+                                $sakit = $sm->jenis === 'Sakit';
+                            @endphp
+
+                            <details class="rp-card ick-acc">
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Surat Keterangan {{ $sakit ? 'Sakit' : 'Sehat' }} — {{ $sm->nomor_surat }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $sm->tanggal_surat ? $sm->tanggal_surat->format('d-m-Y') : '-' }}</span>
+                                        <span class="ick-pill {{ $sakit ? 'tolak' : 'setuju' }}">{{ $sakit ? 'Sakit' : 'Sehat' }}</span>
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
+
+                                <div class="rp-body">
+
+                                    <div class="rp-aksi">
+                                        @if ($kSm)
+                                            <a href="{{ route('surat-medis.cetak', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
+                                               target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
+                                            <a href="{{ route('surat-medis.unduh', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
+                                               class="btn-edit-soap rj-cetak">Unduh</a>
+                                        @endif
+                                    </div>
+
+                                    <div class="dx-list" style="margin-bottom: 22px;">
+                                        <div class="dx-row"><span class="k">Nomor Surat</span><span class="v">{{ $sm->nomor_surat }}</span></div>
+                                        <div class="dx-row"><span class="k">Poli</span><span class="v">{{ $kSm ? $namaPoliDari($kSm->poli) : '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Alamat Pasien</span><span class="v">{{ $sm->alamat_pasien ?: '-' }}</span></div>
+
+                                        @if ($sakit)
+                                            <div class="dx-row"><span class="k">Lama Istirahat</span><span class="v">{{ $sm->lama_istirahat }} hari</span></div>
+                                            <div class="dx-row"><span class="k">Mulai Tanggal</span><span class="v">{{ $sm->mulai_tanggal ? $tglIndo($sm->mulai_tanggal) : '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Sampai Tanggal</span><span class="v">{{ $sm->sampai_tanggal ? $tglIndo($sm->sampai_tanggal) : '-' }}</span></div>
+                                        @else
+                                            <div class="dx-row"><span class="k">Tanggal Pemeriksaan</span><span class="v">{{ $sm->tanggal_pemeriksaan ? $tglIndo($sm->tanggal_pemeriksaan) : '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Dipergunakan Untuk</span><span class="v">{{ $sm->keperluan ?: '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Hasil Pemeriksaan</span><span class="v">{{ $sm->hasil_pemeriksaan ?: '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Berat Badan</span><span class="v">{{ $sm->berat_badan !== null ? $angkaSm($sm->berat_badan) . ' kg' : '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Tinggi Badan</span><span class="v">{{ $sm->tinggi_badan !== null ? $angkaSm($sm->tinggi_badan) . ' cm' : '-' }}</span></div>
+                                            <div class="dx-row"><span class="k">Tekanan Darah</span><span class="v">{{ $sm->tekanan_darah ? $sm->tekanan_darah . ' mmHg' : '-' }}</span></div>
+                                        @endif
+
+                                        <div class="dx-row"><span class="k">Tempat, Tanggal Surat</span><span class="v">{{ $sm->tempat }}, {{ $sm->tanggal_surat ? $tglIndo($sm->tanggal_surat) : '-' }}</span></div>
+                                        <div class="dx-row"><span class="k">Dokter yang Memeriksa</span><span class="v">{{ $sm->dokter ?: '-' }}</span></div>
+                                        <div class="dx-row" style="align-items: flex-start;">
+                                            <span class="k">Tanda Tangan</span>
+                                            <span class="v">
+                                                @if ($sm->ttd_dokter)
+                                                    <img src="{{ $sm->ttd_dokter }}" alt="Tanda tangan dokter" class="img-ttd">
+                                                @else
+                                                    -
+                                                @endif
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </details>
+                        @endforeach
+                    @endif
                 </div>
 
 
