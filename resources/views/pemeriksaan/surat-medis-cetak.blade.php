@@ -49,9 +49,9 @@
     table.i td{padding:2px 6px 2px 0;vertical-align:top}
     .ttd{margin:30px 0 0 auto;width:240px;text-align:center;font-size:13px;page-break-inside:avoid}
     .ttd .tgl{margin-bottom:6px}
-    .ttd .gambar{height:84px;text-align:center}
+    .ttd .peran{margin:0 0 4px}
+    .ttd .gambar{height:84px;margin-bottom:10px;text-align:center}
     .ttd .gambar img{display:block;margin:6px auto 0;max-width:200px;max-height:70px}
-    .ttd .peran{margin:4px 0 22px}
     .ttd .nm{font-weight:bold;text-decoration:underline}
     .bar{position:fixed;top:10px;right:14px}
     .bar button{border:0;border-radius:6px;padding:8px 16px;margin-left:8px;font:600 12px sans-serif;cursor:pointer;color:#fff;background:#1717d6}
@@ -112,12 +112,12 @@
 
     <div class="ttd">
         <div class="tgl">{{ $surat->tempat }}, {{ $tgl($surat->tanggal_surat) }}</div>
+        <div class="peran">Dokter yang memeriksa,</div>
         <div class="gambar">
             @if ($surat->ttd_dokter)
                 <img src="{{ $surat->ttd_dokter }}" alt="Tanda tangan dokter"@if ($ttdW) width="{{ $ttdW }}" height="{{ $ttdH }}"@endif>
             @endif
         </div>
-        <div class="peran">Dokter yang memeriksa,</div>
         <div class="nm">{{ $surat->dokter }}</div>
     </div>
 </div>

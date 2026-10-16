@@ -169,7 +169,6 @@
     <div class="sm-foot">
         <button type="button" class="sm-btn" id="smSimpan">Simpan</button>
         <button type="button" class="sm-btn" id="smCetak">Cetak</button>
-        <button type="button" class="sm-btn" id="smUnduh">Unduh</button>
     </div>
 </form>
 
@@ -186,7 +185,7 @@
     const form = document.getElementById('smForm');
     const el = id => document.getElementById(id);
     const toastEl = el('smToast');
-    const tombol = [el('smSimpan'), el('smCetak'), el('smUnduh')];
+    const tombol = [el('smSimpan'), el('smCetak')];
     const opt = { Sakit: el('optSakit'), Sehat: el('optSehat') };
     const kolom = ['nomor_surat', 'alamat_pasien', 'lama_istirahat', 'mulai_tanggal', 'keperluan',
                    'tanggal_pemeriksaan', 'hasil_pemeriksaan', 'berat_badan', 'tinggi_badan', 'tekanan_darah',
@@ -203,7 +202,7 @@
     // ---------- Tanda tangan (canvas) ----------
     // Goresan dicatat sebagai titik, lalu saat selesai digambar ulang ke kanvas tersembunyi:
     // dipotong pas di sekitar tanda tangan, latar transparan, resolusi tinggi (tinggi 300px)
-    // supaya tetap tajam saat dicetak/diunduh.
+    // supaya tetap tajam saat dicetak.
     const canvas = el('smTtd'), box = el('smTtdBox'), ttdData = el('smTtdData'), ctx = canvas.getContext('2d');
     let menggambar = false, strokes = [], dariSimpan = false;
 
@@ -346,7 +345,7 @@
         return saved;
     }
 
-    // aksi: 'simpan' | 'cetak' | 'unduh'
+    // aksi: 'simpan' | 'cetak'
     async function jalankan(aksi) {
         kunci(true);
         const jendela = aksi === 'cetak' ? window.open('', '_blank') : null;   // dibuka dulu supaya tidak diblokir popup-blocker
@@ -355,9 +354,6 @@
             if (aksi === 'cetak') {
                 if (jendela) jendela.location = saved.cetak_url;
                 else toast('Surat tersimpan. Izinkan pop-up lalu klik Cetak lagi.');
-            } else if (aksi === 'unduh') {
-                window.location = saved.unduh_url;   // respon berupa file PDF, halaman tidak berpindah
-                toast('Surat tersimpan, PDF sedang diunduh');
             } else {
                 toast('Surat keterangan ' + jenis.toLowerCase() + ' tersimpan');
             }
@@ -369,7 +365,6 @@
 
     el('smSimpan').addEventListener('click', () => jalankan('simpan'));
     el('smCetak').addEventListener('click', () => jalankan('cetak'));
-    el('smUnduh').addEventListener('click', () => jalankan('unduh'));
     form.addEventListener('submit', e => e.preventDefault());
 
     // ---------- Awal ----------
