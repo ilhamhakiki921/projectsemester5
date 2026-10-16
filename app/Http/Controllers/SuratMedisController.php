@@ -39,7 +39,8 @@ class SuratMedisController extends Controller
     {
         [$pasien, $kunjungan] = $this->konteks($poli, $no_rm);
 
-        $dokter = $kunjungan->dokter ?: (Auth::check() ? Auth::user()->nama_lengkap : '');
+        // Dokter terisi otomatis dari data pendaftaran/poli (bukan diisi manual)
+        $dokter = $kunjungan->dokter_tampil ?: (Auth::check() ? Auth::user()->nama_lengkap : '');
 
         // Keterangan fisik terisi otomatis dari tanda vital di Asesmen (kalau ada), tetap bisa diubah
         $rm = $kunjungan->rekamMedis;
@@ -188,7 +189,22 @@ class SuratMedisController extends Controller
         [$pasien] = $this->konteks($poli, $no_rm);
         $surat = $this->suratPasien($pasien)->findOrFail($id);
 
+        // Surat lama yang tersimpan dengan nama "Dokter Jaga" dicetak dengan nama dokter yang sebenarnya
+        $surat->dokter = $this->namaDokter($surat);
+
         return ['surat' => $surat, 'pasien' => $pasien, 'pdf' => $pdf];
+    }
+
+    /** Nama dokter pada surat; kalau kosong/"Dokter Jaga" dipakai dokter dari kunjungan (pendaftaran/poli). */
+    protected function namaDokter(SuratMedis $s): string
+    {
+        $nama = trim((string) $s->dokter);
+
+        if ($nama !== '' && strcasecmp($nama, 'Dokter Jaga') !== 0) {
+            return $nama;
+        }
+
+        return (string) (optional($s->kunjungan)->dokter_tampil ?: $nama);
     }
 
     protected function format(SuratMedis $s, $poli, $no_rm): array
@@ -208,7 +224,7 @@ class SuratMedisController extends Controller
             'tekanan_darah'  => $s->tekanan_darah ?? '',
             'tempat'         => $s->tempat,
             'tanggal_surat'  => $s->tanggal_surat->toDateString(),
-            'dokter'         => $s->dokter,
+            'dokter'         => $this->namaDokter($s),
             'ttd_dokter'     => $s->ttd_dokter ?? '',
             'cetak_url'      => route('surat-medis.cetak', [$poli, $no_rm, $s->id]),
             'unduh_url'      => route('surat-medis.unduh', [$poli, $no_rm, $s->id]),
