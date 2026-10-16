@@ -2271,7 +2271,8 @@
 {{-- MODAL PERBARUI GENERAL CONSENT --}}
 @php
     $hubunganTersimpan = $consent ? ($consent->pemberi_persetujuan === 'Wali' ? $consent->hubungan : 'Pasien sendiri') : null;
-    $hubunganPilih = old('hubungan', $hubunganTersimpan);
+    $hubunganPilih = \App\Models\GeneralConsent::normalisasiHubungan(old('hubungan', $hubunganTersimpan));
+    // Urutan dropdown selalu sama untuk semua pasien
     $opsiHubungan = \App\Models\GeneralConsent::HUBUNGAN;
     if ($hubunganPilih && ! in_array($hubunganPilih, $opsiHubungan, true)) {
         $opsiHubungan[] = $hubunganPilih;
@@ -2413,9 +2414,8 @@
         document.getElementById('btnBatalConsent').addEventListener('click', function () {
             modal.classList.remove('show');
         });
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) modal.classList.remove('show');
-        });
+        // Modal General Consent sengaja TIDAK ditutup saat klik di luar pop up;
+        // hanya bisa ditutup lewat tombol Batal.
 
         @if ($errors->any())
             bukaTab('consent');

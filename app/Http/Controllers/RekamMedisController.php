@@ -344,6 +344,185 @@ class RekamMedisController extends Controller
         ]);
     }
 
+    /**
+     * Cetak Informed Consent yang sudah diisi di menu Pemeriksaan (Poli Umum & Poli Gigi).
+     */
+    public function informedConsentCetak(Kunjungan $kunjungan)
+    {
+        $kunjungan->load('pasien');
+
+        $ic = InformedConsent::where('kunjungan_id', $kunjungan->id)->first();
+
+        abort_unless($ic && ! empty($ic->data), 404, 'Informed Consent untuk kunjungan ini belum diisi.');
+
+        // Isian tersimpan berbentuk daftar pasangan [nama_field, nilai] -> peta nama => [nilai, ...]
+        $peta = [];
+        foreach ($ic->data as $baris) {
+            if (! is_array($baris) || ! isset($baris[0])) {
+                continue;
+            }
+            $peta[$baris[0]][] = $baris[1] ?? '';
+        }
+
+        return view('rekam-medis.informed-consent-cetak', [
+            'pasien'    => $kunjungan->pasien,
+            'kunjungan' => $kunjungan,
+            'ic'        => $ic,
+            'd'         => $peta,
+            'namaPoli'  => Poli::daftar()[$kunjungan->poli] ?? 'Poli ' . ucfirst($kunjungan->poli),
+        ]);
+    }
+
+    /**
+     * Resume Medis siap cetak untuk satu kunjungan (tombol "Cetak Resume Medis" di tab Resume Medis).
+     */
+    public function resumeCetak(Kunjungan $kunjungan)
+    {
+        $kunjungan->load('pasien', 'rekamMedis', 'resep.obat');
+
+        $semua = Kunjungan::with('rekamMedis')
+            ->where('pasien_id', $kunjungan->pasien_id)
+            ->get();
+
+        try {
+            $autentikasi = AutentikasiPemeriksaan::where('kunjungan_id', $kunjungan->id)->first();
+        } catch (\Throwable $e) {
+            $autentikasi = null;
+        }
+
+        return view('rekam-medis.resume-cetak', [
+            'resume' => $this->susunResume($kunjungan, $semua, $autentikasi),
+        ]);
+    }
+
+    /**
+     * Susun data Resume Medis satu kunjungan.
+     * Identitas diambil dari Pendaftaran (pasien & kunjungan); isi pemeriksaan dari
+     * Asesmen, SOAP, Diagnosa, dan Resep pada kunjungan yang sama.
+     */
+    protected function susunResume(Kunjungan $k, $semuaKunjungan, $autentikasi = null): array
+    {
+        $pasien = $k->pasien;
+        $rm     = $k->rekamMedis;
+        $bersih = fn ($v) => trim((string) $v);
+        $namaPoli = Poli::daftar();
+
+        // ---- Anamnesa
+        $anamnesa = collect([$rm?->keluhan_utama, $rm?->riwayat_penyakit_sekarang])
+            ->map($bersih)->filter()->implode("\n");
+        if ($anamnesa === '') {
+            $anamnesa = $bersih($rm?->subjective);
+        }
+
+        // ---- Ringkasan hasil pemeriksaan poli utama
+        $poliUtama = collect([$rm?->objective, $rm?->assessment])
+            ->map($bersih)->filter()->implode("\n");
+
+        // ---- Poli konsulan: kunjungan lain pasien yang sama pada tanggal yang sama di poli berbeda
+        $konsulan = collect($semuaKunjungan)
+            ->filter(fn ($o) => $o->id !== $k->id
+                && $o->poli !== $k->poli
+                && optional($o->tanggal_kunjungan)->toDateString() === optional($k->tanggal_kunjungan)->toDateString())
+            ->map(function ($o) use ($namaPoli, $bersih) {
+                $ringkas = collect([$o->rekamMedis?->objective, $o->rekamMedis?->assessment])
+                    ->map($bersih)->filter()->implode(' ');
+                return [
+                    'poli'    => $namaPoli[$o->poli] ?? 'Poli ' . ucfirst($o->poli),
+                    'ringkas' => $ringkas,
+                ];
+            })->values()->all();
+
+        // ---- Tanda vital + BB ideal (rumus Broca: (TB-100) - 10%)
+        $angka = fn ($v) => (float) str_replace(',', '.', (string) $v);
+        $tb    = $angka($rm?->tb);
+        $bbIdeal = $tb > 100 ? number_format(($tb - 100) - (($tb - 100) * 0.10), 1, ',', '') : null;
+        $imt = $rm?->imt;
+        if (! filled($imt) && $tb > 0 && $angka($rm?->berat_badan) > 0) {
+            $imt = number_format($angka($rm->berat_badan) / (($tb / 100) ** 2), 2, '.', '');
+        }
+
+        $vital = [
+            ['Tinggi Badan (cm)',     $rm?->tb],
+            ['Berat Badan (Kg)',      $rm?->berat_badan],
+            ['IMT (kg/m2)',           $imt],
+            ['BB Ideal (Kg)',         $bbIdeal],
+            ['Tekanan Darah (mmHg)',  $rm?->td],
+            ['Detak Jantung (bpm)',   $rm?->detak_jantung],
+            ['Suhu Badan (oC)',       $rm?->suhu_badan],
+            ['Nafas (x/menit)',       $rm?->respiratory_rate],
+        ];
+
+        // ---- Diagnosa & ICD-10
+        $sekunder = collect(explode('|', (string) $rm?->diagnosis_sekunder))
+            ->map($bersih)->filter()->values()->all();
+        preg_match_all('/\b[A-Z]\d{2}(?:\.\d{1,2})?\b/', implode(' ', $sekunder), $cocok);
+        $kodeSekunder = array_values(array_unique($cocok[0] ?? []));
+
+        // ---- Tindakan & ICD-9 (dicocokkan dengan Data Master Tindakan bila ada)
+        $tindakan = collect(explode(',', (string) $rm?->tindakan))->map($bersih)->filter()->values();
+        $kodeIcd9 = [];
+        try {
+            $master = Tindakan::all();
+            foreach ($tindakan as $t) {
+                $ketemu = $master->first(function ($m) use ($t) {
+                    return strcasecmp($m->nama, $t) === 0
+                        || str_starts_with($t, $m->kode . ' ')
+                        || str_contains(mb_strtolower($t), mb_strtolower($m->nama));
+                });
+                if ($ketemu) {
+                    $kodeIcd9[] = $ketemu->kode;
+                }
+            }
+        } catch (\Throwable $e) {
+            // tabel tindakan belum ada -> kode ICD-9 dikosongkan
+        }
+
+        // ---- Farmasi (resep kunjungan ini)
+        $farmasi = $k->resep->map(function ($r) {
+            $nama = trim(($r->obat->nama_obat ?? 'Obat') . ' ' . ($r->obat->dosis ?? ''));
+            $sed  = $r->obat->sediaan ?? '';
+            $rinci = collect([
+                trim($r->jumlah_obat . ' ' . $sed),
+                $r->dosis_obat,
+                $r->frekuensi,
+            ])->map(fn ($v) => trim((string) $v))->filter()->implode(', ');
+            return trim($nama . ($rinci !== '' ? ' — ' . $rinci : ''));
+        })->values()->all();
+
+        // ---- Penanda tangan (DPJP)
+        $dpjp = $k->dokter_tampil;
+        if ($autentikasi && filled($autentikasi->nama_dokter)) {
+            $dpjp = $autentikasi->nama_dokter;
+        }
+        $ttd = ($autentikasi && str_starts_with((string) $autentikasi->tanda_tangan, 'data:image/'))
+            ? $autentikasi->tanda_tangan : null;
+
+        return [
+            'kunjungan_id' => $k->id,
+            'no_rm'        => $pasien->no_rm,
+            'nama'         => trim(($pasien->title ? $pasien->title . ' ' : '') . $pasien->nama),
+            'tgl_lahir'    => $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : '',
+            'poli'         => $namaPoli[$k->poli] ?? 'Poli ' . ucfirst($k->poli),
+            'dpjp'         => $dpjp,
+            'tgl_masuk'    => $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '',
+            'tgl_ttd'      => $k->tanggal_kunjungan
+                                ? $k->tanggal_kunjungan->locale('id')->translatedFormat('j F Y') : '',
+            'ada_rm'       => (bool) $rm,
+            'anamnesa'     => $anamnesa,
+            'poli_utama'   => $poliUtama,
+            'konsulan'     => $konsulan,
+            'vital'        => $vital,
+            'diagnosa'     => $bersih($rm?->diagnosis_utama),
+            'diagnosa_sekunder' => $sekunder,
+            'icd10_primer' => $bersih($rm?->kode_icd10),
+            'icd10_sekunder' => implode(', ', $kodeSekunder),
+            'tindakan'     => $tindakan->all(),
+            'icd9'         => implode(', ', array_unique($kodeIcd9)),
+            'farmasi'      => $farmasi,
+            'ttd'          => $ttd,
+        ];
+    }
+
     public function show(Kunjungan $kunjungan)
     {
         $kunjungan->load('pasien', 'rekamMedis', 'resep.obat');

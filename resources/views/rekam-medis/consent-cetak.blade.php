@@ -36,15 +36,16 @@
     .c-putusan{width:76px;text-align:center}
     .judul{font-weight:bold}
 
-    .ttd{display:flex;justify-content:space-between;margin-top:26px;font-size:13px}
-    .ttd > div{width:30%;text-align:center}
-    .ttd .garis{height:64px;display:flex;align-items:center;justify-content:center}
-    .ttd .garis img{max-height:60px;max-width:100%}
-    .ttd .garis{border-bottom:1px solid #000;margin:0 6px}
-    .ttd .nm{font-weight:bold;min-height:18px;margin-top:4px;word-break:break-word}
-    .ttd .ket{font-size:10px;color:#444}
+    /* Blok tanda tangan: tiga kolom sama lebar, garis tanda tangan sejajar */
+    .ttd{display:grid;grid-template-columns:repeat(3,1fr);column-gap:24px;margin-top:30px;font-size:13px;page-break-inside:avoid;break-inside:avoid}
+    .ttd > div{text-align:center;display:flex;flex-direction:column}
+    .ttd .tgl{min-height:18px;line-height:18px}
+    .ttd .jabatan{min-height:18px;line-height:18px;font-weight:bold}
+    .ttd .garis{height:76px;margin:6px 8px 0;border-bottom:1px solid #000;display:flex;align-items:center;justify-content:center}
+    .ttd .garis img{max-height:70px;max-width:100%}
+    .ttd .nm{font-weight:bold;min-height:18px;margin-top:6px;word-break:break-word}
+    .ttd .peran{font-size:12px;margin-top:2px;min-height:16px}
     .catatan{border:1px solid #000;padding:6px 10px;font-size:11.5px;line-height:1.45;margin-top:14px}
-    .ttd .peran{font-size:11px;margin-top:2px}
 
     .bar{position:fixed;top:10px;right:14px;display:flex;gap:8px}
     .bar button{border:0;border-radius:6px;padding:8px 16px;font:600 12px sans-serif;cursor:pointer;color:#fff;background:#1717d6}
@@ -139,25 +140,25 @@
     @endphp
     <div class="ttd">
         <div>
-            Penandatangan
+            <div class="tgl">&nbsp;</div>
+            <div class="jabatan">Penandatangan</div>
             <div class="garis">@if ($consent && $consent->ttd_penanggung_jawab)<img src="{{ $consent->ttd_penanggung_jawab }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $namaTtd($consent->nama_penyetuju ?? null) }}</div>
-            <div class="ket">Nama terang</div>
             <div class="peran">{{ $consent ? ($pemberiWali ? 'Wali pasien' . ($consent->hubungan ? ' (' . $consent->hubungan . ')' : '') : 'Pasien') : '' }}</div>
         </div>
         <div>
-            Saksi
+            <div class="tgl">&nbsp;</div>
+            <div class="jabatan">Saksi</div>
             <div class="garis">@if ($consent && $consent->ttd_saksi)<img src="{{ $consent->ttd_saksi }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $namaTtd($consent->saksi ?? null) }}</div>
-            <div class="ket">Nama terang</div>
             <div class="peran">Saksi pasien</div>
         </div>
         <div>
-            Ngawi, {{ ($tglConsent ?? now())->locale('id')->translatedFormat('j F Y') }}<br>Petugas yang mencatat,
+            <div class="tgl">Ngawi, {{ ($tglConsent ?? now())->locale('id')->translatedFormat('j F Y') }}</div>
+            <div class="jabatan">Petugas yang mencatat</div>
             <div class="garis">@if ($consent && $consent->ttd_petugas)<img src="{{ $consent->ttd_petugas }}" alt="Tanda tangan">@endif</div>
             <div class="nm">{{ $namaTtd($consent->petugas_pencatat ?? null) }}</div>
-            <div class="ket">Nama terang</div>
-            <div class="peran">Petugas yang mencatat</div>
+            <div class="peran">Petugas klinik</div>
         </div>
     </div>
 </div>

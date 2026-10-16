@@ -4027,7 +4027,7 @@ body.sidebar-collapsed .main {
                     <h3>Tanda Tangan Persetujuan</h3>
                 </div>
 
-                @foreach (['petugas' => 'Petugas Rawat Inap', 'penanggung' => 'Penanggung jawab/pasien', 'saksi' => 'Saksi pasien'] as $kunci => $label)
+                @foreach (['petugas' => 'Petugas', 'penanggung' => 'Penanggung jawab/pasien', 'saksi' => 'Saksi pasien'] as $kunci => $label)
                     <div class="gc-ttd-kartu">
                         <div class="gc-pad" id="gcTtdKotak_{{ $kunci }}">
                             <div class="gc-pad-area"><canvas id="gcTtdCanvas_{{ $kunci }}" aria-label="Tanda tangan {{ $label }}"></canvas></div>
@@ -4036,7 +4036,7 @@ body.sidebar-collapsed .main {
                                 <button type="button" class="gc-pad-bersih" onclick="bersihkanTtdGeneralConsent('{{ $kunci }}')">Bersihkan</button>
                             </div>
                         </div>
-                        <div class="gc-ttd-nama wajib-isi" id="gcTtdNamaWadah_{{ $kunci }}">
+                        <div class="gc-ttd-nama {{ $kunci === 'saksi' ? '' : 'wajib-isi' }}" id="gcTtdNamaWadah_{{ $kunci }}">
                             @if ($kunci === 'penanggung')
                                 <label for="gcTtdNama_{{ $kunci }}">Nama penanggung jawab/pasien yang bertanda tangan<span class="bintang">*</span><span class="badge-wajib">WAJIB DIISI</span></label>
                                 <input type="text" id="gcTtdNama_{{ $kunci }}" maxlength="255" autocomplete="off" placeholder="Ketik nama lengkap penanggung jawab/pasien">
@@ -4049,9 +4049,9 @@ body.sidebar-collapsed .main {
                                        placeholder="Ketik nama lengkap petugas">
                                 <div class="petunjuk">Wajib diisi agar nama petugas tercetak di bawah tanda tangan.</div>
                             @else
-                                <label for="gcTtdNama_{{ $kunci }}">Nama saksi yang bertanda tangan<span class="bintang">*</span><span class="badge-wajib">WAJIB DIISI</span></label>
-                                <input type="text" id="gcTtdNama_{{ $kunci }}" maxlength="255" autocomplete="off" placeholder="Ketik nama lengkap saksi">
-                                <div class="petunjuk">Wajib diisi agar nama saksi tercetak di bawah tanda tangan.</div>
+                                <label for="gcTtdNama_{{ $kunci }}">Nama saksi yang bertanda tangan<span class="badge-opsional">OPSIONAL</span></label>
+                                <input type="text" id="gcTtdNama_{{ $kunci }}" maxlength="255" autocomplete="off" placeholder="Ketik nama lengkap saksi (jika ada)">
+                                <div class="petunjuk">Tidak wajib diisi. Boleh dikosongkan bila tidak ada saksi.</div>
                             @endif
                         </div>
                         <div class="gc-ttd-label">{{ $label }}</div>
@@ -5530,7 +5530,7 @@ function simpanDataLain() {
 // dan baru dikosongkan oleh resetGeneralConsent() saat pasien baru dimulai / selesai disimpan.
 const GC_TTD = { petugas: null, penanggung: null, saksi: null };
 const GC_TTD_LABEL = {
-    petugas:    'Petugas Rawat Inap',
+    petugas:    'Petugas',
     penanggung: 'Penanggung jawab/pasien',
     saksi:      'Saksi pasien'
 };
@@ -5933,12 +5933,12 @@ function bersihkanTtdGeneralConsent(kunci) {
 // SIMPAN
 // =========================
 
-// Simpan Draft: isian tetap dipertahankan, modal ditutup, belum lanjut ke Informasi Kunjungan.
+// Simpan Draft: isian tetap dipertahankan, modal ditutup, belum lanjut ke Informasi Kunjungan (lanjut lewat tombol "Simpan").
 function simpanDraftGeneralConsent() {
 
     tutupModalGeneralConsent();
 
-    tampilToastGeneralConsent('Draft General Consent tersimpan sementara. Klik "Lanjut" lagi untuk melanjutkannya.');
+    tampilToastGeneralConsent('Draft General Consent tersimpan sementara. Klik "Simpan" lagi untuk melanjutkannya.');
 }
 
 
@@ -5971,11 +5971,10 @@ function setujuiGeneralConsent() {
 
     if (!GC_TTD.penanggung) { tandai('gcTtdKotak_penanggung', 'Tanda tangan penanggung jawab/pasien belum dibubuhkan.'); }
     if (!gcNilai('gcTtdNama_penanggung')) { tandai('gcTtdNama_penanggung', 'Nama penanggung jawab/pasien di bawah tanda tangan wajib diisi.'); }
-    if (!GC_TTD.petugas)    { tandai('gcTtdKotak_petugas', 'Tanda tangan petugas rawat inap belum dibubuhkan.'); }
+    if (!GC_TTD.petugas)    { tandai('gcTtdKotak_petugas', 'Tanda tangan petugas belum dibubuhkan.'); }
 
     if (!gcNilai('gcTtdNama_petugas')) { tandai('gcTtdNama_petugas', 'Nama petugas yang bertanda tangan wajib diisi.'); }
-    if (!GC_TTD.saksi)                  { tandai('gcTtdKotak_saksi', 'Tanda tangan saksi pasien belum dibubuhkan.'); }
-    if (!gcNilai('gcTtdNama_saksi'))    { tandai('gcTtdNama_saksi', 'Nama saksi pasien wajib diisi.'); }
+    // Saksi pasien bersifat opsional: tanda tangan dan namanya boleh dikosongkan
 
     if (salah.length) {
 

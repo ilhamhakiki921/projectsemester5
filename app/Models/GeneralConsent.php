@@ -65,9 +65,29 @@ class GeneralConsent extends Model
 
     /** Pilihan hubungan penandatangan dengan pasien. */
     public const HUBUNGAN = [
-        'Pasien sendiri', 'Suami', 'Istri', 'Ayah', 'Ibu', 'Anak',
-        'Saudara kandung', 'Kakek/Nenek', 'Wali hukum', 'Lainnya',
+        'Pasien sendiri', 'Suami', 'Istri', 'Orang Tua', 'Anak',
+        'Saudara Kandung', 'Wali', 'Lain-lain',
     ];
+
+    /** Nilai lama / variasi penulisan -> pilihan baku di atas (supaya dropdown konsisten). */
+    public const HUBUNGAN_ALIAS = [
+        'ayah' => 'Orang Tua', 'ibu' => 'Orang Tua', 'orang tua' => 'Orang Tua', 'orangtua' => 'Orang Tua',
+        'saudara kandung' => 'Saudara Kandung', 'saudara' => 'Saudara Kandung',
+        'wali hukum' => 'Wali', 'wali' => 'Wali',
+        'lainnya' => 'Lain-lain', 'lain-lain' => 'Lain-lain', 'lain lain' => 'Lain-lain',
+        'pasien sendiri' => 'Pasien sendiri', 'pasien' => 'Pasien sendiri',
+        'suami' => 'Suami', 'istri' => 'Istri', 'anak' => 'Anak',
+    ];
+
+    /** Samakan nilai hubungan tersimpan dengan salah satu pilihan baku (bila bisa). */
+    public static function normalisasiHubungan(?string $nilai): ?string
+    {
+        if ($nilai === null || trim($nilai) === '') {
+            return $nilai;
+        }
+
+        return self::HUBUNGAN_ALIAS[mb_strtolower(trim($nilai))] ?? $nilai;
+    }
 
     /** Nomor urut pernyataan yang disetujui (untuk data lama = semua bila setuju). */
     public function pernyataanDisetujui(): array

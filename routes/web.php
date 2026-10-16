@@ -16,7 +16,6 @@ use App\Http\Controllers\DiagnosaController;
 use App\Http\Controllers\TindakanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DataPasienController;
-use App\Http\Controllers\SatuSehatController;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -29,7 +28,6 @@ Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.page');
 Route::post('/login', [LoginController::class, 'login'])->name('login.process');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/satusehat/pasien/{pasien}/sinkron', [SatuSehatController::class, 'sinkronPasien'])->name('satusehat.pasien.sinkron');
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
