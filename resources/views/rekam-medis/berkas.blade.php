@@ -1952,11 +1952,42 @@
 
                 {{-- ========== RESUME MEDIS ========== --}}
                 <div class="berkas-panel" id="panel-resume">
-                    {{-- TODO: tampilan Resume Medis --}}
-                    <div class="kosong-penunjang">
-                        <div class="judul">Resume Medis</div>
-                        <div class="sub">Tampilan ini belum dibuat.</div>
-                    </div>
+                    <link rel="stylesheet" href="{{ asset('css/resume-medis.css') }}">
+
+                    @if ($kunjungan->isEmpty())
+                        <p class="empty-note">Belum ada kunjungan, sehingga resume medis belum tersedia.</p>
+                    @else
+                        @foreach ($kunjungan as $k)
+                            @php $rsm = $resume[$k->id] ?? null; @endphp
+                            @continue(! $rsm)
+
+                            <details class="rp-card ick-acc" @if ($loop->first) open @endif>
+                                <summary class="rp-head ick-summary">
+                                    <span class="ick-judul">Resume Medis — Kunjungan {{ $noKunjungan[$k->id] ?? $loop->iteration }} · {{ $namaPoliDari($k->poli) }}</span>
+                                    <span class="ick-meta">
+                                        <span class="ick-pill">{{ $tglIndo($k->tanggal_kunjungan) }}</span>
+                                        <span class="ick-pill {{ $rsm['ada_rm'] ? 'ok' : 'draft' }}">{{ $rsm['ada_rm'] ? 'Terisi' : 'Belum diperiksa' }}</span>
+                                    </span>
+                                    <span class="ick-chevron" aria-hidden="true"></span>
+                                </summary>
+
+                                <div class="rp-body">
+                                    <div class="rp-aksi">
+                                        <a href="{{ route('rekam-medis.resume.cetak', $k->id) }}"
+                                           target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Resume Medis</a>
+                                    </div>
+
+                                    @unless ($rsm['ada_rm'])
+                                        <p class="rsm-catatan">Pemeriksaan untuk kunjungan ini belum diisi, jadi bagian pemeriksaan masih kosong.</p>
+                                    @endunless
+
+                                    <div style="overflow-x:auto; border:1px solid #d6d6d6; border-radius:8px; padding:22px 26px; background:#fff;">
+                                        @include('rekam-medis._resume-medis', ['resume' => $rsm])
+                                    </div>
+                                </div>
+                            </details>
+                        @endforeach
+                    @endif
                 </div>
 
 

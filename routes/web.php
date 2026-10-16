@@ -117,6 +117,7 @@ Route::middleware('web')->group(function () {
     Route::put('/rekam-medis/kunjungan/{kunjungan}/soap', [RekamMedisController::class, 'soapUpdate'])->name('rekam-medis.soap.update');
     Route::get('/rekam-medis/kunjungan/{kunjungan}/informed-consent/cetak', [RekamMedisController::class, 'informedConsentCetak'])->name('rekam-medis.informed-consent.cetak');
     Route::get('/rekam-medis/kunjungan/{kunjungan}/autentikasi/cetak', [RekamMedisController::class, 'autentikasiCetak'])->name('rekam-medis.autentikasi.cetak');
+    Route::get('/rekam-medis/kunjungan/{kunjungan}/resume-medis/cetak', [RekamMedisController::class, 'resumeCetak'])->name('rekam-medis.resume.cetak');
     Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
 
     Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');
