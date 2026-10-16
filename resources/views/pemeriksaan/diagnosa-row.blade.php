@@ -4,7 +4,6 @@
         type="text"
         name="{{ $name }}[]"
         @if ($icd ?? false) data-icd="sekunder" autocomplete="off" @endif
-        @if ($icd9 ?? false) data-icd="tindakan" autocomplete="off" @endif
         aria-label="{{ $label }}"
         placeholder="{{ $placeholder }}"
         value="{{ $selected ?? '' }}"

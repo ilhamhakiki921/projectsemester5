@@ -351,7 +351,7 @@ class PemeriksaanController extends Controller
             array_map('trim', $data['diagnosis_sekunder'])
         ));
 
-        $data['tindakan'] = implode(', ', array_filter(
+        $data['tindakan'] = implode(' | ', array_filter(
             array_map('trim', $data['tindakan'])
         ));
 

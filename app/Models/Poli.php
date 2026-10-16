@@ -13,6 +13,7 @@ class Poli extends Model
         'kode_poli',
         'nama_poli',
         'status',
+        'satusehat_location_id'
     ];
 
     /**

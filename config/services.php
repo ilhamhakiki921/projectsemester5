@@ -47,4 +47,13 @@ return [
         'language'      => env('ICD_LANGUAGE', 'en'),
     ],
 
+    'satusehat' => [
+    'env'             => env('SATUSEHAT_ENV', 'sandbox'),
+    'auth_url'        => env('SATUSEHAT_AUTH_URL'),
+    'base_url'        => env('SATUSEHAT_BASE_URL'),
+    'client_id'       => env('SATUSEHAT_CLIENT_ID'),
+    'client_secret'   => env('SATUSEHAT_CLIENT_SECRET'),
+    'organization_id' => env('SATUSEHAT_ORGANIZATION_ID'),
+],
+
 ];

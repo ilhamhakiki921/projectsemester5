@@ -422,7 +422,7 @@
 
                     $tindakanList = old(
                         'tindakan',
-                        optional($rekam)->tindakan ? explode(', ', $rekam->tindakan) : []
+                        optional($rekam)->tindakan ? explode(' | ', $rekam->tindakan) : []
                     );
 
                     if (count($sekunder) === 0) { $sekunder = [null]; }
@@ -490,7 +490,6 @@
                                 @foreach ($tindakanList as $nilai)
                                     @include('pemeriksaan.diagnosa-row', [
                                         'name' => 'tindakan',
-                                        'icd9' => true,
                                         'label' => 'Tindakan',
                                         'placeholder' => 'Ketik kode atau nama tindakan (ICD-9), contoh: 86.59 / suture. Boleh dikosongkan jika tidak ada',
                                         'selected' => $nilai,
@@ -504,7 +503,6 @@
                             <template data-template>
                                 @include('pemeriksaan.diagnosa-row', [
                                     'name' => 'tindakan',
-                                        'icd9' => true,
                                     'label' => 'Tindakan',
                                     'placeholder' => 'Ketik kode atau nama tindakan (ICD-9), contoh: 86.59 / suture. Boleh dikosongkan jika tidak ada',
                                     'removable' => true,

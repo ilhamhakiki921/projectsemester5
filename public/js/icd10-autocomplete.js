@@ -81,9 +81,7 @@
         if (controller) controller.abort();
         controller = new AbortController();
 
-        var endpoint = (active && active.dataset.icd === 'tindakan' && url9) ? url9 : url;
-
-        fetch(endpoint + '?q=' + encodeURIComponent(q), {
+        fetch(url + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json' },
             signal: controller.signal
         })
