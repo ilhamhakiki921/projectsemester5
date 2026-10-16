@@ -3,7 +3,7 @@
     <input
         type="text"
         name="{{ $name }}[]"
-        @if ($icd ?? false) data-icd="sekunder" autocomplete="off" @endif
+        @if ($icd ?? false) data-icd="{{ ($icd ?? '') === 'icd9' ? 'tindakan' : 'sekunder' }}" autocomplete="off" @endif
         aria-label="{{ $label }}"
         placeholder="{{ $placeholder }}"
         value="{{ $selected ?? '' }}"

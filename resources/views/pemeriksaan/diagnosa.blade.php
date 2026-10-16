@@ -422,14 +422,14 @@
 
                     $tindakanList = old(
                         'tindakan',
-                        optional($rekam)->tindakan ? explode(', ', $rekam->tindakan) : []
+                        optional($rekam)->tindakan ? explode(' | ', $rekam->tindakan) : []
                     );
 
                     if (count($sekunder) === 0) { $sekunder = [null]; }
                     if (count($tindakanList) === 0) { $tindakanList = [null]; }
                 @endphp
 
-                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa" data-icd-url="{{ route('icd10.cari') }}">
+                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa" data-icd-url="{{ route('icd10.cari') }}" data-icd9-url="{{ route('icd9.cari') }}">
                     @csrf
 
                     <div class="field-group">
@@ -490,6 +490,7 @@
                                 @foreach ($tindakanList as $nilai)
                                     @include('pemeriksaan.diagnosa-row', [
                                         'name' => 'tindakan',
+                                        'icd' => 'icd9',
                                         'label' => 'Tindakan',
                                         'placeholder' => 'Isi tindakan, boleh dikosongkan jika tidak ada',
                                         'selected' => $nilai,
@@ -503,6 +504,7 @@
                             <template data-template>
                                 @include('pemeriksaan.diagnosa-row', [
                                     'name' => 'tindakan',
+                                    'icd' => 'icd9',
                                     'label' => 'Tindakan',
                                     'placeholder' => 'Isi tindakan, boleh dikosongkan jika tidak ada',
                                     'removable' => true,

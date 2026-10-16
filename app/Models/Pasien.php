@@ -14,6 +14,7 @@ class Pasien extends Model
         'jenis_kelamin',
         'tanggal_lahir',
         'nik',
+        'ihs_number',
         'no_telepon',
         'alamat',
         'kecamatan',

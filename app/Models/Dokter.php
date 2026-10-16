@@ -8,7 +8,7 @@ class Dokter extends Model
 {
     protected $table = 'dokter';
 
-    protected $fillable = ['nama', 'poli', 'jabatan', 'utama', 'status'];
+    protected $fillable = ['nama', 'nik', 'ihs_number', 'poli', 'jabatan', 'utama', 'status'];
 
     protected $casts = ['utama' => 'boolean'];
 

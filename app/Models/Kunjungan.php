@@ -16,6 +16,7 @@ class Kunjungan extends Model
         'poli',
         'pembayaran',
         'status',
+        'satusehat_encounter_id'
     ];
 
     protected $casts = [

@@ -74,7 +74,9 @@
         if (controller) controller.abort();
         controller = new AbortController();
 
-        fetch(url + '?q=' + encodeURIComponent(q), {
+        var base = (active && active.dataset.icd === 'tindakan' && form.dataset.icd9Url) ? form.dataset.icd9Url : url;
+
+        fetch(base + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json' },
             signal: controller.signal
         })
