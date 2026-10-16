@@ -1847,6 +1847,11 @@
 
                                 <div class="rp-body">
 
+                                    <div class="rp-aksi">
+                                        <a href="{{ route('rekam-medis.informed-consent.cetak', $k->id) }}"
+                                           target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Informed Consent</a>
+                                    </div>
+
                                     {{-- Pemberian informasi --}}
                                     <div class="ick-sub">Pemberian Informasi</div>
                                     <div class="dx-list">
@@ -2374,7 +2379,7 @@
             modalEdit.classList.add('show');
         }
 
-        document.querySelectorAll('.btn-edit-soap').forEach(function (b) {
+        document.querySelectorAll('.btn-edit-soap:not(.rj-cetak)').forEach(function (b) {
             b.addEventListener('click', function () {
                 bukaEdit(b.dataset.action, JSON.parse(b.dataset.rm || '{}'));
             });

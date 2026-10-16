@@ -323,6 +323,35 @@ class RekamMedisController extends Controller
         ]);
     }
 
+    /**
+     * Cetak Informed Consent yang sudah diisi di menu Pemeriksaan (Poli Umum & Poli Gigi).
+     */
+    public function informedConsentCetak(Kunjungan $kunjungan)
+    {
+        $kunjungan->load('pasien');
+
+        $ic = InformedConsent::where('kunjungan_id', $kunjungan->id)->first();
+
+        abort_unless($ic && ! empty($ic->data), 404, 'Informed Consent untuk kunjungan ini belum diisi.');
+
+        // Isian tersimpan berbentuk daftar pasangan [nama_field, nilai] -> peta nama => [nilai, ...]
+        $peta = [];
+        foreach ($ic->data as $baris) {
+            if (! is_array($baris) || ! isset($baris[0])) {
+                continue;
+            }
+            $peta[$baris[0]][] = $baris[1] ?? '';
+        }
+
+        return view('rekam-medis.informed-consent-cetak', [
+            'pasien'    => $kunjungan->pasien,
+            'kunjungan' => $kunjungan,
+            'ic'        => $ic,
+            'd'         => $peta,
+            'namaPoli'  => Poli::daftar()[$kunjungan->poli] ?? 'Poli ' . ucfirst($kunjungan->poli),
+        ]);
+    }
+
     public function show(Kunjungan $kunjungan)
     {
         $kunjungan->load('pasien', 'rekamMedis', 'resep.obat');
