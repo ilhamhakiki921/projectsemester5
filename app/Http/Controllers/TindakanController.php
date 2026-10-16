@@ -36,40 +36,64 @@ class TindakanController extends Controller
         ]);
     }
 
-public function cari(Request $request)
-{
-    $q = trim((string) $request->query('q', ''));
+    /**
+     * Autocomplete ICD-9 di form Diagnosa > Tindakan.
+     * Urutan hasil: Data Master Tindakan (lokal, selalu tersedia) lalu layanan ICD-9-CM online.
+     * Kalau layanan online gagal (mis. tidak ada internet / sertifikat SSL), hasil lokal tetap tampil.
+     */
+    public function cari(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
 
-    if (mb_strlen($q) < 2) {
-        return response()->json(['data' => [], 'pesan' => null]);
-    }
-
-    try {
-        $res = \Illuminate\Support\Facades\Http::timeout(8)
-            ->get('https://clinicaltables.nlm.nih.gov/api/icd9cm_sg/v3/search', [
-                'terms'   => $q,
-                'maxList' => 15,
-            ]);
-
-        if (! $res->successful()) {
-            throw new \RuntimeException('API ICD-9 gagal');
+        if (mb_strlen($q) < 2) {
+            return response()->json(['data' => [], 'pesan' => null]);
         }
 
-        $hasil = collect($res->json()[3] ?? [])
-            ->map(fn ($r) => ['code' => $r[0], 'title' => $r[1]])
-            ->values();
-    } catch (\Throwable $e) {
+        $hasil = collect();
+
+        // 1. Data Master Tindakan (tabel lokal)
+        try {
+            $like = '%' . addcslashes($q, '%_\\') . '%';
+            $hasil = Tindakan::query()
+                ->where(function ($w) use ($like) {
+                    $w->where('kode', 'like', $like)->orWhere('nama', 'like', $like);
+                })
+                ->orderBy('kode')
+                ->limit(10)
+                ->get()
+                ->map(fn ($t) => ['code' => $t->kode, 'title' => $t->nama]);
+        } catch (\Throwable $e) {
+            report($e);   // tabel tindakan belum ada (migrasi belum dijalankan)
+        }
+
+        // 2. Layanan ICD-9-CM online (opsional)
+        $pesan = null;
+        try {
+            $res = \Illuminate\Support\Facades\Http::timeout(8)
+                ->get('https://clinicaltables.nlm.nih.gov/api/icd9cm_sg/v3/search', [
+                    'terms'   => $q,
+                    'maxList' => 15,
+                ]);
+
+            if (! $res->successful()) {
+                throw new \RuntimeException('API ICD-9 gagal');
+            }
+
+            $online = collect($res->json()[3] ?? [])
+                ->map(fn ($r) => ['code' => $r[0], 'title' => $r[1]]);
+
+            $hasil = $hasil->concat($online)->unique('code');
+        } catch (\Throwable $e) {
+            if ($hasil->isEmpty()) {
+                $pesan = 'Gagal terhubung ke layanan ICD-9 dan belum ada di Data Master Tindakan. Anda tetap bisa mengetik manual.';
+            }
+        }
+
         return response()->json([
-            'data'  => [],
-            'pesan' => 'Gagal terhubung ke layanan ICD-9. Anda tetap bisa mengetik manual.',
+            'data'  => $hasil->values(),
+            'pesan' => $pesan ?? ($hasil->isEmpty() ? 'Tindakan tidak ditemukan. Anda tetap bisa mengetik manual.' : null),
         ]);
     }
-
-    return response()->json([
-        'data'  => $hasil,
-        'pesan' => $hasil->isEmpty() ? 'Tindakan tidak ditemukan. Anda tetap bisa mengetik manual.' : null,
-    ]);
-}   
 
     public function store(Request $request)
     {

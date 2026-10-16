@@ -429,7 +429,7 @@
                     if (count($tindakanList) === 0) { $tindakanList = [null]; }
                 @endphp
 
-                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa" data-icd-url="{{ route('icd10.cari') }}">
+                <form method="POST" action="{{ route('pemeriksaan.diagnosa.store', [$poli, $pasien->no_rm]) }}" id="form-diagnosa" data-icd-url="{{ route('icd10.cari') }}" data-icd9-url="{{ route('icd9.cari') }}">
                     @csrf
 
                     <div class="field-group">
@@ -490,8 +490,9 @@
                                 @foreach ($tindakanList as $nilai)
                                     @include('pemeriksaan.diagnosa-row', [
                                         'name' => 'tindakan',
+                                        'icd9' => true,
                                         'label' => 'Tindakan',
-                                        'placeholder' => 'Isi tindakan, boleh dikosongkan jika tidak ada',
+                                        'placeholder' => 'Ketik kode atau nama tindakan (ICD-9), contoh: 86.59 / suture. Boleh dikosongkan jika tidak ada',
                                         'selected' => $nilai,
                                         'removable' => ! $loop->first,
                                     ])
@@ -503,8 +504,9 @@
                             <template data-template>
                                 @include('pemeriksaan.diagnosa-row', [
                                     'name' => 'tindakan',
+                                        'icd9' => true,
                                     'label' => 'Tindakan',
-                                    'placeholder' => 'Isi tindakan, boleh dikosongkan jika tidak ada',
+                                    'placeholder' => 'Ketik kode atau nama tindakan (ICD-9), contoh: 86.59 / suture. Boleh dikosongkan jika tidak ada',
                                     'removable' => true,
                                 ])
                             </template>

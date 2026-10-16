@@ -1,4 +1,5 @@
-// Autocomplete ICD-10 untuk form Diagnosa.
+// Autocomplete ICD-10 dan ICD-9 untuk form Diagnosa.
+// Input bertanda data-icd="tindakan" -> isi "KODE - Nama tindakan" (ICD-9, sumber /icd9/cari)
 // Input bertanda data-icd="utama"    -> isi kolom diagnosis + kode_icd10 (terpisah)
 // Input bertanda data-icd="sekunder" -> isi "KODE - Judul" (dipakai juga di baris hasil "+ Tambah")
 (function () {
@@ -6,6 +7,7 @@
     if (!form || !form.dataset.icdUrl) return;
 
     var url = form.dataset.icdUrl;
+    var url9 = form.dataset.icd9Url || '';
     var box = document.createElement('div');
     box.className = 'icd-dropdown';
     box.hidden = true;
@@ -35,7 +37,9 @@
 
         if (!list.length) {
             box.innerHTML = '<div class="icd-empty">' +
-                esc(pesan || 'Tidak ada hasil. Anda tetap bisa mengetik diagnosis secara manual.') + '</div>';
+                esc(pesan || (active && active.dataset.icd === 'tindakan'
+                    ? 'Tidak ada hasil. Anda tetap bisa mengetik tindakan secara manual.'
+                    : 'Tidak ada hasil. Anda tetap bisa mengetik diagnosis secara manual.')) + '</div>';
         } else {
             box.innerHTML = list.map(function (it, i) {
                 return '<div class="icd-item" data-i="' + i + '">' +
@@ -62,6 +66,9 @@
             active.dataset.icdPicked = it.title;
             var kode = document.getElementById('kode_icd10');
             if (kode) kode.value = it.code;
+        } else if (active.dataset.icd === 'tindakan') {
+            // Tanda koma dibuang: daftar tindakan disimpan dipisah ", " sehingga koma di nama akan memecahnya
+            active.value = it.code + ' - ' + String(it.title).replace(/,\s*/g, ' ');
         } else {
             active.value = it.code + ' - ' + it.title;
         }
@@ -74,7 +81,9 @@
         if (controller) controller.abort();
         controller = new AbortController();
 
-        fetch(url + '?q=' + encodeURIComponent(q), {
+        var endpoint = (active && active.dataset.icd === 'tindakan' && url9) ? url9 : url;
+
+        fetch(endpoint + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json' },
             signal: controller.signal
         })
