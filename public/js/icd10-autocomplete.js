@@ -67,8 +67,7 @@
             var kode = document.getElementById('kode_icd10');
             if (kode) kode.value = it.code;
         } else if (active.dataset.icd === 'tindakan') {
-            // Tanda koma dibuang: daftar tindakan disimpan dipisah ", " sehingga koma di nama akan memecahnya
-            active.value = it.code + ' - ' + String(it.title).replace(/,\s*/g, ' ');
+            active.value = it.code + ' - ' + it.title;
         } else {
             active.value = it.code + ' - ' + it.title;
         }
@@ -81,7 +80,9 @@
         if (controller) controller.abort();
         controller = new AbortController();
 
-        fetch(url + '?q=' + encodeURIComponent(q), {
+        var endpoint = (active && active.dataset.icd === 'tindakan' && url9) ? url9 : url;
+
+        fetch(endpoint + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json' },
             signal: controller.signal
         })
