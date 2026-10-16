@@ -638,7 +638,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-batal" onclick="document.getElementById('modalTambahResep').classList.remove('show')">
+                <button type="button" class="btn-batal" onclick="batalTambahResep()">
                     Batal
                 </button>
                 <button type="submit" class="btn-simpan-resep">
@@ -691,6 +691,36 @@
 
     inputNama.addEventListener('input', cocokkanObat);
     inputDosis.addEventListener('input', cocokkanObat);
+
+    // Tombol Batal: tutup pop up dan kosongkan semua isian (tidak tersimpan kecuali klik "Simpan Resep").
+    // Dikosongkan manual (bukan form.reset()) supaya sisa isian lama dari validasi gagal juga ikut hilang.
+    var tanggalHariIni = @json(now()->format('Y-m-d'));
+
+    function batalTambahResep() {
+        var form = document.getElementById('form-resep');
+
+        form.querySelectorAll('input[type="text"], input[type="number"]').forEach(function (el) {
+            el.value = '';
+            el.setCustomValidity('');
+        });
+
+        inputSediaan.value = '';
+        inputSediaan.setCustomValidity('');
+
+        var tgl = form.querySelector('input[name="tanggal_penulisan"]');
+        if (tgl) {
+            tgl.value = tanggalHariIni;
+            tgl.setCustomValidity('');
+        }
+
+        // Pesan error validasi dari percobaan simpan sebelumnya ikut dihapus
+        var kotakError = form.querySelector('.modal-error');
+        if (kotakError) {
+            kotakError.remove();
+        }
+
+        document.getElementById('modalTambahResep').classList.remove('show');
+    }
 
     document.querySelectorAll('#form-resep [required]').forEach(function (field) {
         field.addEventListener('invalid', function () {

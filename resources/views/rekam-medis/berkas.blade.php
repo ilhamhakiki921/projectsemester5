@@ -2484,9 +2484,8 @@
         document.getElementById('btnBatalEditSoap').addEventListener('click', function () {
             modalEdit.classList.remove('show');
         });
-        modalEdit.addEventListener('click', function (e) {
-            if (e.target === modalEdit) modalEdit.classList.remove('show');
-        });
+        // Modal Edit Pemeriksaan & SOAP sengaja TIDAK ditutup saat klik di luar pop up;
+        // hanya bisa ditutup lewat tombol Batal.
 
         @if (session('edit_soap_kunjungan_id'))
             // Validasi gagal: buka lagi modalnya dengan isian terakhir + pesan error

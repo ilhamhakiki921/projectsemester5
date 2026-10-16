@@ -2736,6 +2736,14 @@ body.sidebar-collapsed .main {
     max-width: 100%;
 }
 
+/* Kolom aktif (diklik/fokus): border merah + glow, sama seperti kolom lain di form pendaftaran */
+.data-lain-kolom .form-group input:focus,
+.data-lain-kolom .form-group select:focus {
+    border-color: #b40000;
+    box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.12);
+    outline: none;
+}
+
 .data-lain-aksi {
     margin-top: auto;
     padding-top: 12px;
@@ -3739,43 +3747,43 @@ body.sidebar-collapsed .main {
 
                         <div class="form-group">
                             <label for="baruNoKk">No. KK</label>
-                            <input type="text" id="baruNoKk" maxlength="16" inputmode="numeric" autocomplete="off"
+                            <input type="text" id="baruNoKk" maxlength="16" inputmode="numeric" autocomplete="off" placeholder="16 digit angka sesuai Kartu Keluarga"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);">
                         </div>
 
                         <div class="form-group">
                             <label for="baruDomisili">Domisili</label>
-                            <input type="text" id="baruDomisili" autocomplete="off">
+                            <input type="text" id="baruDomisili" placeholder="Contoh: Magetan, Jawa Timur (tempat tinggal saat ini)" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="baruNip">NIP</label>
-                            <input type="text" id="baruNip" autocomplete="off">
+                            <input type="text" id="baruNip" placeholder="Nomor Induk Pegawai (kosongkan bila tidak ada)" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="baruJabatan">Jabatan</label>
-                            <input type="text" id="baruJabatan" autocomplete="off">
+                            <input type="text" id="baruJabatan" placeholder="Contoh: Staf Administrasi" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="baruDivisi">Divisi</label>
-                            <input type="text" id="baruDivisi" autocomplete="off">
+                            <input type="text" id="baruDivisi" placeholder="Contoh: Keuangan" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="baruDepartemen">Departemen</label>
-                            <input type="text" id="baruDepartemen" autocomplete="off">
+                            <input type="text" id="baruDepartemen" placeholder="Contoh: Akuntansi" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="baruSubDepartemen">Sub Departemen</label>
-                            <input type="text" id="baruSubDepartemen" autocomplete="off">
+                            <input type="text" id="baruSubDepartemen" placeholder="Contoh: Perpajakan" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="baruPerusahaan">Perusahaan</label>
-                            <input type="text" id="baruPerusahaan" autocomplete="off">
+                            <input type="text" id="baruPerusahaan" placeholder="Contoh: PT Maju Jaya" autocomplete="off">
                         </div>
 
                     </div>
@@ -3785,7 +3793,7 @@ body.sidebar-collapsed .main {
 
                         <div class="form-group">
                             <label for="baruSuku">Suku</label>
-                            <input type="text" id="baruSuku" autocomplete="off">
+                            <input type="text" id="baruSuku" placeholder="Contoh: Jawa" autocomplete="off">
                         </div>
 
                         <div class="form-group">
@@ -3796,7 +3804,7 @@ body.sidebar-collapsed .main {
                         <div class="form-group">
                             <label for="baruKewarganegaraan">Kewarganegaraan</label>
                             <select id="baruKewarganegaraan">
-                                <option value="" selected></option>
+                                <option value="" selected>Pilih kewarganegaraan</option>
                                 <option value="WNI">WNI</option>
                                 <option value="WNA">WNA</option>
                             </select>
