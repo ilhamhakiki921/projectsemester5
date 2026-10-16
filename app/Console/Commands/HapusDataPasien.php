@@ -17,6 +17,8 @@ class HapusDataPasien extends Command
         'clinical_pathway_kunjungans',
         'clinical_pathways',
         'permintaan_penunjang',
+        'surat_medis',
+        'informed_consent',
         'autentikasi_pemeriksaan',
         'autentikasi_kunjungan',
         'surat_rujukan',
