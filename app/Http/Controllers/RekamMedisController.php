@@ -274,11 +274,12 @@ class RekamMedisController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'tb'               => 'required|string|max:50',
+            'tb'               => 'required|integer|min:1|max:300',
             'berat_badan'      => 'required|string|max:50',
             'imt'              => 'nullable|string|max:50',
             'suhu_badan'       => 'required|string|max:50',
-            'td'               => 'required|string|max:50',
+            'sistole'          => 'required|integer|min:1|max:300',
+            'diastole'         => 'required|integer|min:1|max:200',
             'detak_jantung'    => 'required|string|max:50',
             'respiratory_rate' => 'nullable|string|max:50',
             'saturasi'         => 'nullable|string|max:50',

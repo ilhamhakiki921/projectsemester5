@@ -18,7 +18,8 @@ class RekamMedis extends Model
         'riwayat_alergi',
         'riwayat_pengobatan',
         'tb',
-        'td',
+        'sistole',
+        'diastole',
         'respiratory_rate',
         'berat_badan',
         'detak_jantung',
@@ -45,6 +46,15 @@ class RekamMedis extends Model
     protected $casts = [
         'butuh_informed_consent' => 'boolean',
     ];
+
+        /** Gabungan sistole/diastole, mis. "120/80" (dipakai tampilan, PDF, resume, surat medis). */
+    public function getTdAttribute(): ?string
+    {
+        if ($this->sistole === null || $this->diastole === null) {
+            return null;
+        }
+        return $this->sistole . '/' . $this->diastole;
+    }
 
     /** Cache per request supaya tab di tiap halaman tidak query berulang. */
     protected static array $cacheInformedConsent = [];

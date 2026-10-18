@@ -43,7 +43,7 @@ class PenunjangController extends Controller
         $id = DB::table('permintaan_penunjang')->insertGetId([
             'no_rm'       => $no_rm,
             'pemeriksaan' => json_encode($data['pemeriksaan']),
-            'perlu_puasa' => false,
+            'perlu_puasa' => 'Tidak',
             'hasil_ke'    => 'dokter',
             'keterangan'  => $data['keterangan'] ?? null,
             'created_at'  => now(),

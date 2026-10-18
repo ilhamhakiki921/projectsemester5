@@ -396,7 +396,7 @@
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>TB (Tinggi Badan)<span class="required-mark">*</span></label>
-                            <input type="text" id="tb" name="tb" value="{{ old('tb', optional($rekam)->tb) }}" placeholder="Tinggi badan dalam cm" required>
+                            <input type="number" id="tb" name="tb" min="1" max="300" step="1" value="{{ old('tb', optional($rekam)->tb) }}" placeholder="Tinggi badan dalam cm" required>
                         </div>
                         <div class="field">
                             <label>BB (Berat Badan)<span class="required-mark">*</span></label>
@@ -413,9 +413,13 @@
                             <label>Suhu Badan<span class="required-mark">*</span></label>
                             <input type="text" name="suhu_badan" value="{{ old('suhu_badan', optional($rekam)->suhu_badan) }}" placeholder="Suhu tubuh dalam °C" required>
                         </div>
-                        <div class="field">
+                                                <div class="field">
                             <label>TD (Tekanan Darah)<span class="required-mark">*</span></label>
-                            <input type="text" name="td" value="{{ old('td', optional($rekam)->td) }}" placeholder="Tekanan darah, format 120/80" required>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <input type="number" name="sistole" min="1" max="300" step="1" style="flex:1;min-width:0" value="{{ old('sistole', optional($rekam)->sistole) }}" placeholder="Sistole" required>
+                                <span>/</span>
+                                <input type="number" name="diastole" min="1" max="200" step="1" style="flex:1;min-width:0" value="{{ old('diastole', optional($rekam)->diastole) }}" placeholder="Diastole" required>
+                            </div>
                         </div>
                         <div class="field">
                             <label>Denyut Nadi<span class="required-mark">*</span></label>

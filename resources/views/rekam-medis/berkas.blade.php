@@ -1534,7 +1534,8 @@
                                                         'berat_badan'      => $rm->berat_badan,
                                                         'imt'              => $rm->imt,
                                                         'suhu_badan'       => $rm->suhu_badan,
-                                                        'td'               => $rm->td,
+                                                        'sistole'          => $rm->sistole,
+                                                        'diastole'         => $rm->diastole,
                                                         'detak_jantung'    => $rm->detak_jantung,
                                                         'respiratory_rate' => $rm->respiratory_rate,
                                                         'saturasi'         => $rm->saturasi,
@@ -2191,7 +2192,7 @@
             <div class="f-grid">
                 <div class="f-group {{ $errEdit->has('tb') ? 'salah' : '' }}">
                     <label for="es_tb">TB (cm) <span class="wajib">*</span></label>
-                    <input type="text" id="es_tb" name="tb" placeholder="Tinggi badan dalam cm" autocomplete="off">
+                    <input type="number" id="tb" name="tb" min="1" max="300" step="1" value="{{ old('tb', optional($rekam)->tb) }}" placeholder="Tinggi badan dalam cm" required>
                     @if ($errEdit->has('tb'))<span class="f-pesan">{{ $errEdit->first('tb') }}</span>@endif
                 </div>
                 <div class="f-group {{ $errEdit->has('berat_badan') ? 'salah' : '' }}">
@@ -2209,10 +2210,15 @@
                     <input type="text" id="es_suhu_badan" name="suhu_badan" placeholder="Contoh: 36,8" autocomplete="off">
                     @if ($errEdit->has('suhu_badan'))<span class="f-pesan">{{ $errEdit->first('suhu_badan') }}</span>@endif
                 </div>
-                <div class="f-group {{ $errEdit->has('td') ? 'salah' : '' }}">
-                    <label for="es_td">TD (mmHg) <span class="wajib">*</span></label>
-                    <input type="text" id="es_td" name="td" placeholder="Contoh: 120/80" autocomplete="off">
-                    @if ($errEdit->has('td'))<span class="f-pesan">{{ $errEdit->first('td') }}</span>@endif
+                                <div class="f-group {{ $errEdit->has('sistole') ? 'salah' : '' }}">
+                    <label for="es_sistole">Sistole (mmHg) <span class="wajib">*</span></label>
+                    <input type="number" id="es_sistole" name="sistole" min="1" max="300" step="1" placeholder="Contoh: 120" autocomplete="off">
+                    @if ($errEdit->has('sistole'))<span class="f-pesan">{{ $errEdit->first('sistole') }}</span>@endif
+                </div>
+                <div class="f-group {{ $errEdit->has('diastole') ? 'salah' : '' }}">
+                    <label for="es_diastole">Diastole (mmHg) <span class="wajib">*</span></label>
+                    <input type="number" id="es_diastole" name="diastole" min="1" max="200" step="1" placeholder="Contoh: 80" autocomplete="off">
+                    @if ($errEdit->has('diastole'))<span class="f-pesan">{{ $errEdit->first('diastole') }}</span>@endif
                 </div>
                 <div class="f-group {{ $errEdit->has('detak_jantung') ? 'salah' : '' }}">
                     <label for="es_detak_jantung">Denyut Jantung <span class="wajib">*</span></label>
@@ -2453,7 +2459,7 @@
         // Modal Edit Pemeriksaan & SOAP
         var modalEdit = document.getElementById('modalEditSoap');
         var formEdit  = document.getElementById('formEditSoap');
-        var kolomEdit = ['tb', 'berat_badan', 'imt', 'suhu_badan', 'td', 'detak_jantung',
+                var kolomEdit = ['tb', 'berat_badan', 'imt', 'suhu_badan', 'sistole', 'diastole', 'detak_jantung',
                          'respiratory_rate', 'saturasi', 'gcs',
                          'subjective', 'objective', 'assessment', 'plan'];
 
