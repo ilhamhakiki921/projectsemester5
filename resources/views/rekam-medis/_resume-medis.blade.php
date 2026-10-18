@@ -33,6 +33,8 @@
         <tr><td class="k">No. RM</td><td class="t">:</td><td>{{ $r['no_rm'] }}</td></tr>
         <tr><td class="k">Nama Peserta</td><td class="t">:</td><td>{{ $r['nama'] }}</td></tr>
         <tr><td class="k">Tgl. Lahir</td><td class="t">:</td><td>{{ $r['tgl_lahir'] }}</td></tr>
+        <tr><td class="k">Jenis Kelamin</td><td class="t">:</td><td>{{ $r['jk'] !== '' ? $r['jk'] : '-' }}</td></tr>
+        <tr><td class="k">Alamat</td><td class="t">:</td><td>{{ $r['alamat'] !== '' ? $r['alamat'] : '-' }}</td></tr>
         <tr><td class="k">Poli Tujuan</td><td class="t">:</td><td>{{ $r['poli'] }}</td></tr>
         <tr><td class="k">DPJP</td><td class="t">:</td><td>{{ $r['dpjp'] }}</td></tr>
         <tr><td class="k">Tanggal Masuk</td><td class="t">:</td><td>{{ $r['tgl_masuk'] }}</td></tr>

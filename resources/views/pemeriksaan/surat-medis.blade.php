@@ -167,7 +167,6 @@
     </div>
 
     <div class="sm-foot">
-        <button type="button" class="sm-btn" id="smSimpan">Simpan</button>
         <button type="button" class="sm-btn" id="smCetak">Cetak</button>
     </div>
 </form>
@@ -185,7 +184,7 @@
     const form = document.getElementById('smForm');
     const el = id => document.getElementById(id);
     const toastEl = el('smToast');
-    const tombol = [el('smSimpan'), el('smCetak')];
+    const tombol = [el('smCetak')];
     const opt = { Sakit: el('optSakit'), Sehat: el('optSehat') };
     const kolom = ['nomor_surat', 'alamat_pasien', 'lama_istirahat', 'mulai_tanggal', 'keperluan',
                    'tanggal_pemeriksaan', 'hasil_pemeriksaan', 'berat_badan', 'tinggi_badan', 'tekanan_darah',
@@ -363,7 +362,6 @@
         } finally { kunci(false); }
     }
 
-    el('smSimpan').addEventListener('click', () => jalankan('simpan'));
     el('smCetak').addEventListener('click', () => jalankan('cetak'));
     form.addEventListener('submit', e => e.preventDefault());
 

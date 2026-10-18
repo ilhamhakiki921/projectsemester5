@@ -81,11 +81,45 @@
     $kj = ($pathway ?? null) ? $pathway->kunjungan->keyBy('urutan')->map(fn ($k) => $k->toArray())->all() : [];
     $autoHeader = $autoHeader ?? [];
     $autoKunjungan = $autoKunjungan ?? [];
+    // Pisahkan "KODE - Nama" dari tab Diagnosa: nama ke kolom nama, kode ke kolom Kode ICD
+    $pisahKode = function ($teks) {
+        $nama = [];
+        $kode = [];
+        foreach (preg_split('/\s*\|\s*/', (string) $teks) as $bagian) {
+            $bagian = trim($bagian);
+            if ($bagian === '') continue;
+            if (preg_match('/^([A-Z]\d{2}(?:\.\d{1,4})?|\d{2}(?:\.\d{1,2})?)\s*[-–:]\s*(.+)$/u', $bagian, $m)) {
+                $kode[] = $m[1];
+                $nama[] = trim($m[2]);
+            } else {
+                $nama[] = $bagian;
+            }
+        }
+        return [mb_substr(implode('; ', $nama), 0, 255), mb_substr(implode(', ', $kode), 0, 255)];
+    };
+    $rekamCp = optional($kunjungan ?? null)->rekamMedis;
+    [$autoKunjungan['diagnosis_penyerta'], $autoKunjungan['kode_penyerta']] = $pisahKode(optional($rekamCp)->diagnosis_sekunder);
+    [$autoKunjungan['tindakan_nama'], $autoKunjungan['tindakan_kode']] = $pisahKode(optional($rekamCp)->tindakan);
     // Isian awal dari tab Diagnosa & Resep: hanya Kunjungan ke-1, dan hanya mengisi kolom yang masih kosong
     $val = function ($i, $k) use ($kj, $autoKunjungan) {
         $tersimpan = $kj[$i][$k] ?? '';
         if (blank($tersimpan) && $i == 1) {
             $tersimpan = $autoKunjungan[$k] ?? '';
+        }
+        // Data lama: kode penyakit/tindakan tercampur di kolom nama -> pindahkan ke kolom kode
+        $pasangan = ['diagnosis_penyerta' => 'kode_penyerta', 'tindakan_nama' => 'tindakan_kode'];
+        $kebalikan = array_flip($pasangan);
+        $polaKode = '/^([A-Z]\d{2}(?:\.\d{1,4})?|\d{2}(?:\.\d{1,2})?)\s*[-–:]\s*(.+)$/u';
+        if (isset($pasangan[$k]) && preg_match($polaKode, (string) $tersimpan, $m)) {
+            $tersimpan = trim($m[2]);
+        } elseif (isset($kebalikan[$k]) && blank($tersimpan)) {
+            $namaLama = $kj[$i][$kebalikan[$k]] ?? '';
+            if (blank($namaLama) && $i == 1) {
+                $namaLama = $autoKunjungan[$kebalikan[$k]] ?? '';
+            }
+            if (preg_match($polaKode, (string) $namaLama, $m)) {
+                $tersimpan = $m[1];
+            }
         }
         return old("kunjungan.$i.$k", $tersimpan);
     };
@@ -175,7 +209,7 @@
             <div class="cp-box">
                 <div class="cp-box-head red">Diagnosis (ICD-10)</div>
                 <div class="cp-box-body">
-                    <div style="margin:0 0 12px"><button type="button" class="cp-btn tarik" data-cp-tarik="{{ json_encode(['diagnosis_utama' => $autoKunjungan['diagnosis_utama'] ?? '', 'kode_utama' => $autoKunjungan['kode_utama'] ?? '', 'diagnosis_penyerta' => $autoKunjungan['diagnosis_penyerta'] ?? ''], JSON_UNESCAPED_UNICODE) }}">Ambil dari Diagnosa</button></div>
+                    <div style="margin:0 0 12px"><button type="button" class="cp-btn tarik" data-cp-tarik="{{ json_encode(['diagnosis_utama' => $autoKunjungan['diagnosis_utama'] ?? '', 'kode_utama' => $autoKunjungan['kode_utama'] ?? '', 'diagnosis_penyerta' => $autoKunjungan['diagnosis_penyerta'] ?? '', 'kode_penyerta' => $autoKunjungan['kode_penyerta'] ?? ''], JSON_UNESCAPED_UNICODE) }}">Ambil dari Diagnosa</button></div>
                     <div class="cp-grid2">
                         <div class="cp-f"><label>Diagnosis Utama</label><input type="text" name="kunjungan[{{ $i }}][diagnosis_utama]" data-cp-icd data-cp-kode="kode_utama" autocomplete="off" value="{{ $val($i, 'diagnosis_utama') }}" placeholder="Ketik kode atau nama penyakit (ICD-10)"></div>
                         <div class="cp-f"><label>Kode ICD-10</label><input type="text" name="kunjungan[{{ $i }}][kode_utama]" data-cp-icd data-cp-nama="diagnosis_utama" autocomplete="off" value="{{ $val($i, 'kode_utama') }}" placeholder="Contoh: I10"></div>
@@ -214,8 +248,8 @@
                 <div class="cp-box-head red">Pemeriksaan Penunjang (ICD-9-CM)</div>
                 <div class="cp-box-body">
                     <div class="cp-grid-tind">
-                        <div class="cp-f"><label>Jenis Pemeriksaan</label><input type="text" name="kunjungan[{{ $i }}][tindakan_nama]" value="{{ $val($i, 'tindakan_nama') }}" placeholder="Tulis bebas, mis. EKG" autocomplete="off"></div>
-                        <div class="cp-f"><label>Kode ICD-9-CM</label><input type="text" name="kunjungan[{{ $i }}][tindakan_kode]" value="{{ $val($i, 'tindakan_kode') }}" placeholder="Ketik kode atau nama, mis. 89.52" data-cp-icd data-cp-gabung data-cp-url="{{ route('icd9.cari') }}" autocomplete="off"></div>
+                        <div class="cp-f"><label>Jenis Pemeriksaan</label><input type="text" name="kunjungan[{{ $i }}][tindakan_nama]" value="{{ $val($i, 'tindakan_nama') }}" placeholder="Tulis bebas, mis. EKG" data-cp-icd data-cp-kode="tindakan_kode" data-cp-url="{{ route('icd9.cari') }}" autocomplete="off"></div>
+                        <div class="cp-f"><label>Kode ICD-9-CM</label><input type="text" name="kunjungan[{{ $i }}][tindakan_kode]" value="{{ $val($i, 'tindakan_kode') }}" placeholder="Ketik kode atau nama, mis. 89.52" data-cp-icd data-cp-nama="tindakan_nama" data-cp-url="{{ route('icd9.cari') }}" autocomplete="off"></div>
                     </div>
                 </div>
             </div>
