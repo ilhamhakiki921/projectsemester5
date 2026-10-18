@@ -24,7 +24,6 @@
 <body>
 <div class="bar">
     <button onclick="window.print()">Cetak</button>
-    <button class="x" onclick="window.close()">Tutup</button>
 </div>
 
 <div class="halaman">

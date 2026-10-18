@@ -1974,7 +1974,7 @@
                                 <div class="rp-body">
                                     <div class="rp-aksi">
                                         <a href="{{ route('rekam-medis.resume.cetak', $k->id) }}"
-                                           target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Resume Medis</a>
+                                           target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
                                     </div>
 
                                     @unless ($rsm['ada_rm'])

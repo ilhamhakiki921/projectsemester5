@@ -413,9 +413,18 @@ class RekamMedisController extends Controller
         if ($anamnesa === '') {
             $anamnesa = $bersih($rm?->subjective);
         }
+        foreach ([
+            'Riwayat penyakit dahulu' => $rm?->riwayat_penyakit_terdahulu,
+            'Riwayat alergi'          => $rm?->riwayat_alergi,
+            'Riwayat pengobatan'      => $rm?->riwayat_pengobatan,
+        ] as $label => $isi) {
+            if ($bersih($isi) !== '') {
+                $anamnesa .= ($anamnesa !== '' ? "\n" : '') . $label . ': ' . $bersih($isi);
+            }
+        }
 
         // ---- Ringkasan hasil pemeriksaan poli utama
-        $poliUtama = collect([$rm?->objective, $rm?->assessment])
+        $poliUtama = collect([$rm?->objective, $rm?->assessment, $rm?->plan])
             ->map($bersih)->filter()->implode("\n");
 
         // ---- Poli konsulan: kunjungan lain pasien yang sama pada tanggal yang sama di poli berbeda
@@ -459,11 +468,19 @@ class RekamMedisController extends Controller
         $kodeSekunder = array_values(array_unique($cocok[0] ?? []));
 
         // ---- Tindakan & ICD-9 (dicocokkan dengan Data Master Tindakan bila ada)
-        $tindakan = collect(explode(',', (string) $rm?->tindakan))->map($bersih)->filter()->values();
+        // Tab Diagnosa menyimpan beberapa tindakan dipisah " | " (nama tindakan boleh memuat koma)
+        $tindakan = collect(preg_split('/\s*\|\s*/', (string) $rm?->tindakan))->map($bersih)->filter()->values();
         $kodeIcd9 = [];
+        foreach ($tindakan as $t) {
+            // Format dari pencarian ICD-9: "86.59 - Nama tindakan"
+            if (preg_match('/^(\d{2}(?:\.\d{1,2})?)\s*[-–:]/u', $t, $m9)) {
+                $kodeIcd9[] = $m9[1];
+            }
+        }
         try {
             $master = Tindakan::all();
             foreach ($tindakan as $t) {
+                if (preg_match('/^\d{2}(?:\.\d{1,2})?\s*[-–:]/u', $t)) continue;   // kode sudah terambil
                 $ketemu = $master->first(function ($m) use ($t) {
                     return strcasecmp($m->nama, $t) === 0
                         || str_starts_with($t, $m->kode . ' ')
@@ -502,6 +519,9 @@ class RekamMedisController extends Controller
             'no_rm'        => $pasien->no_rm,
             'nama'         => trim(($pasien->title ? $pasien->title . ' ' : '') . $pasien->nama),
             'tgl_lahir'    => $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : '',
+            'jk'           => $bersih($pasien->jenis_kelamin),
+            'alamat'       => collect([$pasien->alamat, $pasien->kelurahan, $pasien->kecamatan, $pasien->kabupaten])
+                                ->map($bersih)->filter()->implode(', '),
             'poli'         => $namaPoli[$k->poli] ?? 'Poli ' . ucfirst($k->poli),
             'dpjp'         => $dpjp,
             'tgl_masuk'    => $k->tanggal_kunjungan ? $k->tanggal_kunjungan->format('d-m-Y') : '',
@@ -514,7 +534,9 @@ class RekamMedisController extends Controller
             'vital'        => $vital,
             'diagnosa'     => $bersih($rm?->diagnosis_utama),
             'diagnosa_sekunder' => $sekunder,
-            'icd10_primer' => $bersih($rm?->kode_icd10),
+            'icd10_primer' => $bersih($rm?->kode_icd10) !== ''
+                                ? $bersih($rm?->kode_icd10)
+                                : (preg_match('/\b[A-Z]\d{2}(?:\.\d{1,2})?\b/', (string) $rm?->diagnosis_utama, $mp) ? $mp[0] : ''),
             'icd10_sekunder' => implode(', ', $kodeSekunder),
             'tindakan'     => $tindakan->all(),
             'icd9'         => implode(', ', array_unique($kodeIcd9)),
