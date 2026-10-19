@@ -411,7 +411,7 @@
                     <div class="field-row cols-3">
                         <div class="field">
                             <label>Suhu Badan<span class="required-mark">*</span></label>
-                            <input type="text" name="suhu_badan" value="{{ old('suhu_badan', optional($rekam)->suhu_badan) }}" placeholder="Suhu tubuh dalam °C" required>
+                            <input type="number" min="1" max="50" step="1" name="suhu_badan" value="{{ old('suhu_badan', optional($rekam)->suhu_badan) }}" placeholder="Suhu tubuh dalam °C" required>
                         </div>
                                                 <div class="field">
                             <label>TD (Tekanan Darah)<span class="required-mark">*</span></label>
@@ -438,7 +438,7 @@
                         </div>
                         <div class="field">
                             <label>GCS</label>
-                            <input type="text" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" placeholder="Nilai GCS, format E4V5M6">
+                            <input type="number" min="3" max="15" step="1" name="gcs" value="{{ old('gcs', optional($rekam)->gcs) }}" placeholder="Total skor GCS (3-15)">
                         </div>
                     </div>
 

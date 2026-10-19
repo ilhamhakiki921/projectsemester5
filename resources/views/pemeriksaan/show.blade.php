@@ -516,7 +516,7 @@ body {
 
                             <div class="form-group">
                                 <label>Suhu Badan<span class="required-mark">*</span></label>
-                                <input type="text" name="suhu_badan" value="{{ old('suhu_badan', $rekamMedis->suhu_badan ?? '') }}" placeholder="Suhu tubuh dalam °C" required>
+                                <input type="number" min="1" max="50" step="1" name="suhu_badan" value="{{ old('suhu_badan', $rekamMedis->suhu_badan ?? '') }}" placeholder="Suhu tubuh dalam °C" required>
                             </div>
 
                                                         <div class="form-group">
@@ -549,7 +549,7 @@ body {
 
                             <div class="form-group">
                                 <label>GCS<span class="required-mark">*</span></label>
-                                <input type="text" name="gcs" value="{{ old('gcs', $rekamMedis->gcs ?? '') }}" placeholder="Nilai GCS, format E4V5M6" required>
+                                <input type="number" min="3" max="15" step="1" name="gcs" value="{{ old('gcs', $rekamMedis->gcs ?? '') }}" placeholder="Total skor GCS (3-15)" required>
                             </div>
 
                         </div>
