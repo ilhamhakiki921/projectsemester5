@@ -29,5 +29,9 @@
 <div class="halaman">
     @include('rekam-medis._resume-medis', ['resume' => $resume])
 </div>
+<script>
+// Dialog cetak langsung terbuka begitu lembar selesai dimuat (tombol "Cetak" di pojok tetap ada untuk cetak ulang)
+window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 600); });
+</script>
 </body>
 </html>

@@ -121,5 +121,11 @@
         <div class="nm">{{ $surat->dokter }}</div>
     </div>
 </div>
+@unless ($pdf)
+<script>
+// Dialog cetak langsung terbuka begitu lembar selesai dimuat (tombol "Cetak" di pojok tetap ada untuk cetak ulang)
+window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 600); });
+</script>
+@endunless
 </body>
 </html>

@@ -2024,8 +2024,6 @@
                                         @if ($kSm)
                                             <a href="{{ route('surat-medis.cetak', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
-                                            <a href="{{ route('surat-medis.unduh', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
-                                               class="btn-edit-soap rj-cetak">Unduh</a>
                                         @endif
                                     </div>
 
