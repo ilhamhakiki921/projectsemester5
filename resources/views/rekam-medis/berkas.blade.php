@@ -2192,7 +2192,7 @@
             <div class="f-grid">
                 <div class="f-group {{ $errEdit->has('tb') ? 'salah' : '' }}">
                     <label for="es_tb">TB (cm) <span class="wajib">*</span></label>
-                    <input type="number" id="tb" name="tb" min="1" max="300" step="1" value="{{ old('tb', optional($rekam)->tb) }}" placeholder="Tinggi badan dalam cm" required>
+                    <input type="number" id="es_tb" name="tb" min="1" max="300" step="1" placeholder="Tinggi badan dalam cm" required>
                     @if ($errEdit->has('tb'))<span class="f-pesan">{{ $errEdit->first('tb') }}</span>@endif
                 </div>
                 <div class="f-group {{ $errEdit->has('berat_badan') ? 'salah' : '' }}">
