@@ -62,5 +62,14 @@ class UserSeeder extends Seeder
                 'status'       => 'aktif',
             ]
         );
+                User::updateOrCreate(
+            ['username' => 'rekammedis'],
+            [
+                'nama_lengkap' => 'Petugas Rekam Medis',
+                'password'     => 'rm123456',
+                'role'         => 'rm',
+                'status'       => 'aktif',
+            ]
+        );
     }
 }
