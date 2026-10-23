@@ -40,12 +40,13 @@ class User extends Authenticatable
     /**
      * Apakah akun ini Petugas Rekam Medis (role `rm`).
      */
-    public function isRm(): bool
+        public function isRm(): bool
     {
         return $this->role === 'rm';
     }
 
     /**
+<<<<<<< HEAD
      * Apakah akun ini Petugas Pendaftaran (role `petugas_pendaftaran`):
      * hanya boleh membuka Dashboard & Pendaftaran.
      */
@@ -55,6 +56,15 @@ class User extends Authenticatable
     }
 
     /**
+=======
+<<<<<<< HEAD
+     * Apakah akun ini Dokter (role `dokter`).
+     */
+    public function isDokter(): bool
+    {
+        return $this->role === 'dokter';
+=======
+>>>>>>> 35569b599f104dd705e536a67d24ace77ca733b2
      * Apakah akun ini Administrator (role `admin`): akses penuh ke seluruh sistem.
      */
     public function isAdmin(): bool
@@ -69,6 +79,7 @@ class User extends Authenticatable
     public function bisaKelolaRekamMedis(): bool
     {
         return $this->isRm() || $this->isAdmin();
+>>>>>>> 517f25037703c7501b022179cd998efcd3d28629
     }
 
     /**

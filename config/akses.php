@@ -22,6 +22,16 @@
 
 return [
 
+    /*
+     | Saklar login.
+     |   true (bawaan) = login sungguhan (cek username/password) dan hak akses
+     |                   perawat aktif.
+     |   false         = login dilewati: klik Login langsung masuk, halaman bisa
+     |                   dibuka tanpa login. Hak akses perawat TIDAK aktif.
+     | Ubah lewat file .env:  AKSES_LOGIN_WAJIB=false   lalu  php artisan config:clear
+     */
+    'login_wajib' => env('AKSES_LOGIN_WAJIB', true),
+
     'perawat' => [
 
         'tulis_boleh' => [

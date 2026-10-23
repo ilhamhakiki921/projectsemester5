@@ -39,13 +39,14 @@ Route::post('/forgot-password', [LoginController::class, 'lupaPassword'])->name(
 
 // ===========================
 // HALAMAN YANG WAJIB LOGIN
-// Wajib login ('auth') supaya hak akses per role bisa berjalan.
-// BatasiAkses = pembatasan hak akses PERAWAT (aturannya di config/akses.php);
-// role lain tidak terpengaruh. Kalau suatu saat mau menonaktifkan login lagi,
-// ganti 'auth' jadi 'web' DAN ubah LoginController::login() seperti semula.
+// Dikendalikan saklar config('akses.login_wajib') (.env: AKSES_LOGIN_WAJIB):
+//  - true (bawaan): memakai 'auth' (wajib login) sehingga hak akses per role berjalan.
+//  - false: memakai middleware 'web' saja, semua halaman bisa diakses tanpa login.
+// BatasiAkses = pembatasan hak akses PERAWAT (config/akses.php); hanya berlaku
+// untuk user perawat yang sedang login, role lain tidak terpengaruh.
 // ===========================
 
-Route::middleware(['auth', BatasiAkses::class, CatatAudit::class])->group(function () {
+Route::middleware([config('akses.login_wajib') ? 'auth' : 'web', BatasiAkses::class, CatatAudit::class])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
