@@ -2846,8 +2846,7 @@ body.sidebar-collapsed .main {
                 </div>
 
 
-                @unless (auth()->user()?->isDokter())
-<button
+                <button
     type="button"
     class="btn-new"
     onclick="bukaModalPasienBaru()"
@@ -2855,7 +2854,26 @@ body.sidebar-collapsed .main {
     <i class="bi bi-person-plus-fill"></i>
     Daftarkan Pasien Baru
 </button>
-@endunless
+
+@if (auth()->user()?->isRm())
+{{-- Petugas Rekam Medis: di halaman Pendaftaran hanya boleh melihat detail identitas pasien (tombol mata). --}}
+<style>
+    .btn-new, .btn-kunjungan, .btn-edit, .btn-telusuri {
+        opacity: 0.4;
+        filter: grayscale(0.7);
+        pointer-events: none;
+        cursor: default;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-new, .btn-kunjungan, .btn-edit, .btn-telusuri').forEach(function (el) {
+            el.setAttribute('tabindex', '-1');
+            el.setAttribute('aria-disabled', 'true');
+        });
+    });
+</script>
+@endif
 
             </div>
 
@@ -2936,15 +2954,13 @@ body.sidebar-collapsed .main {
 
                                 <td>
                                     <div class="action">
-                                        @unless (auth()->user()?->isDokter())
-<button
-    type="button"
-    class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-    onclick="bukaModalKunjungan(this)"
->
-    <i class="bi bi-person-plus-fill"></i>
-</button>
-@endunless
+                                        <button
+                                            type="button"
+                                            class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
+                                            onclick="bukaModalKunjungan(this)"
+                                        >
+                                            <i class="bi bi-person-plus-fill"></i>
+                                        </button>
 
                                         <button
                                             type="button"
@@ -2960,13 +2976,11 @@ body.sidebar-collapsed .main {
                                             data-alamat="{{ $p->alamat }}"
                                         ><i class="bi bi-eye-fill"></i></button>
 
-                                        @unless (auth()->user()?->isDokter())
-<button
-    type="button"
-    class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-    onclick="bukaModalEdit(this)"
-><i class="bi bi-pencil-square"></i></button>
-@endunless
+                                        <button
+                                            type="button"
+                                            class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
+                                            onclick="bukaModalEdit(this)"
+                                        ><i class="bi bi-pencil-square"></i></button>
                                     </div>
                                 </td>
                             </tr>

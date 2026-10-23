@@ -4,6 +4,8 @@
 @php
     // Petugas Pendaftaran: menu selain Dashboard & Pendaftaran tampil pudar dan tidak bisa diklik
     $kunciMenu = auth()->user()?->isPetugasPendaftaran() ? 'menu-terkunci' : '';
+    // Petugas Rekam Medis: menu Penunjang & Farmasi tampil pudar dan tidak bisa dibuka
+    $kunciRm = auth()->user()?->isRm() ? 'menu-terkunci' : '';
 @endphp
 
 <aside class="sidebar" id="sidebarUtama">
@@ -90,7 +92,7 @@
 
         {{-- Penunjang --}}
         <a href="#"
-           class="menu-item {{ $kunciMenu }}">
+           class="menu-item {{ $kunciMenu }} {{ $kunciRm }}">
 
             <span class="menu-icon"><i class="bi bi-clipboard2-pulse-fill"></i></span>
 
@@ -101,7 +103,7 @@
 
         {{-- Farmasi --}}
         <a href="{{ route('farmasi.index') }}"
-           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }} {{ $kunciMenu }}">
+           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }} {{ $kunciMenu }} {{ $kunciRm }}">
 
             <span class="menu-icon"><i class="bi bi-capsule"></i></span>
 
