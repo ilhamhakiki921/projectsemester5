@@ -75,13 +75,26 @@ class LoginController extends Controller implements HasMiddleware
     /**
      * Proses submit form login.
      *
-     * Pengecekan username/password ke database sudah AKTIF (dibutuhkan supaya
-     * hak akses per role, mis. Perawat, bisa bekerja). Untuk menonaktifkannya
-     * lagi, lihat catatan di routes/web.php.
+     * Dikendalikan saklar config('akses.login_wajib') (.env: AKSES_LOGIN_WAJIB):
+     *  - true (bawaan): cek username/password ke database (loginDenganPengecekan),
+     *    dan hak akses per role (mis. Perawat) ikut aktif.
+     *  - false: login dilewati, klik Login langsung masuk ke dashboard tanpa
+     *    mengecek username/password.
      */
     public function login(Request $request)
     {
-        return $this->loginDenganPengecekan($request);
+        if (config('akses.login_wajib')) {
+            return $this->loginDenganPengecekan($request);
+        }
+
+        // Nama user dicatat di session supaya Audit Trail tetap tahu siapa
+        // yang login/logout walau pengecekan password sedang dinonaktifkan.
+        $username = trim((string) $request->input($this->username())) ?: 'admin';
+        $request->session()->put('audit_username', $username);
+
+        ActivityLog::catat('Login', 'users', null, 'Login berhasil', null, null, null, $username);
+
+        return redirect($this->redirectTo);
     }
 
     /**
