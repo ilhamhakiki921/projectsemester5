@@ -92,8 +92,6 @@ class BatasiAksesRole
 
             return $next($request);
         }
-
-<<<<<<< HEAD
         // Role selain rm & admin: halaman Rekam Medis hanya boleh dilihat
         // (kecuali Dokter, yang boleh mengedit Pemeriksaan & SOAP).
         // Administrator punya akses penuh (kecuali Riwayat SOAP yang hanya boleh diedit Dokter).

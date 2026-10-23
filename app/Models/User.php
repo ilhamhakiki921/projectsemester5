@@ -46,13 +46,14 @@ class User extends Authenticatable
     }
 
     /**
-<<<<<<< HEAD
      * Apakah akun ini Dokter (role `dokter`).
      */
     public function isDokter(): bool
     {
         return $this->role === 'dokter';
-=======
+    }
+
+    /**
      * Apakah akun ini Administrator (role `admin`): akses penuh ke seluruh sistem.
      */
     public function isAdmin(): bool
@@ -67,7 +68,6 @@ class User extends Authenticatable
     public function bisaKelolaRekamMedis(): bool
     {
         return $this->isRm() || $this->isAdmin();
->>>>>>> 517f25037703c7501b022179cd998efcd3d28629
     }
 
     /**
