@@ -17,10 +17,13 @@
     </div>
 
     <div class="admin-dropdown" id="adminDropdown">
+        @if (! auth()->user()?->isRm())
         <a href="#" class="dropdown-item">
             <i class="bi bi-person"></i> Profil Saya
         </a>
+        @endif
 
+        @if (auth()->user()?->role === 'admin')
         <div class="dropdown-divider"></div>
         <div class="dropdown-label">DATA MASTER</div>
 
@@ -42,6 +45,7 @@
         </a>
 
         <div class="dropdown-divider"></div>
+        @endif
 
         <form action="{{ route('logout') }}" method="POST" class="dropdown-logout-form">
             @csrf

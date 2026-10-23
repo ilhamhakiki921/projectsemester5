@@ -54,8 +54,8 @@
 
         {{-- Pemeriksaan --}}
 <a href="#"
-   class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
-   onclick="event.preventDefault(); toggleSubmenuPemeriksaan(this);">
+   class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }} {{ auth()->user()?->isRm() ? 'menu-nonaktif-rm' : '' }}"
+   onclick="event.preventDefault(); @if (! auth()->user()?->isRm()) toggleSubmenuPemeriksaan(this); @endif">
 
     <span class="menu-icon"><i class="bi bi-heart-pulse-fill"></i></span>
 
@@ -65,7 +65,7 @@
 
 </a>
 
-        <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}">
+        <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}" @if (auth()->user()?->isRm()) style="display:none" @endif>
 
             @php
                 $poliSaatIni = request()->route('poli');
@@ -82,7 +82,8 @@
 
         {{-- Penunjang --}}
         <a href="#"
-           class="menu-item">
+           class="menu-item {{ auth()->user()?->isRm() ? 'menu-nonaktif-rm' : '' }}"
+           onclick="event.preventDefault();">
 
             <span class="menu-icon"><i class="bi bi-clipboard2-pulse-fill"></i></span>
 
@@ -92,8 +93,8 @@
 
 
         {{-- Farmasi --}}
-        <a href="{{ route('farmasi.index') }}"
-           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }}">
+        <a href="{{ auth()->user()?->isRm() ? '#' : route('farmasi.index') }}"
+           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }} {{ auth()->user()?->isRm() ? 'menu-nonaktif-rm' : '' }}">
 
             <span class="menu-icon"><i class="bi bi-capsule"></i></span>
 
@@ -694,20 +695,23 @@ body.sidebar-collapsed .main {
 --}}
 @if (auth()->user()?->isRm() && ! request()->routeIs('rekam-medis.*'))
 <style>
-    .mode-baca-nonaktif { opacity: .45; cursor: not-allowed !important; pointer-events: none; }
-    .mode-baca-sembunyi { display: none !important; }
-    #bannerModeBaca {
-        position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
-        z-index: 9998; padding: 8px 16px; border-radius: 999px;
-        background: #fff8e1; border: 1px solid #f1d28a; color: #5a4300;
-        font: 500 12px 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    .mode-baca-nonaktif,
+    .mode-baca-nonaktif:hover {
+        background: #e5e7eb !important;
+        border-color: #d1d5db !important;
+        color: #9ca3af !important;
+        box-shadow: none !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+        opacity: 1 !important;
     }
+    .mode-baca-nonaktif i { color: #9ca3af !important; }
+    .mode-baca-sembunyi { display: none !important; }
 </style>
-<div id="bannerModeBaca">Mode lihat saja — di luar halaman Rekam Medis tidak dapat mengubah atau mencetak.</div>
 <script>
 (function () {
-    var PESAN = 'Di luar halaman Rekam Medis, akun ini hanya dapat melihat data.';
-    var aksi  = /(simpan|hapus|edit|ubah|tambah|delete|submit|import|upload|unggah|kirim|selesai|batalkan|verifikasi)/i;
+    var PESAN = '';
+    var aksi  = /(simpan|hapus|edit|ubah|tambah|delete|submit|import|upload|unggah|kirim|selesai|batalkan|verifikasi|daftarkan|btn-kunjungan|btn-new)/i;
 
     function adalahLogout(el) {
         var f = el.closest ? el.closest('form') : null;
@@ -724,17 +728,18 @@ body.sidebar-collapsed .main {
                 el.disabled = true;
                 el.classList.add('mode-baca-nonaktif');
             });
-            f.addEventListener('submit', function (e) { e.preventDefault(); alert(PESAN); }, true);
+            f.addEventListener('submit', function (e) { e.preventDefault();  }, true);
         });
 
         // 2) Tombol aksi di luar form (modal, tombol Edit/Hapus/Tambah, dst.)
         document.querySelectorAll('button, a.btn, [role="button"]').forEach(function (el) {
             if (adalahLogout(el) || el.closest('#sidebarUtama') || el.closest('.berkas-tabs')) return;
-            var teks = (el.textContent || '') + ' ' + el.className + ' ' + el.id;
+            var teks = (el.textContent || '') + ' ' + el.className + ' ' + el.id + ' ' + (el.getAttribute('title') || '');
+            if (/(detail|lihat)/i.test(el.className + ' ' + (el.getAttribute('title') || ''))) return;
             if (aksi.test(teks)) {
                 el.classList.add('mode-baca-nonaktif');
-                el.setAttribute('title', PESAN);
                 el.setAttribute('aria-disabled', 'true');
+                if (el.tagName === 'BUTTON') el.disabled = true;
             }
         });
 
@@ -757,7 +762,7 @@ body.sidebar-collapsed .main {
         window.fetch = function (url, opt) {
             var m = ((opt && opt.method) || 'GET').toUpperCase();
             if (m !== 'GET' && m !== 'HEAD' && !/\/logout/.test(String(url))) {
-                alert(PESAN);
+                
                 return Promise.reject(new Error(PESAN));
             }
             return fetchAsli.apply(this, arguments);
@@ -766,22 +771,36 @@ body.sidebar-collapsed .main {
     var bukaAsli = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function (method, url) {
         if (String(method).toUpperCase() !== 'GET' && !/\/logout/.test(String(url))) {
-            alert(PESAN);
+            
             throw new Error(PESAN);
         }
         return bukaAsli.apply(this, arguments);
     };
 
     // 5) Cetak lewat Ctrl+P / window.print() juga dimatikan
-    window.print = function () { alert(PESAN); };
+    window.print = function () {  };
     document.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'p') {
             e.preventDefault();
-            alert(PESAN);
+            
         }
     });
 
     document.addEventListener('DOMContentLoaded', kunci);
 })();
 </script>
+@endif
+
+
+@if (auth()->user()?->isRm())
+<style>
+    .sidebar .menu-nonaktif-rm,
+    .sidebar .menu-nonaktif-rm:hover {
+        opacity: .4;
+        cursor: not-allowed;
+        pointer-events: none;
+        background: transparent !important;
+        filter: grayscale(1);
+    }
+</style>
 @endif

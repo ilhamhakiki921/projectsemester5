@@ -12,8 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
  * Role `rm` (Petugas Rekam Medis):
  *  - Di halaman Rekam Medis : boleh mengubah koding & mencetak surat/formulir.
  *    Riwayat Pemeriksaan & SOAP TIDAK boleh diedit.
+ *  - Halaman Pemeriksaan & Farmasi : tidak bisa dibuka (dialihkan ke Rekam Medis).
  *  - Di halaman lain        : hanya boleh MELIHAT (semua simpan/ubah/hapus dan
  *    semua cetak/unduh ditolak).
+ *
+ * Data Master, Audit Trail & Pengaturan: hanya role `admin`.
  *
  * Role lain (dokter, perawat, admin, dst.):
  *  - Halaman Rekam Medis hanya boleh DILIHAT (tidak boleh mengubah / mencetak).
@@ -47,12 +50,30 @@ class BatasiAksesRole
         $ubah      = ! in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
         $cetak     = (bool) preg_match('/\.(cetak|unduh)$/', $nama);
 
+        // Data Master (Data User, Poli, Diagnosa, Tindakan, Obat, Pasien), Audit Trail
+        // dan Pengaturan: khusus admin.
+        if ($user->role !== 'admin' && $request->is('data-*', 'audit-log', 'audit-log/*', 'pengaturan', 'pengaturan/*')) {
+            return redirect()->route($user->isRm() ? 'rekam-medis.index' : 'dashboard');
+        }
+
         // Riwayat Pemeriksaan & SOAP: tidak bisa diedit oleh siapa pun.
         if (in_array($nama, $this->dikunciSemua, true)) {
             return $this->tolak($request, 'Riwayat Pemeriksaan & SOAP hanya dapat dilihat, tidak dapat diedit dari halaman Rekam Medis.');
         }
 
         if ($user->isRm()) {
+            // Halaman Pemeriksaan (asesmen, SOAP, diagnosa, resep, penunjang, rujukan,
+            // surat medis, autentikasi, clinical pathway) tidak bisa dibuka sama sekali.
+            // Hasil inputannya dilihat lewat halaman Rekam Medis.
+            if ($request->is('pemeriksaan', 'pemeriksaan/*')) {
+                return redirect()->route('rekam-medis.index');
+            }
+
+            // Halaman Farmasi juga tidak bisa dibuka.
+            if ($request->is('farmasi', 'farmasi/*')) {
+                return redirect()->route('rekam-medis.index');
+            }
+
             if ($halamanRm) {
                 if ($ubah && ! in_array($nama, $this->bolehDiubahRm, true)) {
                     return $this->tolak($request, 'Aksi ini tidak diizinkan untuk Petugas Rekam Medis.');
