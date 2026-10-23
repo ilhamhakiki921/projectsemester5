@@ -2846,7 +2846,8 @@ body.sidebar-collapsed .main {
                 </div>
 
 
-                <button
+                @unless (auth()->user()?->isDokter())
+<button
     type="button"
     class="btn-new"
     onclick="bukaModalPasienBaru()"
@@ -2854,6 +2855,7 @@ body.sidebar-collapsed .main {
     <i class="bi bi-person-plus-fill"></i>
     Daftarkan Pasien Baru
 </button>
+@endunless
 
             </div>
 
@@ -2934,13 +2936,15 @@ body.sidebar-collapsed .main {
 
                                 <td>
                                     <div class="action">
-                                        <button
-                                            type="button"
-                                            class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
-                                            onclick="bukaModalKunjungan(this)"
-                                        >
-                                            <i class="bi bi-person-plus-fill"></i>
-                                        </button>
+                                        @unless (auth()->user()?->isDokter())
+<button
+    type="button"
+    class="btn-kunjungan" title="Daftarkan Kunjungan" aria-label="Daftarkan Kunjungan"
+    onclick="bukaModalKunjungan(this)"
+>
+    <i class="bi bi-person-plus-fill"></i>
+</button>
+@endunless
 
                                         <button
                                             type="button"
@@ -2956,11 +2960,13 @@ body.sidebar-collapsed .main {
                                             data-alamat="{{ $p->alamat }}"
                                         ><i class="bi bi-eye-fill"></i></button>
 
-                                        <button
-                                            type="button"
-                                            class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
-                                            onclick="bukaModalEdit(this)"
-                                        ><i class="bi bi-pencil-square"></i></button>
+                                        @unless (auth()->user()?->isDokter())
+<button
+    type="button"
+    class="btn-edit" title="Edit Data Pasien" aria-label="Edit Data Pasien"
+    onclick="bukaModalEdit(this)"
+><i class="bi bi-pencil-square"></i></button>
+@endunless
                                     </div>
                                 </td>
                             </tr>

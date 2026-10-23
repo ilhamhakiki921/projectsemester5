@@ -46,5 +46,15 @@ class UserSeeder extends Seeder
                 'status'       => 'aktif',
             ]
         );
+
+        User::updateOrCreate(
+            ['username' => 'dokter'],
+            [
+                'nama_lengkap' => 'Dokter',
+                'password'     => 'dokter123',
+                'role'         => 'dokter',
+                'status'       => 'aktif',
+            ]
+        );
     }
 }

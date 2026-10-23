@@ -1523,9 +1523,29 @@
 
                                 <div class="rp-body">
 
-                                    <div class="rp-aksi">
+                                                                        <div class="rp-aksi">
                                         @if ($terverifikasi)
                                             <span class="info-terkunci" title="Sudah dikoding dan terverifikasi, data tidak dapat diedit lagi">&#128274; Terverifikasi — tidak dapat diedit</span>
+                                        @elseif (auth()->user()?->isDokter())
+                                            <button type="button" class="btn-edit-soap"
+                                                    data-id="{{ $k->id }}"
+                                                    data-action="{{ route('rekam-medis.soap.update', $k->id) }}"
+                                                    data-rm="{{ json_encode([
+                                                        'tb'               => $rm->tb,
+                                                        'berat_badan'      => $rm->berat_badan,
+                                                        'imt'              => $rm->imt,
+                                                        'suhu_badan'       => $rm->suhu_badan,
+                                                        'sistole'          => $rm->sistole,
+                                                        'diastole'         => $rm->diastole,
+                                                        'detak_jantung'    => $rm->detak_jantung,
+                                                        'respiratory_rate' => $rm->respiratory_rate,
+                                                        'saturasi'         => $rm->saturasi,
+                                                        'gcs'              => $rm->gcs,
+                                                        'subjective'       => $rm->subjective,
+                                                        'objective'        => $rm->objective,
+                                                        'assessment'       => $rm->assessment,
+                                                        'plan'             => $rm->plan,
+                                                    ]) }}">Edit</button>
                                         @else
                                             <span class="info-terkunci" title="Riwayat Pemeriksaan & SOAP hanya dapat dilihat">&#128274; Hanya dapat dilihat</span>
                                         @endif
@@ -2185,7 +2205,7 @@
             <div class="f-grid">
                 <div class="f-group {{ $errEdit->has('tb') ? 'salah' : '' }}">
                     <label for="es_tb">TB (cm) <span class="wajib">*</span></label>
-                    <input type="number" id="tb" name="tb" min="1" max="300" step="1" value="{{ old('tb', optional($rekam ?? null)->tb) }}" placeholder="Tinggi badan dalam cm" required>
+                    <input type="number" id="es_tb" name="tb" min="1" max="300" step="1" placeholder="Tinggi badan dalam cm" required>
                     @if ($errEdit->has('tb'))<span class="f-pesan">{{ $errEdit->first('tb') }}</span>@endif
                 </div>
                 <div class="f-group {{ $errEdit->has('berat_badan') ? 'salah' : '' }}">

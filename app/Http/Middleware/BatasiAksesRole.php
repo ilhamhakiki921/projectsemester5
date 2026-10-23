@@ -29,11 +29,6 @@ class BatasiAksesRole
         'rekam-medis.koding.update',
     ];
 
-    /** Aksi ubah di halaman Rekam Medis yang tidak boleh dilakukan siapa pun. */
-    protected array $dikunciSemua = [
-        'rekam-medis.soap.update',   // Riwayat Pemeriksaan & SOAP: baca saja
-    ];
-
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
@@ -47,9 +42,14 @@ class BatasiAksesRole
         $ubah      = ! in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
         $cetak     = (bool) preg_match('/\.(cetak|unduh)$/', $nama);
 
-        // Riwayat Pemeriksaan & SOAP: tidak bisa diedit oleh siapa pun.
-        if (in_array($nama, $this->dikunciSemua, true)) {
-            return $this->tolak($request, 'Riwayat Pemeriksaan & SOAP hanya dapat dilihat, tidak dapat diedit dari halaman Rekam Medis.');
+                // Riwayat Pemeriksaan & SOAP: hanya Dokter yang boleh mengedit.
+        if ($nama === 'rekam-medis.soap.update' && ! $user->isDokter()) {
+            return $this->tolak($request, 'Riwayat Pemeriksaan & SOAP hanya dapat diedit oleh Dokter.');
+        }
+
+        // Dokter: halaman Pendaftaran hanya boleh dilihat.
+        if ($user->isDokter() && $ubah && $request->is('pendaftaran/*')) {
+            return $this->tolak($request, 'Halaman Pendaftaran hanya dapat dilihat oleh Dokter.');
         }
 
         if ($user->isRm()) {
@@ -69,8 +69,11 @@ class BatasiAksesRole
             return $next($request);
         }
 
-        // Role selain rm: halaman Rekam Medis hanya boleh dilihat.
-        if ($halamanRm && ($ubah || $cetak)) {
+               // Role selain rm: halaman Rekam Medis hanya boleh dilihat
+        // (kecuali Dokter, yang boleh mengedit Pemeriksaan & SOAP).
+        $dokterEditSoap = $user->isDokter() && $nama === 'rekam-medis.soap.update';
+
+        if ($halamanRm && ($ubah || $cetak) && ! $dokterEditSoap) {
             return $this->tolak($request, 'Halaman Rekam Medis hanya dapat diubah dan dicetak oleh Petugas Rekam Medis.');
         }
 

@@ -40,9 +40,17 @@ class User extends Authenticatable
     /**
      * Apakah akun ini Petugas Rekam Medis (role `rm`).
      */
-    public function isRm(): bool
+        public function isRm(): bool
     {
         return $this->role === 'rm';
+    }
+
+    /**
+     * Apakah akun ini Dokter (role `dokter`).
+     */
+    public function isDokter(): bool
+    {
+        return $this->role === 'dokter';
     }
 
     /**
