@@ -17,9 +17,7 @@ use App\Http\Controllers\TindakanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DataPasienController;
 use App\Http\Controllers\AuditLogController;
-use App\Http\Controllers\RujukanController;
-use App\Http\Controllers\SuratMedisController;
-use App\Http\Middleware\BatasiAksesRole;
+use App\Http\Middleware\BatasiAkses;
 use App\Http\Middleware\CatatAudit;
 
 // ===========================
@@ -41,11 +39,13 @@ Route::post('/forgot-password', [LoginController::class, 'lupaPassword'])->name(
 
 // ===========================
 // HALAMAN YANG WAJIB LOGIN
-// Wajib login ('auth'), lalu hak akses per role diperiksa oleh
-// BatasiAksesRole (Petugas Rekam Medis vs role lain).
+// Wajib login ('auth') supaya hak akses per role bisa berjalan.
+// BatasiAkses = pembatasan hak akses PERAWAT (aturannya di config/akses.php);
+// role lain tidak terpengaruh. Kalau suatu saat mau menonaktifkan login lagi,
+// ganti 'auth' jadi 'web' DAN ubah LoginController::login() seperti semula.
 // ===========================
 
-Route::middleware(['auth', BatasiAksesRole::class, CatatAudit::class])->group(function () {
+Route::middleware(['auth', BatasiAkses::class, CatatAudit::class])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
@@ -122,10 +122,6 @@ Route::middleware(['auth', BatasiAksesRole::class, CatatAudit::class])->group(fu
     Route::get('/rekam-medis/kunjungan/{kunjungan}/informed-consent/cetak', [RekamMedisController::class, 'informedConsentCetak'])->name('rekam-medis.informed-consent.cetak');
     Route::get('/rekam-medis/kunjungan/{kunjungan}/autentikasi/cetak', [RekamMedisController::class, 'autentikasiCetak'])->name('rekam-medis.autentikasi.cetak');
     Route::get('/rekam-medis/kunjungan/{kunjungan}/resume-medis/cetak', [RekamMedisController::class, 'resumeCetak'])->name('rekam-medis.resume.cetak');
-    // Cetak Rujukan & Surat Medis dari halaman Rekam Medis (memakai controller yang sama
-    // dengan halaman Pemeriksaan, tapi route-nya terpisah agar hak cetaknya hanya milik role RM).
-    Route::get('/rekam-medis/rujukan/{poli}/{no_rm}/{id}/cetak', [RujukanController::class, 'cetak'])->name('rekam-medis.rujukan.cetak');
-    Route::get('/rekam-medis/surat-medis/{poli}/{no_rm}/{id}/cetak', [SuratMedisController::class, 'cetak'])->name('rekam-medis.surat-medis.cetak');
     Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
 
     Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');

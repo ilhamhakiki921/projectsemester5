@@ -73,7 +73,11 @@ class LoginController extends Controller implements HasMiddleware
     }
 
     /**
-     * Proses submit form login (validasi + cek username/password ke database).
+     * Proses submit form login.
+     *
+     * Pengecekan username/password ke database sudah AKTIF (dibutuhkan supaya
+     * hak akses per role, mis. Perawat, bisa bekerja). Untuk menonaktifkannya
+     * lagi, lihat catatan di routes/web.php.
      */
     public function login(Request $request)
     {
@@ -81,10 +85,7 @@ class LoginController extends Controller implements HasMiddleware
     }
 
     /**
-     * Logic login yang sebenarnya (validasi + cek username/password ke
-     * database). Saat ini tidak dipanggil dari mana pun — biarkan saja di
-     * sini supaya gampang diaktifkan lagi nanti (tinggal ganti isi method
-     * login() di atas menjadi "return $this->loginDenganPengecekan($request);").
+     * Logic login (validasi + cek username/password + status akun ke database).
      */
     protected function loginDenganPengecekan(Request $request)
     {
@@ -110,11 +111,6 @@ class LoginController extends Controller implements HasMiddleware
             $request->session()->put('audit_username', Auth::user()->username);
 
             ActivityLog::catat('Login', 'users', Auth::id(), 'Login berhasil');
-
-            // Petugas Rekam Medis langsung diarahkan ke halaman Rekam Medis.
-            if (Auth::user()->isRm()) {
-                return redirect()->route('rekam-medis.index');
-            }
 
             return redirect()->intended($this->redirectTo);
         }

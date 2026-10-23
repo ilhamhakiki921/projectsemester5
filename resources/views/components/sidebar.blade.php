@@ -1,3 +1,6 @@
+{{-- Hak akses perawat (lihat config/akses.php); tidak mengubah tampilan role lain --}}
+<x-akses-perawat />
+
 <aside class="sidebar" id="sidebarUtama">
 
     <!-- Watermark logo transparan di background, murni dekoratif -->
@@ -686,102 +689,3 @@ body.sidebar-collapsed .main {
         });
     })();
 </script>
-
-{{--
-    MODE BACA SAJA untuk akun Petugas Rekam Medis di luar halaman Rekam Medis.
-    Ini hanya merapikan tampilan (tombol dimatikan); penjagaan yang sebenarnya
-    ada di server (App\Http\Middleware\BatasiAksesRole).
---}}
-@if (auth()->user()?->isRm() && ! request()->routeIs('rekam-medis.*'))
-<style>
-    .mode-baca-nonaktif { opacity: .45; cursor: not-allowed !important; pointer-events: none; }
-    .mode-baca-sembunyi { display: none !important; }
-    #bannerModeBaca {
-        position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
-        z-index: 9998; padding: 8px 16px; border-radius: 999px;
-        background: #fff8e1; border: 1px solid #f1d28a; color: #5a4300;
-        font: 500 12px 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.12);
-    }
-</style>
-<div id="bannerModeBaca">Mode lihat saja — di luar halaman Rekam Medis tidak dapat mengubah atau mencetak.</div>
-<script>
-(function () {
-    var PESAN = 'Di luar halaman Rekam Medis, akun ini hanya dapat melihat data.';
-    var aksi  = /(simpan|hapus|edit|ubah|tambah|delete|submit|import|upload|unggah|kirim|selesai|batalkan|verifikasi)/i;
-
-    function adalahLogout(el) {
-        var f = el.closest ? el.closest('form') : null;
-        return f && /\/logout/.test(f.getAttribute('action') || '');
-    }
-
-    function kunci() {
-        // 1) Form yang bukan GET (simpan/ubah/hapus): matikan semua isiannya
-        document.querySelectorAll('form').forEach(function (f) {
-            var method = (f.getAttribute('method') || 'GET').toUpperCase();
-            if (method === 'GET' || adalahLogout(f)) return;
-            f.querySelectorAll('input, select, textarea, button').forEach(function (el) {
-                if (el.type === 'hidden') return;
-                el.disabled = true;
-                el.classList.add('mode-baca-nonaktif');
-            });
-            f.addEventListener('submit', function (e) { e.preventDefault(); alert(PESAN); }, true);
-        });
-
-        // 2) Tombol aksi di luar form (modal, tombol Edit/Hapus/Tambah, dst.)
-        document.querySelectorAll('button, a.btn, [role="button"]').forEach(function (el) {
-            if (adalahLogout(el) || el.closest('#sidebarUtama') || el.closest('.berkas-tabs')) return;
-            var teks = (el.textContent || '') + ' ' + el.className + ' ' + el.id;
-            if (aksi.test(teks)) {
-                el.classList.add('mode-baca-nonaktif');
-                el.setAttribute('title', PESAN);
-                el.setAttribute('aria-disabled', 'true');
-            }
-        });
-
-        // 3) Tombol cetak / unduh disembunyikan
-        document.querySelectorAll('a[href*="/cetak"], a[href*="/unduh"], [onclick*="print"]').forEach(function (el) {
-            el.classList.add('mode-baca-sembunyi');
-        });
-        document.querySelectorAll('button, a').forEach(function (el) {
-            if (el.closest('#sidebarUtama')) return;
-            var teks = (el.textContent || '') + ' ' + el.className + ' ' + el.id;
-            if (/(cetak|print|unduh|download)/i.test(teks) || el.querySelector('.bi-printer')) {
-                el.classList.add('mode-baca-sembunyi');
-            }
-        });
-    }
-
-    // 4) Permintaan AJAX selain GET diblokir di browser juga
-    var fetchAsli = window.fetch;
-    if (fetchAsli) {
-        window.fetch = function (url, opt) {
-            var m = ((opt && opt.method) || 'GET').toUpperCase();
-            if (m !== 'GET' && m !== 'HEAD' && !/\/logout/.test(String(url))) {
-                alert(PESAN);
-                return Promise.reject(new Error(PESAN));
-            }
-            return fetchAsli.apply(this, arguments);
-        };
-    }
-    var bukaAsli = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (method, url) {
-        if (String(method).toUpperCase() !== 'GET' && !/\/logout/.test(String(url))) {
-            alert(PESAN);
-            throw new Error(PESAN);
-        }
-        return bukaAsli.apply(this, arguments);
-    };
-
-    // 5) Cetak lewat Ctrl+P / window.print() juga dimatikan
-    window.print = function () { alert(PESAN); };
-    document.addEventListener('keydown', function (e) {
-        if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'p') {
-            e.preventDefault();
-            alert(PESAN);
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', kunci);
-})();
-</script>
-@endif
