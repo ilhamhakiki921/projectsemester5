@@ -21,7 +21,8 @@
 */
 
 return [
-
+    
+'login_wajib' => env('AKSES_LOGIN_WAJIB', true),
     'perawat' => [
 
         'tulis_boleh' => [
