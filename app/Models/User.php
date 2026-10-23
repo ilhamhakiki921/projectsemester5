@@ -61,7 +61,10 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
-
+public function isDokter(): bool
+{
+    return $this->role === 'dokter';
+}
     /**
      * Boleh mengubah koding & mencetak di halaman Rekam Medis
      * (Petugas Rekam Medis dan Administrator).
