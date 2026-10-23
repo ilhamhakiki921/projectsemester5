@@ -1397,7 +1397,7 @@
                         </div>
 
                         <div class="gc-actions">
-                            @if (auth()->user()?->isRm())
+                            @if (auth()->user()?->bisaKelolaRekamMedis())
                             <a href="{{ route('rekam-medis.consent.cetak', $pasien->id) }}" target="_blank" class="btn-biru">Cetak Formulir</a>
                             @endif
                         </div>
@@ -1584,7 +1584,7 @@
                                                     <span class="pill-koding belum">Belum dikoding</span>
                                                 @endif
 
-                                                @if (auth()->user()?->isRm())
+                                                @if (auth()->user()?->bisaKelolaRekamMedis())
                                                 <button type="button" class="btn-koding"
                                                         data-action="{{ route('rekam-medis.koding.update', $k->id) }}"
                                                         data-kode="{{ $rm->kode_icd10 }}"
@@ -1713,7 +1713,7 @@
 
                                     <div class="rp-aksi">
                                         @if ($kAsal)
-                                            @if (auth()->user()?->isRm())
+                                            @if (auth()->user()?->bisaKelolaRekamMedis())
                                             <a href="{{ route('rekam-medis.rujukan.cetak', [$kAsal->poli, $pasien->no_rm, $r->id]) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Surat</a>
                                             @endif
@@ -1836,7 +1836,7 @@
                                 <div class="rp-body">
 
                                     <div class="rp-aksi">
-                                        @if (auth()->user()?->isRm())
+                                        @if (auth()->user()?->bisaKelolaRekamMedis())
                                         <a href="{{ route('rekam-medis.informed-consent.cetak', $k->id) }}"
                                            target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Informed Consent</a>
                                         @endif
@@ -1963,7 +1963,7 @@
 
                                 <div class="rp-body">
                                     <div class="rp-aksi">
-                                        @if (auth()->user()?->isRm())
+                                        @if (auth()->user()?->bisaKelolaRekamMedis())
                                         <a href="{{ route('rekam-medis.resume.cetak', $k->id) }}"
                                            target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
                                         @endif
@@ -2013,7 +2013,7 @@
 
                                     <div class="rp-aksi">
                                         @if ($kSm)
-                                            @if (auth()->user()?->isRm())
+                                            @if (auth()->user()?->bisaKelolaRekamMedis())
                                             <a href="{{ route('rekam-medis.surat-medis.cetak', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
                                             @endif
@@ -2098,7 +2098,7 @@
                                 <div class="rp-body">
                                     @if ($terautentikasi)
                                         <div class="rp-aksi">
-                                            @if (auth()->user()?->isRm())
+                                            @if (auth()->user()?->bisaKelolaRekamMedis())
                                             <a href="{{ route('rekam-medis.autentikasi.cetak', $k->id) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Autentikasi</a>
                                             @endif

@@ -18,7 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Data Master, Audit Trail & Pengaturan: hanya role `admin`.
  *
- * Role lain (dokter, perawat, admin, dst.):
+ * Role `admin` (Administrator): akses penuh ke semua halaman, termasuk mengubah koding
+ *  & mencetak di Rekam Medis (satu-satunya pengecualian: Riwayat SOAP terkunci untuk semua).
+ *
+ * Role lain (dokter, perawat, dst.):
  *  - Halaman Rekam Medis hanya boleh DILIHAT (tidak boleh mengubah / mencetak).
  *  - Halaman miliknya sendiri tidak dibatasi.
  *
@@ -90,8 +93,9 @@ class BatasiAksesRole
             return $next($request);
         }
 
-        // Role selain rm: halaman Rekam Medis hanya boleh dilihat.
-        if ($halamanRm && ($ubah || $cetak)) {
+        // Role selain rm & admin: halaman Rekam Medis hanya boleh dilihat.
+        // Administrator punya akses penuh (kecuali Riwayat SOAP yang terkunci untuk semua).
+        if ($halamanRm && ($ubah || $cetak) && ! $user->isAdmin()) {
             return $this->tolak($request, 'Halaman Rekam Medis hanya dapat diubah dan dicetak oleh Petugas Rekam Medis.');
         }
 
