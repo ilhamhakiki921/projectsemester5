@@ -7,10 +7,12 @@
     - window.icSimpanServer(true) dipanggil tombol Simpan setelah validasi lolos.
 --}}
 @push('scripts')
+<style>@media print{.ttd-kunci-note{display:none!important}}</style>
 <script>
 (function () {
     var URL_SIMPAN = @json(route('pemeriksaan.informed-consent.simpan', [$poli, $rm]));
     var TERSIMPAN  = @json($icData ?? null);
+    var TERKUNCI   = @json($icTerkunci ?? false);   // sudah disimpan final -> tanda tangan tidak bisa diubah
 
     function mulai() {
         var form = document.getElementById('formIc');
@@ -88,7 +90,29 @@
             });
         }
 
+        // ---------- Kunci tanda tangan yang sudah tersimpan ----------
+        function kunciTtd() {
+            Array.prototype.forEach.call(form.querySelectorAll('canvas[data-ttd]'), function (c) {
+                var h = c.parentNode.querySelector('input[type="hidden"]');
+                if (! h || ! h.value) return;
+                c.style.pointerEvents = 'none';
+                c.style.cursor = 'not-allowed';
+                Array.prototype.forEach.call(c.parentNode.querySelectorAll('.ic-ttd-clear, .icu-ttd-clear'), function (b) {
+                    b.style.display = 'none';
+                });
+                var teks = 'Tanda tangan sudah tersimpan dan tidak dapat diubah';
+                var bar = c.parentNode.querySelector('.icu-ttd-bar span');
+                if (bar) { bar.textContent = teks; return; }
+                var note = document.createElement('div');
+                note.className = 'ttd-kunci-note';
+                note.textContent = teks;
+                note.style.cssText = 'margin-top:6px;font-size:9.5px;color:#6b7280;text-align:center';
+                c.parentNode.appendChild(note);
+            });
+        }
+
         if (TERSIMPAN && TERSIMPAN.length) pulihkan(TERSIMPAN);
+        if (TERKUNCI) kunciTtd();
         memuat = false;
 
         // ---------- Kirim ke server ----------

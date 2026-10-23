@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -81,6 +82,13 @@ class LoginController extends Controller implements HasMiddleware
      */
     public function login(Request $request)
     {
+        // Nama user dicatat di session supaya Audit Trail tetap tahu siapa
+        // yang login/logout walau pengecekan password sedang dinonaktifkan.
+        $username = trim((string) $request->input($this->username())) ?: 'admin';
+        $request->session()->put('audit_username', $username);
+
+        ActivityLog::catat('Login', 'users', null, 'Login berhasil', null, null, null, $username);
+
         return redirect($this->redirectTo);
     }
 
@@ -111,9 +119,21 @@ class LoginController extends Controller implements HasMiddleware
 
         if ($berhasilLogin) {
             $request->session()->regenerate();
+            $request->session()->put('audit_username', Auth::user()->username);
+
+            ActivityLog::catat('Login', 'users', Auth::id(), 'Login berhasil');
 
             return redirect()->intended($this->redirectTo);
         }
+
+        ActivityLog::catat(
+            'Login', 'users', null,
+            'Login gagal (username atau password salah)',
+            null,
+            ['username' => (string) $request->input($this->username())],
+            null,
+            (string) $request->input($this->username()) ?: 'admin'
+        );
 
         return $this->sendFailedLoginResponse($request);
     }
@@ -162,11 +182,42 @@ class LoginController extends Controller implements HasMiddleware
      */
     public function logout(Request $request)
     {
+        // Catat DULU, sebelum session dihapus.
+        ActivityLog::catat('Logout', 'users', Auth::id(), 'Logout');
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    /**
+     * Permintaan "Lupa Password": dicatat ke Audit Trail supaya administrator
+     * bisa melihat siapa yang meminta reset, lalu mengganti password lewat
+     * menu Data User.
+     */
+    public function lupaPassword(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string|max:50',
+        ], [
+            'username.required' => 'Username wajib diisi.',
+        ]);
+
+        $username = (string) $request->input('username');
+
+        ActivityLog::catat(
+            'Password', 'users', null,
+            'Permintaan lupa password',
+            null,
+            ['username' => $username],
+            null,
+            $username
+        );
+
+        return redirect()->route('password.request')
+            ->with('status', 'Permintaan reset password sudah dikirim. Silakan hubungi administrator.');
     }
 }

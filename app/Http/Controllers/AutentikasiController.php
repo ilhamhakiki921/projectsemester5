@@ -139,8 +139,28 @@ class AutentikasiController extends Controller
             'tanda_tangan' => 'Tanda tangan digital',
         ]);
 
-        DB::transaction(function () use ($data, $kunjungan) {
-            AutentikasiPemeriksaan::updateOrCreate(
+        // Tanda tangan autentikasi yang sudah tersimpan TIDAK bisa diubah / ditimpa
+        $ada = AutentikasiPemeriksaan::where('kunjungan_id', $kunjungan->id)->first();
+        if ($ada && $ada->tanda_tangan) {
+            if ($data['tanda_tangan'] !== $ada->tanda_tangan) {
+                \App\Models\ActivityLog::catatTtd(
+                    "Percobaan mengubah tanda tangan autentikasi pemeriksaan {$pasien->nama} DITOLAK",
+                    $pasien->no_rm, $ada->getTable(), (int) $ada->id,
+                    ['nama' => $pasien->nama, 'dokter' => $ada->nama_dokter]
+                );
+            }
+
+            $kunjungan->update(['status' => 'Selesai']);
+
+            return response()->json([
+                'ok'      => true,
+                'message' => 'Tanda tangan autentikasi sudah tersimpan dan tidak dapat diubah. Status pasien sekarang "Selesai".',
+                'waktu'   => $ada->waktu_autentikasi?->format('d-m-Y H:i'),
+            ]);
+        }
+
+        $rec = DB::transaction(function () use ($data, $kunjungan) {
+            $rec = AutentikasiPemeriksaan::updateOrCreate(
                 ['kunjungan_id' => $kunjungan->id],
                 [
                     'nama_dokter'       => $data['nama_dokter'],
@@ -152,7 +172,15 @@ class AutentikasiController extends Controller
 
             // Autentikasi = langkah terakhir pemeriksaan -> kunjungan selesai
             $kunjungan->update(['status' => 'Selesai']);
+
+            return $rec;
         });
+
+        \App\Models\ActivityLog::catatTtd(
+            "Tanda tangan autentikasi pemeriksaan {$pasien->nama}",
+            $pasien->no_rm, $rec->getTable(), (int) $rec->id,
+            ['nama' => $pasien->nama, 'dokter' => $rec->nama_dokter, 'jabatan' => $rec->jabatan]
+        );
 
         return response()->json([
             'ok'      => true,

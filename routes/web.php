@@ -16,6 +16,8 @@ use App\Http\Controllers\DiagnosaController;
 use App\Http\Controllers\TindakanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DataPasienController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Middleware\CatatAudit;
 
 // ===========================
 // LOGIN / LOGOUT
@@ -32,6 +34,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->name('password.request');
+Route::post('/forgot-password', [LoginController::class, 'lupaPassword'])->name('password.request.store');
 
 // ===========================
 // HALAMAN YANG WAJIB LOGIN
@@ -40,7 +43,7 @@ Route::get('/forgot-password', function () {
 // login dulu. Tinggal ganti 'web' jadi 'auth' lagi kalau mau diaktifkan.
 // ===========================
 
-Route::middleware('web')->group(function () {
+Route::middleware(['web', CatatAudit::class])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
@@ -111,7 +114,6 @@ Route::middleware('web')->group(function () {
 
     Route::get('/rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
     Route::get('/rekam-medis/pasien/{pasien}', [RekamMedisController::class, 'berkas'])->name('rekam-medis.berkas');
-    Route::put('/rekam-medis/pasien/{pasien}/general-consent', [RekamMedisController::class, 'consentUpdate'])->name('rekam-medis.consent.update');
     Route::get('/rekam-medis/pasien/{pasien}/general-consent/cetak', [RekamMedisController::class, 'consentCetak'])->name('rekam-medis.consent.cetak');
     Route::put('/rekam-medis/kunjungan/{kunjungan}/koding', [RekamMedisController::class, 'kodingUpdate'])->name('rekam-medis.koding.update');
     Route::put('/rekam-medis/kunjungan/{kunjungan}/soap', [RekamMedisController::class, 'soapUpdate'])->name('rekam-medis.soap.update');
@@ -183,6 +185,12 @@ Route::middleware('web')->group(function () {
 
     Route::get('/data-pasien', [DataPasienController::class, 'index'])->name('data-pasien.index');
     Route::put('/data-pasien/{pasien}', [DataPasienController::class, 'update'])->name('data-pasien.update');
+
+    // ===========================
+    // AUDIT TRAIL (menu Admin, di atas Pengaturan)
+    // ===========================
+
+    Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 
     require __DIR__.'/penunjang.php';
 

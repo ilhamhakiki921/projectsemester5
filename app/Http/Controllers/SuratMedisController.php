@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Kunjungan;
 use App\Models\Pasien;
 use App\Models\Poli;
@@ -89,7 +90,7 @@ class SuratMedisController extends Controller
     /** Simpan surat. Satu kunjungan hanya punya satu surat per jenis, jadi simpan ulang = memperbarui. */
     public function store(Request $request, $poli, $no_rm)
     {
-        [, $kunjungan] = $this->konteks($poli, $no_rm);
+        [$pasien, $kunjungan] = $this->konteks($poli, $no_rm);
 
         $sakit = $request->input('jenis') === 'Sakit';
 
@@ -139,6 +140,10 @@ class SuratMedisController extends Controller
 
         $surat = SuratMedis::firstOrNew(['kunjungan_id' => $kunjungan->id, 'jenis' => $data['jenis']]);
 
+        // Tanda tangan yang sudah tersimpan TIDAK bisa diubah / dihapus / ditimpa
+        $ttdLama  = $surat->exists ? $surat->ttd_dokter : null;
+        $ttdMasuk = $data['ttd_dokter'] ?? null;
+
         // Nomor dibuat sekali saat surat pertama kali disimpan, tidak berubah saat diperbarui
         if (! $surat->exists) {
             [$surat->no_urut, $surat->nomor_surat] = SuratMedis::nomorBerikutnya($data['jenis'], Carbon::parse($data['tanggal_surat']));
@@ -159,8 +164,22 @@ class SuratMedisController extends Controller
             'tempat'         => $data['tempat'],
             'tanggal_surat'  => $data['tanggal_surat'],
             'dokter'         => $data['dokter'],
-            'ttd_dokter'     => $data['ttd_dokter'] ?: null,
+            'ttd_dokter'     => $ttdLama ?: ($ttdMasuk ?: null),
         ])->save();
+
+        // Audit trail tanda tangan
+        $infoTtd = ['nama' => $pasien->nama, 'dokter' => $surat->dokter, 'nomor surat' => $surat->nomor_surat];
+        if (! $ttdLama && $ttdMasuk) {
+            ActivityLog::catatTtd(
+                "Tanda tangan dokter pada surat keterangan {$surat->jenis} {$pasien->nama}",
+                $pasien->no_rm, $surat->getTable(), (int) $surat->id, $infoTtd
+            );
+        } elseif ($ttdLama && $ttdMasuk && $ttdMasuk !== $ttdLama) {
+            ActivityLog::catatTtd(
+                "Percobaan mengubah tanda tangan surat keterangan {$surat->jenis} {$pasien->nama} DITOLAK",
+                $pasien->no_rm, $surat->getTable(), (int) $surat->id, $infoTtd
+            );
+        }
 
         return response()->json($this->format($surat, $poli, $no_rm), 201);
     }

@@ -40,12 +40,15 @@
     .sm-ttd.terisi .ph{display:none}
     .sm-btn-kecil{margin-top:10px;height:28px;padding:0 20px;border:1px solid #777;border-radius:5px;background:#fff;font:inherit;font-size:10px;font-weight:600;color:#111;cursor:pointer}
     .sm-btn-kecil:hover{border-color:#a11a1e;color:#a11a1e}
+    .sm-ttd-note{margin-top:8px;font-size:10px;color:#6b7280}
 
     /* Bilah tombol bawah */
     .sm-foot{display:flex;justify-content:flex-end;gap:14px;padding:16px 24px;border-top:1px solid #8a8a8a}
     .sm-btn{min-width:84px;height:30px;padding:0 18px;border:1px solid #777;border-radius:5px;background:#fff;font:inherit;font-size:10.5px;font-weight:600;color:#111;cursor:pointer}
     .sm-btn:hover{border-color:#a11a1e;color:#a11a1e}
     .sm-btn:disabled{opacity:.55;cursor:wait}
+    .sm-btn-simpan{background:#a11a1e;border-color:#a11a1e;color:#fff}
+    .sm-btn-simpan:hover{background:#85141a;border-color:#85141a;color:#fff}
 
     [hidden]{display:none !important}
 
@@ -167,10 +170,12 @@
             <div class="ph">Gunakan mouse/jari untuk mentandatangani</div>
         </div>
         <input type="hidden" name="ttd_dokter" id="smTtdData">
+        <p class="sm-ttd-note" id="smTtdNote" hidden>Tanda tangan sudah tersimpan dan tidak dapat diubah.</p>
         <button type="button" class="sm-btn-kecil" id="smHapus">Hapus</button>
     </div>
 
     <div class="sm-foot">
+        <button type="button" class="sm-btn sm-btn-simpan" id="smSimpan">Simpan</button>
         <button type="button" class="sm-btn" id="smCetak">Cetak</button>
     </div>
 </form>
@@ -188,7 +193,7 @@
     const form = document.getElementById('smForm');
     const el = id => document.getElementById(id);
     const toastEl = el('smToast');
-    const tombol = [el('smCetak')];
+    const tombol = [el('smSimpan'), el('smCetak')];
     const opt = { Sakit: el('optSakit'), Sehat: el('optSehat') };
     const kolom = ['nomor_surat', 'alamat_pasien', 'lama_istirahat', 'mulai_tanggal', 'keperluan',
                    'tanggal_pemeriksaan', 'hasil_pemeriksaan', 'berat_badan', 'tinggi_badan', 'sistole', 'diastole',
@@ -209,19 +214,26 @@
     const canvas = el('smTtd'), box = el('smTtdBox'), ttdData = el('smTtdData'), ctx = canvas.getContext('2d');
     let menggambar = false, strokes = [], dariSimpan = false;
 
+    // Tanda tangan yang sudah tersimpan terkunci: tidak bisa digambar ulang / dihapus
+    function kunciTtd(k) {
+        el('smHapus').hidden = k;
+        el('smTtdNote').hidden = !k;
+        canvas.style.cursor = k ? 'not-allowed' : '';
+    }
+
     function siapkanCanvas(gambar) {
         const r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
         canvas.width = r.width * dpr; canvas.height = r.height * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111';
-        strokes = []; ttdData.value = ''; box.classList.remove('terisi'); dariSimpan = false;
+        strokes = []; ttdData.value = ''; box.classList.remove('terisi'); dariSimpan = false; kunciTtd(false);
         if (gambar) {   // tampilkan tanda tangan yang sudah tersimpan (pas di tengah kotak, perbandingan asli)
             const img = new Image();
             img.onload = () => {
                 const k = Math.min((r.width - 20) / img.width, (r.height - 16) / img.height, 1);
                 const w = img.width * k, h = img.height * k;
                 ctx.drawImage(img, (r.width - w) / 2, (r.height - h) / 2, w, h);
-                ttdData.value = gambar; box.classList.add('terisi'); dariSimpan = true;
+                ttdData.value = gambar; box.classList.add('terisi'); dariSimpan = true; kunciTtd(true);
             };
             img.src = gambar;
         }
@@ -261,7 +273,7 @@
 
     const pos = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     canvas.addEventListener('pointerdown', e => {
-        if (dariSimpan) siapkanCanvas(null);   // mulai menggambar = mengganti tanda tangan yang tersimpan
+        if (dariSimpan) return;   // tanda tangan tersimpan tidak bisa diubah
         menggambar = true; canvas.setPointerCapture(e.pointerId);
         const p = pos(e); strokes.push([p]); ctx.beginPath(); ctx.moveTo(p.x, p.y);
     });
@@ -277,7 +289,7 @@
     };
     canvas.addEventListener('pointerup', selesai);
     canvas.addEventListener('pointerleave', selesai);
-    el('smHapus').addEventListener('click', () => siapkanCanvas(null));
+    el('smHapus').addEventListener('click', () => { if (!dariSimpan) siapkanCanvas(null); });
 
     // ---------- Isi / ambil isian form ----------
     function ambil() {
@@ -344,6 +356,7 @@
 
         const saved = await res.json();
         data[jenis] = saved;
+        if (saved.ttd_dokter && !dariSimpan) siapkanCanvas(saved.ttd_dokter);   // kunci setelah tersimpan
         form.elements.nomor_surat.value = saved.nomor_surat;
         return saved;
     }
@@ -366,6 +379,7 @@
         } finally { kunci(false); }
     }
 
+    el('smSimpan').addEventListener('click', () => jalankan('simpan'));
     el('smCetak').addEventListener('click', () => jalankan('cetak'));
     form.addEventListener('submit', e => e.preventDefault());
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\InformedConsent;
 use App\Models\Poli;
 use App\Models\Kunjungan;
@@ -261,8 +262,11 @@ class PemeriksaanController extends Controller
 
         // Isian Informed Consent yang sudah pernah disimpan dipulihkan lagi (tidak perlu input ulang)
         $icData = null;
+        $icTerkunci = false;
         try {
-            $icData = optional(InformedConsent::where('kunjungan_id', $kunjungan->id)->first())->data;
+            $icSimpan   = InformedConsent::where('kunjungan_id', $kunjungan->id)->first();
+            $icData     = optional($icSimpan)->data;
+            $icTerkunci = (bool) optional($icSimpan)->lengkap;
         } catch (\Throwable $e) {
             report($e);   // tabel informed_consent belum dibuat (migrasi belum dijalankan)
         }
@@ -275,6 +279,7 @@ class PemeriksaanController extends Controller
             'pasien'    => $kunjungan->pasien,
             'rekam'     => $kunjungan->rekamMedis,
             'icData'    => $icData,
+            'icTerkunci' => $icTerkunci,   // sudah disimpan final -> tanda tangan terkunci
         ]);
     }
 
@@ -301,14 +306,62 @@ class PemeriksaanController extends Controller
             ->values()
             ->all();
 
-        InformedConsent::updateOrCreate(
+        // ---- Tanda tangan (ttd_*): setelah Simpan final, tidak bisa diubah / dihapus ----
+        $ada   = InformedConsent::where('kunjungan_id', $kunjungan->id)->first();
+        $final = (bool) optional($ada)->lengkap;
+        $lengkap = $request->boolean('lengkap') || $final;
+        $namaPasien = optional($kunjungan->pasien)->nama;
+        $noRmPasien = optional($kunjungan->pasien)->no_rm;
+        $label = fn ($n) => str_replace('_', ' ', preg_replace('/^ttd_?/', '', $n)) ?: 'ttd';
+
+        if ($final) {
+            $terkunci = [];
+            foreach ((array) $ada->data as $p) {
+                if (isset($p[0]) && str_starts_with((string) $p[0], 'ttd') && ($p[1] ?? '') !== '') {
+                    $terkunci[$p[0]] = (string) $p[1];
+                }
+            }
+
+            $sudah = [];
+            foreach ($data as $i => $p) {
+                if (isset($terkunci[$p[0]])) {
+                    if ($p[1] !== '' && $p[1] !== $terkunci[$p[0]]) {
+                        ActivityLog::catatTtd(
+                            'Percobaan mengubah tanda tangan ' . $label($p[0]) . " pada informed consent {$namaPasien} DITOLAK",
+                            $noRmPasien, 'informed_consent', (int) $ada->id, ['nama' => $namaPasien]
+                        );
+                    }
+                    $data[$i][1] = $terkunci[$p[0]];
+                    $sudah[$p[0]] = true;
+                }
+            }
+            foreach ($terkunci as $n => $v) {
+                if (! isset($sudah[$n])) {
+                    $data[] = [$n, $v];
+                }
+            }
+        }
+
+        $rec = InformedConsent::updateOrCreate(
             ['kunjungan_id' => $kunjungan->id],
             [
                 'poli'    => $poli,
                 'data'    => $data,
-                'lengkap' => $request->boolean('lengkap'),
+                'lengkap' => $lengkap,
             ]
         );
+
+        // Audit trail: tanda tangan dicatat saat Simpan final pertama kali
+        if (! $final && $request->boolean('lengkap')) {
+            foreach ($data as $p) {
+                if (str_starts_with((string) $p[0], 'ttd') && $p[1] !== '') {
+                    ActivityLog::catatTtd(
+                        'Tanda tangan ' . $label($p[0]) . " pada informed consent {$namaPasien}",
+                        $noRmPasien, 'informed_consent', (int) $rec->id, ['nama' => $namaPasien, 'poli' => $poli]
+                    );
+                }
+            }
+        }
 
         return response()->json(['ok' => true]);
     }

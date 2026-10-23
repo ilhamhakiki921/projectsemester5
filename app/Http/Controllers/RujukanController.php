@@ -174,6 +174,12 @@ class RujukanController extends Controller
             ]);
         });
 
+        \App\Models\ActivityLog::catatTtd(
+            "Tanda tangan perujuk pada surat rujukan {$surat->jenis} {$pasien->nama}",
+            $pasien->no_rm, $surat->getTable(), (int) $surat->id,
+            ['nama' => $pasien->nama, 'dokter perujuk' => $surat->dokter_perujuk, 'jenis' => $surat->jenis]
+        );
+
         return response()->json($this->format($surat, $poli, $no_rm), 201);
     }
 

@@ -1397,7 +1397,6 @@
                         </div>
 
                         <div class="gc-actions">
-                            <button type="button" class="btn-outline" id="btnPerbaruiConsent">Perbarui</button>
                             <a href="{{ route('rekam-medis.consent.cetak', $pasien->id) }}" target="_blank" class="btn-biru">Cetak Formulir</a>
                         </div>
                     </div>
@@ -2272,103 +2271,6 @@
     </form>
 </div>
 
-{{-- MODAL PERBARUI GENERAL CONSENT --}}
-@php
-    $hubunganTersimpan = $consent ? ($consent->pemberi_persetujuan === 'Wali' ? $consent->hubungan : 'Pasien sendiri') : null;
-    $hubunganPilih = \App\Models\GeneralConsent::normalisasiHubungan(old('hubungan', $hubunganTersimpan));
-    // Urutan dropdown selalu sama untuk semua pasien
-    $opsiHubungan = \App\Models\GeneralConsent::HUBUNGAN;
-    if ($hubunganPilih && ! in_array($hubunganPilih, $opsiHubungan, true)) {
-        $opsiHubungan[] = $hubunganPilih;
-    }
-    // Tanggal & jam persetujuan otomatis (saat disimpan), tidak diisi manual
-    $tanggalForm = now()->format('d-m-Y H:i');
-    $centangLama = old('pernyataan') !== null
-        ? array_map('intval', old('pernyataan'))
-        : ($consent ? $consent->pernyataanDisetujui() : []);
-@endphp
-
-<div class="modal-bg" id="modalConsent">
-    <form class="modal-box" method="POST" action="{{ route('rekam-medis.consent.update', $pasien->id) }}" id="formConsent" novalidate>
-        @csrf
-        @method('PUT')
-
-        <div class="modal-head">
-            <h3>General Consent</h3>
-        </div>
-
-        <div class="modal-main">
-
-            @if ($errors->any())
-                <div class="f-error">
-                    @foreach ($errors->all() as $err) <div>{{ $err }}</div> @endforeach
-                </div>
-            @endif
-
-            <div class="alert-merah">
-                Persetujuan umum berlaku untuk seluruh kunjungan pasien. Penandatangan adalah pasien atau walinya bila pasien belum dewasa/tidak cakap.
-            </div>
-
-            <div class="f-grid">
-                <div class="f-group {{ $errors->has('nama_penyetuju') ? 'salah' : '' }}">
-                    <label for="fNama">Nama penandatangan <span class="wajib">*</span></label>
-                    <input type="text" id="fNama" name="nama_penyetuju" placeholder="Nama pasien atau wali"
-                           value="{{ old('nama_penyetuju', $consent->nama_penyetuju ?? '') }}" autocomplete="off">
-                </div>
-
-                <div class="f-group {{ $errors->has('hubungan') ? 'salah' : '' }}">
-                    <label for="fHubungan">Hubungan dengan pasien <span class="wajib">*</span></label>
-                    <select id="fHubungan" name="hubungan" required>
-                        <option value="" disabled {{ $hubunganPilih ? '' : 'selected' }}>Pilih hubungan</option>
-                        @foreach ($opsiHubungan as $opsi)
-                            <option value="{{ $opsi }}" {{ $hubunganPilih === $opsi ? 'selected' : '' }}>{{ $opsi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="f-group">
-                    <label for="fTanggal">Tanggal &amp; Jam (otomatis)</label>
-                    <input type="text" id="fTanggal" value="{{ $tanggalForm }}" readonly tabindex="-1" style="background:#f4f4f4;color:#444;cursor:default">
-                </div>
-
-                <div class="f-group">
-                    <label for="fSaksi">Nama Saksi</label>
-                    <input type="text" id="fSaksi" name="saksi" placeholder="Nama saksi (jika ada)"
-                           value="{{ old('saksi', $consent->saksi ?? '') }}" autocomplete="off">
-                </div>
-
-                <div class="f-group">
-                    <label for="fPetugas">Nama Petugas yang mencatat</label>
-                    <input type="text" id="fPetugas" name="petugas_pencatat" placeholder="Nama petugas yang bertanda tangan"
-                           value="{{ old('petugas_pencatat', $consent->petugas_pencatat ?? (auth()->user()->nama_lengkap ?? auth()->user()->name ?? '')) }}" autocomplete="off">
-                </div>
-
-                <div class="f-group lebar">
-                    <label for="fPendamping">Keluarga/pendamping yang boleh menerima informasi</label>
-                    <input type="text" id="fPendamping" name="pendamping" placeholder="Nama keluarga/pendamping (jika ada)"
-                           value="{{ old('pendamping', $consent->pendamping ?? '') }}" autocomplete="off">
-                </div>
-            </div>
-
-            <div class="pernyataan-judul">Pernyataan Persetujuan</div>
-
-            @foreach (\App\Models\GeneralConsent::PERNYATAAN as $n => $row)
-                <label class="f-check">
-                    <input type="checkbox" class="cb-pernyataan {{ $row[1] === 'Wajib' ? 'cb-wajib' : '' }}" name="pernyataan[]" value="{{ $n }}"
-                           {{ in_array($n, $centangLama, true) ? 'checked' : '' }}>
-                    <span>{{ $row[0] }} <em class="tag-sifat {{ $row[1] === 'Wajib' ? 'wajib' : '' }}">({{ $row[1] }})</em></span>
-                </label>
-            @endforeach
-
-        </div>
-
-        <div class="modal-foot">
-            <button type="button" class="btn-batal" id="btnBatalConsent">Batal</button>
-            <button type="submit" class="btn-simpan" id="btnSimpanConsent">Simpan General Consent</button>
-        </div>
-    </form>
-</div>
-
 <script>
     (function () {
         var tabs   = document.querySelectorAll('.berkas-tab');
@@ -2388,43 +2290,6 @@
         if (hash && document.getElementById('panel-' + hash)) {
             bukaTab(hash);
         }
-
-        // Modal Perbarui General Consent
-        var modal = document.getElementById('modalConsent');
-        var selHubungan = document.getElementById('fHubungan');
-        var fNama       = document.getElementById('fNama');
-        var fTanggal    = document.getElementById('fTanggal');
-        var cbs         = document.querySelectorAll('.cb-wajib');
-        var btnSimpan   = document.getElementById('btnSimpanConsent');
-
-        // Tombol simpan aktif kalau nama, hubungan, tanggal terisi dan semua pernyataan Wajib dicentang
-        function aturTombol() {
-            var lengkap = fNama.value.trim() !== '' && selHubungan.value !== '' && fTanggal.value !== '';
-            var semua = true;
-            cbs.forEach(function (c) { if (!c.checked) semua = false; });
-            btnSimpan.disabled = !(lengkap && semua);
-        }
-
-        [fNama, selHubungan, fTanggal].forEach(function (el) {
-            el.addEventListener('input', aturTombol);
-            el.addEventListener('change', aturTombol);
-        });
-        cbs.forEach(function (c) { c.addEventListener('change', aturTombol); });
-        aturTombol();
-
-        document.getElementById('btnPerbaruiConsent').addEventListener('click', function () {
-            modal.classList.add('show');
-        });
-        document.getElementById('btnBatalConsent').addEventListener('click', function () {
-            modal.classList.remove('show');
-        });
-        // Modal General Consent sengaja TIDAK ditutup saat klik di luar pop up;
-        // hanya bisa ditutup lewat tombol Batal.
-
-        @if ($errors->any())
-            bukaTab('consent');
-            modal.classList.add('show');
-        @endif
 
         // Modal Koding (ICD-10)
         var modalKoding = document.getElementById('modalKoding');

@@ -33,6 +33,10 @@
 
         <div class="dropdown-divider"></div>
 
+        <a href="{{ route('audit-log.index') }}" class="dropdown-item">
+            <i class="bi bi-clipboard-data"></i> Audit Trail
+        </a>
+
         <a href="#" class="dropdown-item">
             <i class="bi bi-gear"></i> Pengaturan
         </a>

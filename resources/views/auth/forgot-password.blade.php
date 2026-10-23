@@ -139,13 +139,22 @@
         <h2>Lupa Password</h2>
         <p>Masukkan username Anda, administrator akan membantu mereset password.</p>
 
-        <form method="POST" action="#">
+        @if (session('status'))
+            <div style="margin-bottom:16px;padding:10px 12px;border-radius:8px;background:#e8f7ee;color:#14532d;font-size:12.5px;">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.request.store') }}">
 
             @csrf
 
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Masukkan username">
+                <input type="text" id="username" name="username" class="form-control" placeholder="Masukkan username" value="{{ old('username') }}">
+                @error('username')
+                    <small style="color:#d00000;font-size:12px;">{{ $message }}</small>
+                @enderror
             </div>
 
             <button type="submit" class="btn-submit">Kirim Permintaan</button>

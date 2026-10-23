@@ -269,7 +269,22 @@ public function create()
                     $dataConsent['saksi'] = ! empty($gc['nama_saksi']) ? $gc['nama_saksi'] : null;
                 }
 
-                GeneralConsent::create($dataConsent);
+                $gcBaru = GeneralConsent::create($dataConsent);
+
+                // Audit trail tanda tangan general consent (tidak bisa diubah setelah tersimpan)
+                foreach ([
+                    'ttd_petugas'          => 'petugas',
+                    'ttd_penanggung_jawab' => 'penanggung jawab',
+                    'ttd_saksi'            => 'saksi',
+                ] as $kolomTtd => $peran) {
+                    if (! empty($dataConsent[$kolomTtd])) {
+                        \App\Models\ActivityLog::catatTtd(
+                            "Tanda tangan {$peran} pada general consent {$pasien->nama}",
+                            $pasien->no_rm, $gcBaru->getTable(), (int) $gcBaru->id,
+                            ['nama pasien' => $pasien->nama, 'penandatangan' => $dataConsent['nama_penyetuju'] ?? null]
+                        );
+                    }
+                }
             }
 
             $kunjungan = Kunjungan::create([
