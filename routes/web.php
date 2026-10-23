@@ -17,7 +17,10 @@ use App\Http\Controllers\TindakanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DataPasienController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\RujukanController;
+use App\Http\Controllers\SuratMedisController;
 use App\Http\Middleware\BatasiAkses;
+use App\Http\Middleware\BatasiAksesRole;
 use App\Http\Middleware\CatatAudit;
 
 // ===========================
@@ -46,7 +49,7 @@ Route::post('/forgot-password', [LoginController::class, 'lupaPassword'])->name(
 // untuk user perawat yang sedang login, role lain tidak terpengaruh.
 // ===========================
 
-Route::middleware([config('akses.login_wajib') ? 'auth' : 'web', BatasiAkses::class, CatatAudit::class])->group(function () {
+Route::middleware([config('akses.login_wajib') ? 'auth' : 'web', BatasiAkses::class, BatasiAksesRole::class, CatatAudit::class])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
@@ -123,6 +126,10 @@ Route::middleware([config('akses.login_wajib') ? 'auth' : 'web', BatasiAkses::cl
     Route::get('/rekam-medis/kunjungan/{kunjungan}/informed-consent/cetak', [RekamMedisController::class, 'informedConsentCetak'])->name('rekam-medis.informed-consent.cetak');
     Route::get('/rekam-medis/kunjungan/{kunjungan}/autentikasi/cetak', [RekamMedisController::class, 'autentikasiCetak'])->name('rekam-medis.autentikasi.cetak');
     Route::get('/rekam-medis/kunjungan/{kunjungan}/resume-medis/cetak', [RekamMedisController::class, 'resumeCetak'])->name('rekam-medis.resume.cetak');
+    // Cetak Rujukan & Surat Medis dari halaman Rekam Medis (controller sama dengan halaman
+    // Pemeriksaan, tapi route terpisah agar hak cetaknya mengikuti aturan Rekam Medis).
+    Route::get('/rekam-medis/rujukan/{poli}/{no_rm}/{id}/cetak', [RujukanController::class, 'cetak'])->name('rekam-medis.rujukan.cetak');
+    Route::get('/rekam-medis/surat-medis/{poli}/{no_rm}/{id}/cetak', [SuratMedisController::class, 'cetak'])->name('rekam-medis.surat-medis.cetak');
     Route::get('/rekam-medis/{kunjungan}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
 
     Route::get('/farmasi', [FarmasiController::class, 'index'])->name('farmasi.index');

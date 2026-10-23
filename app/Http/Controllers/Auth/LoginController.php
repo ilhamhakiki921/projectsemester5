@@ -125,6 +125,11 @@ class LoginController extends Controller implements HasMiddleware
 
             ActivityLog::catat('Login', 'users', Auth::id(), 'Login berhasil');
 
+            // Petugas Rekam Medis langsung diarahkan ke halaman Rekam Medis.
+            if (Auth::user()->isRm()) {
+                return redirect()->route('rekam-medis.index');
+            }
+
             return redirect()->intended($this->redirectTo);
         }
 

@@ -43,6 +43,12 @@ class BatasiAksesRole
             return $next($request);
         }
 
+        // Perawat & Petugas Pendaftaran diatur oleh BatasiAkses (config/akses.php),
+        // jadi tidak diproses lagi di sini supaya aturannya tidak bentrok.
+        if ($user->role === 'perawat' || $user->isPetugasPendaftaran()) {
+            return $next($request);
+        }
+
         $nama     = (string) optional($request->route())->getName();
         $halamanRm = str_starts_with($nama, 'rekam-medis.');
         $ubah      = ! in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
