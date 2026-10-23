@@ -119,11 +119,15 @@
                 </div>
                 <div class="sm-f">
                     <label for="smTB">Tinggi Badan (cm)</label>
-                    <input type="number" id="smTB" name="tinggi_badan" min="30" max="250" step="0.1">
+                    <input type="number" id="smTB" name="tinggi_badan" min="30" max="250" step="1">
                 </div>
                 <div class="sm-f">
                     <label for="smTD">Tekanan Darah (mmHg)</label>
-                    <input type="text" id="smTD" name="tekanan_darah" placeholder="120/80" maxlength="7">
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <input type="number" id="smSistole" name="sistole" min="1" max="300" step="1" placeholder="Sistole">
+                        <span>/</span>
+                        <input type="number" id="smDiastole" name="diastole" min="1" max="200" step="1" placeholder="Diastole">
+                    </div>
                 </div>
             </div>
         </div>
@@ -187,7 +191,7 @@
     const tombol = [el('smCetak')];
     const opt = { Sakit: el('optSakit'), Sehat: el('optSehat') };
     const kolom = ['nomor_surat', 'alamat_pasien', 'lama_istirahat', 'mulai_tanggal', 'keperluan',
-                   'tanggal_pemeriksaan', 'hasil_pemeriksaan', 'berat_badan', 'tinggi_badan', 'tekanan_darah',
+                   'tanggal_pemeriksaan', 'hasil_pemeriksaan', 'berat_badan', 'tinggi_badan', 'sistole', 'diastole',
                    'tempat', 'tanggal_surat', 'dokter'];
 
     let jenis = 'Sakit';

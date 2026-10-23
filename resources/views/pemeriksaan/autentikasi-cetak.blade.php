@@ -156,5 +156,9 @@
     if (img.complete) pangkas(); else img.addEventListener('load', pangkas, { once: true });
 })();
 </script>
+<script>
+// Dialog cetak langsung terbuka begitu lembar selesai dimuat (tombol "Cetak" di pojok tetap ada untuk cetak ulang)
+window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 600); });
+</script>
 </body>
 </html>

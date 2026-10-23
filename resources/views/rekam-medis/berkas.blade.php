@@ -2024,8 +2024,6 @@
                                         @if ($kSm)
                                             <a href="{{ route('surat-medis.cetak', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
-                                            <a href="{{ route('surat-medis.unduh', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
-                                               class="btn-edit-soap rj-cetak">Unduh</a>
                                         @endif
                                     </div>
 
@@ -2207,7 +2205,7 @@
                 </div>
                 <div class="f-group {{ $errEdit->has('suhu_badan') ? 'salah' : '' }}">
                     <label for="es_suhu_badan">Suhu (°C) <span class="wajib">*</span></label>
-                    <input type="text" id="es_suhu_badan" name="suhu_badan" placeholder="Contoh: 36,8" autocomplete="off">
+                    <input type="number" id="es_suhu_badan" name="suhu_badan" min="1" max="50" step="1" placeholder="Contoh: 37" autocomplete="off">
                     @if ($errEdit->has('suhu_badan'))<span class="f-pesan">{{ $errEdit->first('suhu_badan') }}</span>@endif
                 </div>
                                 <div class="f-group {{ $errEdit->has('sistole') ? 'salah' : '' }}">
@@ -2237,7 +2235,7 @@
                 </div>
                 <div class="f-group {{ $errEdit->has('gcs') ? 'salah' : '' }}">
                     <label for="es_gcs">GCS</label>
-                    <input type="text" id="es_gcs" name="gcs" placeholder="Contoh: E4V5M6" autocomplete="off">
+                    <input type="number" id="es_gcs" name="gcs" min="3" max="15" step="1" placeholder="Total skor, contoh: 15" autocomplete="off">
                     @if ($errEdit->has('gcs'))<span class="f-pesan">{{ $errEdit->first('gcs') }}</span>@endif
                 </div>
             </div>

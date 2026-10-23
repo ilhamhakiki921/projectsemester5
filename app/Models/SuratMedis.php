@@ -23,7 +23,8 @@ class SuratMedis extends Model
         'hasil_pemeriksaan',
         'berat_badan',
         'tinggi_badan',
-        'tekanan_darah',
+        'sistole',
+        'diastole',
         'tempat',
         'tanggal_surat',
         'dokter',
@@ -40,6 +41,15 @@ class SuratMedis extends Model
     public function kunjungan()
     {
         return $this->belongsTo(Kunjungan::class);
+    }
+
+    /** Gabungan sistole/diastole, mis. "120/80" (dipakai halaman cetak dan berkas). */
+    public function getTekananDarahAttribute(): ?string
+    {
+        if ($this->sistole === null || $this->diastole === null) {
+            return null;
+        }
+        return $this->sistole . '/' . $this->diastole;
     }
 
     /** Kode surat di awal nomor. */

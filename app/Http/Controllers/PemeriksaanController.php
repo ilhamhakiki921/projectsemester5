@@ -132,8 +132,8 @@ class PemeriksaanController extends Controller
             'detak_jantung'              => 'required|string',
             'saturasi'                   => 'nullable|string',
             'imt'                        => 'required|string',
-            'suhu_badan'                 => 'required|string',
-            'gcs'                        => 'nullable|string',
+            'suhu_badan'                 => 'required|integer|min:1|max:50',
+            'gcs'                        => 'nullable|integer|min:3|max:15',
         ], $this->pesanValidasi());
 
         RekamMedis::updateOrCreate(

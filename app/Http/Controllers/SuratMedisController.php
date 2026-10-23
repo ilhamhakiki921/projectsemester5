@@ -45,7 +45,6 @@ class SuratMedisController extends Controller
         // Keterangan fisik terisi otomatis dari tanda vital di Asesmen (kalau ada), tetap bisa diubah
         $rm = $kunjungan->rekamMedis;
         $angka = fn ($v) => preg_match('/\d+(?:[.,]\d+)?/', (string) $v, $m) ? str_replace(',', '.', $m[0]) : '';
-        $tensi = preg_match('/(\d{2,3})\s*\/\s*(\d{2,3})/', (string) ($rm?->td), $m) ? $m[1] . '/' . $m[2] : '';
 
         // Isian awal per jenis: kalau sudah pernah disimpan di kunjungan ini, tampilkan yang tersimpan
         $tersimpan = SuratMedis::where('kunjungan_id', $kunjungan->id)->get()->keyBy('jenis');
@@ -65,8 +64,9 @@ class SuratMedisController extends Controller
                     'tanggal_pemeriksaan' => $kunjungan->tanggal_kunjungan?->toDateString() ?? now()->toDateString(),
                     'hasil_pemeriksaan'   => '',
                     'berat_badan'    => $angka($rm?->berat_badan),
-                    'tinggi_badan'   => $angka($rm?->tb),
-                    'tekanan_darah'  => $tensi,
+                    'tinggi_badan'   => $rm?->tb ?? '',
+                    'sistole'        => $rm?->sistole ?? '',
+                    'diastole'       => $rm?->diastole ?? '',
                     'tempat'         => 'Ngawi',
                     'tanggal_surat'  => now()->toDateString(),
                     'dokter'         => $dokter,
@@ -110,15 +110,15 @@ class SuratMedisController extends Controller
             $rules['keperluan']           = 'required|string|max:255';
             $rules['hasil_pemeriksaan']   = 'required|string|max:500';
             $rules['berat_badan']         = 'required|numeric|min:1|max:500';
-            $rules['tinggi_badan']        = 'required|numeric|min:30|max:250';
-            $rules['tekanan_darah']       = ['required', 'regex:/^\d{2,3}\/\d{2,3}$/'];
+            $rules['tinggi_badan']        = 'required|integer|min:30|max:250';
+            $rules['sistole']             = 'required|integer|min:1|max:300';
+            $rules['diastole']            = 'required|integer|min:1|max:200';
         }
 
         $data = $request->validate($rules, [
             'required' => ':attribute wajib diisi.',
             'integer'  => ':attribute harus berupa angka.',
             'numeric'  => ':attribute harus berupa angka.',
-            'tekanan_darah.regex' => 'Tekanan darah harus berformat 120/80.',
             'min'      => ':attribute minimal :min.',
             'max'      => ':attribute terlalu besar / panjang.',
         ], [
@@ -130,7 +130,8 @@ class SuratMedisController extends Controller
             'hasil_pemeriksaan'   => 'Hasil pemeriksaan',
             'berat_badan'    => 'Berat badan',
             'tinggi_badan'   => 'Tinggi badan',
-            'tekanan_darah'  => 'Tekanan darah',
+            'sistole'        => 'Sistole',
+            'diastole'       => 'Diastole',
             'tempat'         => 'Tempat',
             'tanggal_surat'  => 'Tanggal surat',
             'dokter'         => 'Dokter yang memeriksa',
@@ -153,7 +154,8 @@ class SuratMedisController extends Controller
             'hasil_pemeriksaan'   => $sakit ? null : $data['hasil_pemeriksaan'],
             'berat_badan'    => $sakit ? null : $data['berat_badan'],
             'tinggi_badan'   => $sakit ? null : $data['tinggi_badan'],
-            'tekanan_darah'  => $sakit ? null : $data['tekanan_darah'],
+            'sistole'        => $sakit ? null : $data['sistole'],
+            'diastole'       => $sakit ? null : $data['diastole'],
             'tempat'         => $data['tempat'],
             'tanggal_surat'  => $data['tanggal_surat'],
             'dokter'         => $data['dokter'],
@@ -220,8 +222,9 @@ class SuratMedisController extends Controller
             'tanggal_pemeriksaan' => $s->tanggal_pemeriksaan?->toDateString() ?? '',
             'hasil_pemeriksaan'   => $s->hasil_pemeriksaan ?? '',
             'berat_badan'    => $s->berat_badan !== null ? (float) $s->berat_badan : '',
-            'tinggi_badan'   => $s->tinggi_badan !== null ? (float) $s->tinggi_badan : '',
-            'tekanan_darah'  => $s->tekanan_darah ?? '',
+            'tinggi_badan'   => $s->tinggi_badan ?? '',
+            'sistole'        => $s->sistole ?? '',
+            'diastole'       => $s->diastole ?? '',
             'tempat'         => $s->tempat,
             'tanggal_surat'  => $s->tanggal_surat->toDateString(),
             'dokter'         => $this->namaDokter($s),
