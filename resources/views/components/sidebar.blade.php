@@ -1,3 +1,6 @@
+{{-- Hak akses perawat (lihat config/akses.php); tidak mengubah tampilan role lain --}}
+<x-akses-perawat />
+
 <aside class="sidebar" id="sidebarUtama">
 
     <!-- Watermark logo transparan di background, murni dekoratif -->
@@ -54,8 +57,8 @@
 
         {{-- Pemeriksaan --}}
 <a href="#"
-   class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }} {{ auth()->user()?->isRm() ? 'menu-nonaktif-rm' : '' }}"
-   onclick="event.preventDefault(); @if (! auth()->user()?->isRm()) toggleSubmenuPemeriksaan(this); @endif">
+   class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
+   onclick="event.preventDefault(); toggleSubmenuPemeriksaan(this);">
 
     <span class="menu-icon"><i class="bi bi-heart-pulse-fill"></i></span>
 
@@ -65,7 +68,7 @@
 
 </a>
 
-        <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}" @if (auth()->user()?->isRm()) style="display:none" @endif>
+        <div class="menu-group {{ request()->routeIs('pemeriksaan.*') ? 'open' : '' }}">
 
             @php
                 $poliSaatIni = request()->route('poli');
@@ -82,8 +85,7 @@
 
         {{-- Penunjang --}}
         <a href="#"
-           class="menu-item {{ auth()->user()?->isRm() ? 'menu-nonaktif-rm' : '' }}"
-           onclick="event.preventDefault();">
+           class="menu-item">
 
             <span class="menu-icon"><i class="bi bi-clipboard2-pulse-fill"></i></span>
 
@@ -93,8 +95,8 @@
 
 
         {{-- Farmasi --}}
-        <a href="{{ auth()->user()?->isRm() ? '#' : route('farmasi.index') }}"
-           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }} {{ auth()->user()?->isRm() ? 'menu-nonaktif-rm' : '' }}">
+        <a href="{{ route('farmasi.index') }}"
+           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }}">
 
             <span class="menu-icon"><i class="bi bi-capsule"></i></span>
 
@@ -687,120 +689,3 @@ body.sidebar-collapsed .main {
         });
     })();
 </script>
-
-{{--
-    MODE BACA SAJA untuk akun Petugas Rekam Medis di luar halaman Rekam Medis.
-    Ini hanya merapikan tampilan (tombol dimatikan); penjagaan yang sebenarnya
-    ada di server (App\Http\Middleware\BatasiAksesRole).
---}}
-@if (auth()->user()?->isRm() && ! request()->routeIs('rekam-medis.*'))
-<style>
-    .mode-baca-nonaktif,
-    .mode-baca-nonaktif:hover {
-        background: #e5e7eb !important;
-        border-color: #d1d5db !important;
-        color: #9ca3af !important;
-        box-shadow: none !important;
-        cursor: not-allowed !important;
-        pointer-events: none !important;
-        opacity: 1 !important;
-    }
-    .mode-baca-nonaktif i { color: #9ca3af !important; }
-    .mode-baca-sembunyi { display: none !important; }
-</style>
-<script>
-(function () {
-    var PESAN = '';
-    var aksi  = /(simpan|hapus|edit|ubah|tambah|delete|submit|import|upload|unggah|kirim|selesai|batalkan|verifikasi|daftarkan|btn-kunjungan|btn-new)/i;
-
-    function adalahLogout(el) {
-        var f = el.closest ? el.closest('form') : null;
-        return f && /\/logout/.test(f.getAttribute('action') || '');
-    }
-
-    function kunci() {
-        // 1) Form yang bukan GET (simpan/ubah/hapus): matikan semua isiannya
-        document.querySelectorAll('form').forEach(function (f) {
-            var method = (f.getAttribute('method') || 'GET').toUpperCase();
-            if (method === 'GET' || adalahLogout(f)) return;
-            f.querySelectorAll('input, select, textarea, button').forEach(function (el) {
-                if (el.type === 'hidden') return;
-                el.disabled = true;
-                el.classList.add('mode-baca-nonaktif');
-            });
-            f.addEventListener('submit', function (e) { e.preventDefault();  }, true);
-        });
-
-        // 2) Tombol aksi di luar form (modal, tombol Edit/Hapus/Tambah, dst.)
-        document.querySelectorAll('button, a.btn, [role="button"]').forEach(function (el) {
-            if (adalahLogout(el) || el.closest('#sidebarUtama') || el.closest('.berkas-tabs')) return;
-            var teks = (el.textContent || '') + ' ' + el.className + ' ' + el.id + ' ' + (el.getAttribute('title') || '');
-            if (/(detail|lihat)/i.test(el.className + ' ' + (el.getAttribute('title') || ''))) return;
-            if (aksi.test(teks)) {
-                el.classList.add('mode-baca-nonaktif');
-                el.setAttribute('aria-disabled', 'true');
-                if (el.tagName === 'BUTTON') el.disabled = true;
-            }
-        });
-
-        // 3) Tombol cetak / unduh disembunyikan
-        document.querySelectorAll('a[href*="/cetak"], a[href*="/unduh"], [onclick*="print"]').forEach(function (el) {
-            el.classList.add('mode-baca-sembunyi');
-        });
-        document.querySelectorAll('button, a').forEach(function (el) {
-            if (el.closest('#sidebarUtama')) return;
-            var teks = (el.textContent || '') + ' ' + el.className + ' ' + el.id;
-            if (/(cetak|print|unduh|download)/i.test(teks) || el.querySelector('.bi-printer')) {
-                el.classList.add('mode-baca-sembunyi');
-            }
-        });
-    }
-
-    // 4) Permintaan AJAX selain GET diblokir di browser juga
-    var fetchAsli = window.fetch;
-    if (fetchAsli) {
-        window.fetch = function (url, opt) {
-            var m = ((opt && opt.method) || 'GET').toUpperCase();
-            if (m !== 'GET' && m !== 'HEAD' && !/\/logout/.test(String(url))) {
-                
-                return Promise.reject(new Error(PESAN));
-            }
-            return fetchAsli.apply(this, arguments);
-        };
-    }
-    var bukaAsli = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (method, url) {
-        if (String(method).toUpperCase() !== 'GET' && !/\/logout/.test(String(url))) {
-            
-            throw new Error(PESAN);
-        }
-        return bukaAsli.apply(this, arguments);
-    };
-
-    // 5) Cetak lewat Ctrl+P / window.print() juga dimatikan
-    window.print = function () {  };
-    document.addEventListener('keydown', function (e) {
-        if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'p') {
-            e.preventDefault();
-            
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', kunci);
-})();
-</script>
-@endif
-
-
-@if (auth()->user()?->isRm())
-<style>
-    .sidebar .menu-nonaktif-rm,
-    .sidebar .menu-nonaktif-rm:hover {
-        opacity: .4;
-        cursor: not-allowed;
-        pointer-events: none;
-        background: transparent !important;
-        filter: grayscale(1);
-    }
-</style>
-@endif

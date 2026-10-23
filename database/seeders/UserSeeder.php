@@ -16,10 +16,10 @@ class UserSeeder extends Seeder
      * Password otomatis di-hash lewat cast 'password' => 'hashed' pada
      * model User, jadi di sini cukup ditulis teks biasa "admin123".
      *
-     * Akun Petugas Rekam Medis:
-     * Username : rekammedis
-     * Password : rm123456
-     * (setelah login langsung masuk ke halaman Rekam Medis)
+     * Akun perawat (hak akses terbatas, lihat config/akses.php):
+     *
+     * Username : perawat
+     * Password : perawat123
      *
      * Pakai updateOrCreate supaya aman dijalankan berkali-kali (seed ulang
      * tidak akan membuat akun admin dobel / menimpa role & status kalau
@@ -38,11 +38,11 @@ class UserSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['username' => 'rekammedis'],
+            ['username' => 'perawat'],
             [
-                'nama_lengkap' => 'Petugas Rekam Medis',
-                'password'     => 'rm123456',
-                'role'         => 'rm',
+                'nama_lengkap' => 'Perawat',
+                'password'     => 'perawat123',
+                'role'         => 'perawat',
                 'status'       => 'aktif',
             ]
         );
