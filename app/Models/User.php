@@ -55,14 +55,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Apakah akun ini Dokter (role `dokter`).
-     */
-    public function isDokter(): bool
-    {
-        return $this->role === 'dokter';
-    }
-
-    /**
      * Apakah akun ini Administrator (role `admin`): akses penuh ke seluruh sistem.
      */
     public function isAdmin(): bool

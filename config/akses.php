@@ -22,16 +22,6 @@
 
 return [
 
-    /*
-     | Saklar login.
-     |   true (bawaan) = login sungguhan (cek username/password) dan hak akses
-     |                   perawat aktif.
-     |   false         = login dilewati: klik Login langsung masuk, halaman bisa
-     |                   dibuka tanpa login. Hak akses perawat TIDAK aktif.
-     | Ubah lewat file .env:  AKSES_LOGIN_WAJIB=false   lalu  php artisan config:clear
-     */
-    'login_wajib' => env('AKSES_LOGIN_WAJIB', true),
-
     'perawat' => [
 
         'tulis_boleh' => [
@@ -101,6 +91,25 @@ return [
                 'blok' => '.btn-koding',
             ],
         ],
+    ],
+
+    // Petugas Rekam Medis: di semua tab Pemeriksaan hanya boleh MELIHAT.
+    // Kolom dikunci, tombol simpan/tambah/hapus/cetak tidak bisa dipakai (tanpa notifikasi).
+    'rm' => [
+        'ui' => [
+            '*' => [
+                'pesan'  => '',
+                'bidang' => 'form:not(.search-card) input:not([type="hidden"]), form:not(.search-card) textarea, form:not(.search-card) select',
+                'form'   => 'form:not(.search-card)',
+                'blok'   => 'form:not(.search-card) button[type="submit"], form:not(.search-card) button[type="reset"], .btn-simpan, .btn-simpan-resep, .btn-tambah, .btn-batal, [data-add], [data-remove], '
+                          . '#icTidak, #icYa, .ic-cetak, .ic-simpan, .ic-ttd-clear, .icu-cetak, .icu-simpan, .icu-btn-hijau, .icu-pilih, .icu-ttd-clear, '
+                          . '.cp-btn, .cp-add, #pjAdd, #pjBtn, #pjBatal, .pj-ab.edit, .pj-ab.hapus, '
+                          . '#rjHapus, #rjSimpan, #rjBtn, #rjTtdClear, [data-aksi], #smHapus, #smSimpan, #smCetak, #auCetak, #auClear, #auBtn',
+                'pointer' => 'canvas, #smTtdBox',
+            ],
+        ],
+        // Nama route halaman Pemeriksaan yang dikunci (daftar antrian 'pemeriksaan.index' tidak ikut).
+        'route' => ['pemeriksaan.asesmen', 'pemeriksaan.soap', 'pemeriksaan.informed-consent', 'pemeriksaan.diagnosa', 'pemeriksaan.resep', 'pemeriksaan.clinical-pathway', 'clinical-pathway.index', 'penunjang.index', 'rujukan.index', 'surat-medis.index', 'autentikasi.index'],
     ],
 
 ];

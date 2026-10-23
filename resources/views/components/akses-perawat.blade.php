@@ -26,6 +26,15 @@
         }
     }
 
+    // Petugas Rekam Medis: halaman Pemeriksaan hanya boleh dilihat (lihat config/akses.php, blok 'rm')
+    if ($penggunaAkses && $penggunaAkses->isRm()) {
+        $namaRouteRm = (string) optional(request()->route())->getName();
+
+        if ($namaRouteRm !== '' && in_array($namaRouteRm, config('akses.rm.route', []), true)) {
+            $aturanAkses = config('akses.rm.ui.*');
+        }
+    }
+
     $pesanAkses = session('akses_ditolak');
 @endphp
 
@@ -68,10 +77,11 @@
 (function () {
     var ATURAN = @json($aturanAkses);
     var FLASH  = @json($pesanAkses);
-    var PESAN_LIHAT = 'Akses perawat pada bagian ini hanya untuk melihat data.';
+    var PESAN_LIHAT = (ATURAN && typeof ATURAN.pesan === 'string') ? ATURAN.pesan : 'Akses perawat pada bagian ini hanya untuk melihat data.';
     var elToast = null, timerToast = null;
 
     function toast(teks) {
+        if (!teks) { return; }
         if (!elToast) {
             elToast = document.createElement('div');
             elToast.className = 'akses-toast';

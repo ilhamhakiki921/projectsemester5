@@ -26,6 +26,10 @@ class BatasiAkses
             return $this->batasiPetugasPendaftaran($request, $next);
         }
 
+        if ($user && $user->isRm()) {
+            return $this->batasiRekamMedis($request, $next);
+        }
+
         if (! $user || $user->role !== 'perawat') {
             return $next($request);
         }
@@ -68,6 +72,55 @@ class BatasiAkses
         }
 
         return redirect()->route('dashboard');
+    }
+
+    /**
+     * Petugas Rekam Medis: di halaman Pendaftaran hanya boleh MELIHAT detail
+     * identitas pasien. Daftar pasien baru, daftar kunjungan, edit & hapus pasien
+     * ditolak di server (walau URL/form dikirim manual).
+     */
+    private function batasiRekamMedis(Request $request, Closure $next): Response
+    {
+        $nama = (string) optional($request->route())->getName();
+
+        // Halaman Farmasi tidak bisa dibuka Petugas Rekam Medis.
+        if ($request->is('farmasi', 'farmasi/*')) {
+            return redirect()->route('rekam-medis.index');
+        }
+
+        $ditutup = [
+            'pasien.baru', 'pasien.baru.store', 'pasien.update',
+            'pasien.lama.edit', 'pasien.lama.kunjungan.store',
+            'pasien.kunjungan.store', 'pasien.lama.destroy',
+        ];
+
+        if (in_array($nama, $ditutup, true)) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Tidak dapat diakses.'], 403);
+            }
+
+            return redirect()->route('pendaftaran');
+        }
+
+        // Halaman Pemeriksaan (asesmen, SOAP, diagnosa, resep, penunjang, rujukan,
+        // surat medis, autentikasi, clinical pathway, informed consent): hanya lihat.
+        // Semua simpan/ubah/hapus dan cetak/unduh ditolak.
+        if ($request->is('pemeriksaan', 'pemeriksaan/*')) {
+            $ubah  = ! in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
+            $cetak = (bool) preg_match('/\.(cetak|unduh)$/', $nama);
+
+            if ($ubah || $cetak) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['message' => 'Tidak dapat diakses.'], 403);
+                }
+
+                return $request->isMethod('GET')
+                    ? redirect()->route('rekam-medis.index')
+                    : redirect()->back(fallback: route('rekam-medis.index'));
+            }
+        }
+
+        return $next($request);
     }
 
     private function tolak(Request $request, string $pesan): Response
