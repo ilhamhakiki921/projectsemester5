@@ -46,6 +46,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Apakah akun ini Petugas Pendaftaran (role `petugas_pendaftaran`):
+     * hanya boleh membuka Dashboard & Pendaftaran.
+     */
+    public function isPetugasPendaftaran(): bool
+    {
+        return $this->role === 'petugas_pendaftaran';
+    }
+
+    /**
      * Apakah akun ini Administrator (role `admin`): akses penuh ke seluruh sistem.
      */
     public function isAdmin(): bool

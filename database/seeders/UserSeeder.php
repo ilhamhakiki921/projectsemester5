@@ -21,6 +21,12 @@ class UserSeeder extends Seeder
      * Username : perawat
      * Password : perawat123
      *
+     * Akun petugas pendaftaran (hanya boleh Login, Dashboard, Pendaftaran;
+     * aturannya di App\Http\Middleware\BatasiAkses):
+     *
+     * Username : pendaftaran
+     * Password : pendaftaran123
+     *
      * Pakai updateOrCreate supaya aman dijalankan berkali-kali (seed ulang
      * tidak akan membuat akun admin dobel / menimpa role & status kalau
      * sudah pernah diubah manual, kecuali kolom password memang mau di-reset).
@@ -43,6 +49,16 @@ class UserSeeder extends Seeder
                 'nama_lengkap' => 'Perawat',
                 'password'     => 'perawat123',
                 'role'         => 'perawat',
+                'status'       => 'aktif',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['username' => 'pendaftaran'],
+            [
+                'nama_lengkap' => 'Petugas Pendaftaran',
+                'password'     => 'pendaftaran123',
+                'role'         => 'petugas_pendaftaran',
                 'status'       => 'aktif',
             ]
         );
