@@ -22,6 +22,10 @@ class BatasiAkses
     {
         $user = $request->user();
 
+        if ($user && $user->isPetugasPendaftaran()) {
+            return $this->batasiPetugasPendaftaran($request, $next);
+        }
+
         if (! $user || $user->role !== 'perawat') {
             return $next($request);
         }
@@ -39,6 +43,31 @@ class BatasiAkses
         }
 
         return $next($request);
+    }
+
+    /**
+     * Petugas Pendaftaran: whitelist. Hanya route Dashboard, Pendaftaran
+     * (pasien lama/baru, kunjungan) dan proxy wilayah yang boleh dibuka.
+     * Semua route lain (Pemeriksaan, Penunjang, Farmasi, Rekam Medis, Laporan,
+     * Data Master, Audit Trail, Pengaturan, dst.) ditolak, termasuk kalau
+     * URL-nya diketik manual. Route baru otomatis tertutup (default-deny).
+     */
+    private function batasiPetugasPendaftaran(Request $request, Closure $next): Response
+    {
+        $nama = (string) optional($request->route())->getName();
+
+        $boleh = ['dashboard', 'dashboard.*', 'pendaftaran', 'pasien.*', 'wilayah.*'];
+
+        if ($nama !== '' && Str::is($boleh, $nama)) {
+            return $next($request);
+        }
+
+        // Tanpa pemberitahuan: cukup dikembalikan ke Dashboard.
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['message' => 'Tidak dapat diakses.'], 403);
+        }
+
+        return redirect()->route('dashboard');
     }
 
     private function tolak(Request $request, string $pesan): Response

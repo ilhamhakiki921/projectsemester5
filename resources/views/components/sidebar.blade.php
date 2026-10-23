@@ -1,6 +1,11 @@
 {{-- Hak akses perawat (lihat config/akses.php); tidak mengubah tampilan role lain --}}
 <x-akses-perawat />
 
+@php
+    // Petugas Pendaftaran: menu selain Dashboard & Pendaftaran tampil pudar dan tidak bisa diklik
+    $kunciMenu = auth()->user()?->isPetugasPendaftaran() ? 'menu-terkunci' : '';
+@endphp
+
 <aside class="sidebar" id="sidebarUtama">
 
     <!-- Watermark logo transparan di background, murni dekoratif -->
@@ -57,7 +62,7 @@
 
         {{-- Pemeriksaan --}}
 <a href="#"
-   class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }}"
+   class="menu-item has-submenu {{ request()->routeIs('pemeriksaan.*') ? 'active' : '' }} {{ $kunciMenu }}"
    onclick="event.preventDefault(); toggleSubmenuPemeriksaan(this);">
 
     <span class="menu-icon"><i class="bi bi-heart-pulse-fill"></i></span>
@@ -85,7 +90,7 @@
 
         {{-- Penunjang --}}
         <a href="#"
-           class="menu-item">
+           class="menu-item {{ $kunciMenu }}">
 
             <span class="menu-icon"><i class="bi bi-clipboard2-pulse-fill"></i></span>
 
@@ -96,7 +101,7 @@
 
         {{-- Farmasi --}}
         <a href="{{ route('farmasi.index') }}"
-           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }}">
+           class="menu-item {{ request()->routeIs('farmasi.*') ? 'active' : '' }} {{ $kunciMenu }}">
 
             <span class="menu-icon"><i class="bi bi-capsule"></i></span>
 
@@ -107,7 +112,7 @@
 
         {{-- Rekam Medis --}}
         <a href="{{ route('rekam-medis.index') }}"
-           class="menu-item {{ request()->routeIs('rekam-medis.*') ? 'active' : '' }}">
+           class="menu-item {{ request()->routeIs('rekam-medis.*') ? 'active' : '' }} {{ $kunciMenu }}">
 
             <span class="menu-icon"><i class="bi bi-folder-fill"></i></span>
 
@@ -120,7 +125,7 @@
         {{-- Nanti kalau halamannya sudah ada: ganti href="#" dengan {{ route('laporan.index') }}
              dan hapus onclick. Status "active" otomatis menyala untuk route berawalan laporan.* --}}
         <a href="#"
-           class="menu-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
+           class="menu-item {{ request()->routeIs('laporan.*') ? 'active' : '' }} {{ $kunciMenu }}"
            onclick="event.preventDefault();">
 
             <span class="menu-icon"><i class="bi bi-file-earmark-bar-graph-fill"></i></span>
@@ -446,6 +451,14 @@ body.sidebar-collapsed .main {
             transform 0.15s ease;
     }
 
+
+    /* Menu terkunci (Petugas Pendaftaran): pudar & tidak bisa diklik */
+    .menu-item.menu-terkunci {
+        opacity: 0.4;
+        filter: grayscale(0.7);
+        pointer-events: none;
+        cursor: default;
+    }
 
     /* =================================
        ICON

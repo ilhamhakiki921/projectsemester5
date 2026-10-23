@@ -40,9 +40,18 @@ class User extends Authenticatable
     /**
      * Apakah akun ini Petugas Rekam Medis (role `rm`).
      */
-        public function isRm(): bool
+    public function isRm(): bool
     {
         return $this->role === 'rm';
+    }
+
+    /**
+     * Apakah akun ini Petugas Pendaftaran (role `petugas_pendaftaran`):
+     * hanya boleh membuka Dashboard & Pendaftaran.
+     */
+    public function isPetugasPendaftaran(): bool
+    {
+        return $this->role === 'petugas_pendaftaran';
     }
 
     /**

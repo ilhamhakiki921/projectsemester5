@@ -17,7 +17,7 @@
     </div>
 
     <div class="admin-dropdown" id="adminDropdown">
-        @if (! auth()->user()?->isRm())
+        @if (! auth()->user()?->isRm() && ! auth()->user()?->isPetugasPendaftaran())
         <a href="#" class="dropdown-item">
             <i class="bi bi-person"></i> Profil Saya
         </a>
