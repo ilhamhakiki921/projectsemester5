@@ -73,23 +73,11 @@ class LoginController extends Controller implements HasMiddleware
     }
 
     /**
-     * Proses submit form login.
-     *
-     * SEMENTARA DINONAKTIFKAN atas permintaan: klik tombol Login langsung
-     * masuk ke dashboard, tanpa mengecek username/password ke database.
-     * (Logic pengecekan asli disimpan di bawah, di method
-     * loginDenganPengecekan(), tinggal dipanggil lagi kalau mau diaktifkan.)
+     * Proses submit form login (validasi + cek username/password ke database).
      */
     public function login(Request $request)
     {
-        // Nama user dicatat di session supaya Audit Trail tetap tahu siapa
-        // yang login/logout walau pengecekan password sedang dinonaktifkan.
-        $username = trim((string) $request->input($this->username())) ?: 'admin';
-        $request->session()->put('audit_username', $username);
-
-        ActivityLog::catat('Login', 'users', null, 'Login berhasil', null, null, null, $username);
-
-        return redirect($this->redirectTo);
+        return $this->loginDenganPengecekan($request);
     }
 
     /**
@@ -122,6 +110,11 @@ class LoginController extends Controller implements HasMiddleware
             $request->session()->put('audit_username', Auth::user()->username);
 
             ActivityLog::catat('Login', 'users', Auth::id(), 'Login berhasil');
+
+            // Petugas Rekam Medis langsung diarahkan ke halaman Rekam Medis.
+            if (Auth::user()->isRm()) {
+                return redirect()->route('rekam-medis.index');
+            }
 
             return redirect()->intended($this->redirectTo);
         }

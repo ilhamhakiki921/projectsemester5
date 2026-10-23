@@ -58,6 +58,8 @@ class CatatAudit
         'rekam-medis.informed-consent.cetak'   => ['Cetak',  'Mencetak informed consent'],
         'rekam-medis.autentikasi.cetak'        => ['Cetak',  'Mencetak autentikasi'],
         'rekam-medis.resume.cetak'             => ['Cetak',  'Mencetak resume medis'],
+        'rekam-medis.rujukan.cetak'            => ['Cetak',  'Mencetak surat rujukan (dari Rekam Medis)'],
+        'rekam-medis.surat-medis.cetak'        => ['Cetak',  'Mencetak surat medis (dari Rekam Medis)'],
 
         // ---- Data master ----
         'user.store'        => ['Input',  'Menambah user'],

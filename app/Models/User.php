@@ -38,6 +38,14 @@ class User extends Authenticatable
     ];
 
     /**
+     * Apakah akun ini Petugas Rekam Medis (role `rm`).
+     */
+    public function isRm(): bool
+    {
+        return $this->role === 'rm';
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

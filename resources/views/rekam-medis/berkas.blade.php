@@ -1397,7 +1397,9 @@
                         </div>
 
                         <div class="gc-actions">
+                            @if (auth()->user()?->isRm())
                             <a href="{{ route('rekam-medis.consent.cetak', $pasien->id) }}" target="_blank" class="btn-biru">Cetak Formulir</a>
+                            @endif
                         </div>
                     </div>
 
@@ -1525,25 +1527,7 @@
                                         @if ($terverifikasi)
                                             <span class="info-terkunci" title="Sudah dikoding dan terverifikasi, data tidak dapat diedit lagi">&#128274; Terverifikasi — tidak dapat diedit</span>
                                         @else
-                                            <button type="button" class="btn-edit-soap"
-                                                    data-id="{{ $k->id }}"
-                                                    data-action="{{ route('rekam-medis.soap.update', $k->id) }}"
-                                                    data-rm="{{ json_encode([
-                                                        'tb'               => $rm->tb,
-                                                        'berat_badan'      => $rm->berat_badan,
-                                                        'imt'              => $rm->imt,
-                                                        'suhu_badan'       => $rm->suhu_badan,
-                                                        'sistole'          => $rm->sistole,
-                                                        'diastole'         => $rm->diastole,
-                                                        'detak_jantung'    => $rm->detak_jantung,
-                                                        'respiratory_rate' => $rm->respiratory_rate,
-                                                        'saturasi'         => $rm->saturasi,
-                                                        'gcs'              => $rm->gcs,
-                                                        'subjective'       => $rm->subjective,
-                                                        'objective'        => $rm->objective,
-                                                        'assessment'       => $rm->assessment,
-                                                        'plan'             => $rm->plan,
-                                                    ]) }}">Edit</button>
+                                            <span class="info-terkunci" title="Riwayat Pemeriksaan & SOAP hanya dapat dilihat">&#128274; Hanya dapat dilihat</span>
                                         @endif
                                     </div>
 
@@ -1600,10 +1584,12 @@
                                                     <span class="pill-koding belum">Belum dikoding</span>
                                                 @endif
 
+                                                @if (auth()->user()?->isRm())
                                                 <button type="button" class="btn-koding"
                                                         data-action="{{ route('rekam-medis.koding.update', $k->id) }}"
                                                         data-kode="{{ $rm->kode_icd10 }}"
                                                         data-diagnosa="{{ $rm->diagnosis_utama }}">Koding</button>
+                                                @endif
                                             </span>
                                         </div>
                                     </div>
@@ -1727,8 +1713,10 @@
 
                                     <div class="rp-aksi">
                                         @if ($kAsal)
-                                            <a href="{{ route('rujukan.cetak', [$kAsal->poli, $pasien->no_rm, $r->id]) }}"
+                                            @if (auth()->user()?->isRm())
+                                            <a href="{{ route('rekam-medis.rujukan.cetak', [$kAsal->poli, $pasien->no_rm, $r->id]) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Surat</a>
+                                            @endif
                                         @endif
                                     </div>
 
@@ -1848,8 +1836,10 @@
                                 <div class="rp-body">
 
                                     <div class="rp-aksi">
+                                        @if (auth()->user()?->isRm())
                                         <a href="{{ route('rekam-medis.informed-consent.cetak', $k->id) }}"
                                            target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Informed Consent</a>
+                                        @endif
                                     </div>
 
                                     {{-- Pemberian informasi --}}
@@ -1973,8 +1963,10 @@
 
                                 <div class="rp-body">
                                     <div class="rp-aksi">
+                                        @if (auth()->user()?->isRm())
                                         <a href="{{ route('rekam-medis.resume.cetak', $k->id) }}"
                                            target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
+                                        @endif
                                     </div>
 
                                     @unless ($rsm['ada_rm'])
@@ -2021,8 +2013,10 @@
 
                                     <div class="rp-aksi">
                                         @if ($kSm)
-                                            <a href="{{ route('surat-medis.cetak', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
+                                            @if (auth()->user()?->isRm())
+                                            <a href="{{ route('rekam-medis.surat-medis.cetak', [$kSm->poli, $pasien->no_rm, $sm->id]) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak</a>
+                                            @endif
                                         @endif
                                     </div>
 
@@ -2104,8 +2098,10 @@
                                 <div class="rp-body">
                                     @if ($terautentikasi)
                                         <div class="rp-aksi">
+                                            @if (auth()->user()?->isRm())
                                             <a href="{{ route('rekam-medis.autentikasi.cetak', $k->id) }}"
                                                target="_blank" rel="noopener" class="btn-edit-soap rj-cetak">Cetak Autentikasi</a>
+                                            @endif
                                         </div>
 
                                         <div class="dx-list">
